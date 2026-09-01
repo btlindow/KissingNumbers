@@ -26,3 +26,14 @@ docs/note/*.aux
 docs/note/*.log
 docs/note/*.out
 docs/note/*.toc
+
+# Markdowns
+AGENTS.md
+# Phase 2 working directory (local only)
+PHASE_2/
+
+# Confidential to the collaboration (Cohn construction) — never public
+private/
+
+# regenerable caches
+.cache/

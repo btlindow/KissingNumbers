@@ -13,7 +13,7 @@ known examples actually look like.
 
 | | |
 |---|---|
-| **K(27) ≥ 200540** | A new lower bound, +496 on the previous record of 200044. The R³ kissing configuration in the lifting template is the cuboctahedron, and both prior papers partitioned it into 2 triangles + 3 antipodal pairs (weight 7); it in fact partitions into **4 disjoint triangles** (weight 8). Found independently and at about the same time by Alexey Kravatsky. |
+| **K(27) ≥ 200540** | A new lower bound, +496 on the previous record of 200044. The R³ kissing configuration in the lifting template is the cuboctahedron, and both prior papers partitioned it into 2 triangles + 3 antipodal pairs (weight 7); it in fact partitions into **4 disjoint triangles** (weight 8). Found independently and at about the same time by Alexey Kravatskiy. |
 | **496 ≤ max&#124;S&#124; ≤ 837** | The upper bound is a three-point semidefinite program over the Terwilliger algebra of the 6-class association scheme, with an exact-rational dual certificate. *Every* two-point method — Delsarte LP, scheme LP, Lovász ϑ, Schrijver ϑ′, the ratio bound — gives exactly 9360/11 = 850.90…, so 837 is the first bound below that ceiling. |
 | **At least 64 pairwise Co₀-inequivalent maximal 496-sets** | No plateau move between them is realised by any Leech automorphism; they fall into 8 congruence classes of 8. Relevant to the suggestion that 496 is optimal: whatever the maximum is, it is not attained uniquely. |
 | **A structural account of the 496** | The known 496-sets live inside a Turyn decomposition ℝ²⁴ = B₁ ⊥ B₂ ⊥ B₃ with Λ ∩ Bᵢ ≅ √2·E₈, consist entirely of "duads", and are governed by a PG(3,2) of 15 *channels* carrying 8×8 rook grids, giving 496 = 4·(3·12 + 9·8 + 2·8). Every plateau move is a single channel-pair rewiring. |
@@ -38,6 +38,8 @@ merely asserted: see [`docs/reports/03-search-for-497.md`](docs/reports/03-searc
 
 ```
 docs/reports/      detailed working notes, by topic (start with its README)
+                   07 and 08 and KRAVATSKIY-OVERLAP are the September additions:
+                   the 418-line bound, the second shell, and the overlap audit
 docs/handover/     the summary paper (LaTeX + PDF) and its clean-room test transcript
 docs/note/         the dimension-27 record: note, certificate and standalone verifier
 docs/background.md the problem, the construction template, and the literature

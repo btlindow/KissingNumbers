@@ -369,3 +369,64 @@ channel_opt.py profilecaps --time 600                    (partial, interrupted)
   g(3) FEASIBLE best=27 bound=45.0    g(4) FEASIBLE best=36 bound=60.0
   g(5) FEASIBLE best=40 bound=62.0    — reproduces the ledger of docs/reports/A2.md §214
 ```
+
+---
+
+## 6. Phase 2 additions (1 September 2026)
+
+Four further headline claims, all CPU-only and independent of the build above. Timings are
+from a clean tree with an emptied environment (`env -i`, six variables), Python 3.10.12.
+
+```
+export PYTHONPATH=$PWD/python
+
+# 7.  |S| <= 837 re-checked from scratch, and the +-16 variant             [~10 s each]
+.venv/bin/python tools/bounds/recheck_sdp3_certificate.py data/scheme/sdp3_certificate.json
+# RESULT task1-verifierB file=sdp3_certificate.json forbidden_dots=[16] bound_floor=837 ok=1
+.venv/bin/python tools/bounds/recheck_sdp3_certificate.py data/scheme/sdp3_certificate_pm16.json
+# RESULT task1-verifierB file=sdp3_certificate_pm16.json forbidden_dots=[-16, 16] bound_floor=837 ok=1
+#   Imports nothing from python/bounds and nothing from any solver; rebuilds the S_3 orbit
+#   partition, the objective, Cy, both G families and both PSD blocks from orbitals.json.
+
+# 8.  418 lines: the doubling lemma, on regenerated data                     [~60 s]
+.venv/bin/python tools/bounds/verify_line_vector_reduction.py
+# RESULT task1-verifierA ok=1 conclusion='a line set of size L doubles to a 2L-vector
+#        60-degree-free set, so L <= floor(alpha_vec/2)'
+
+# 9.  the second shell: |A(v) n A(w)| = 33, the higher bounds, the flavours
+.venv/bin/python tools/leech/norm6_shell.py                    [9 s, peak 1.2 GiB, 384 MiB cache]
+# RESULT norm6-shell total=16773120 expected=16773120 -> True
+# RESULT norm6-shell ok=1
+.venv/bin/python tools/leech/second_shell_intersections.py               [74 s, peak 1.2 GiB]
+# RESULT thm mean = 33; variance = 0 -> |A(v) n A(w)| = 33 for EVERY pair: True
+# RESULT second-shell-intersections ok=1
+#   Run norm6_shell.py FIRST: the other two read its cache. Location is overridable with
+#   LEECH_NORM48_CACHE. The build streams each shape into a memmap, so peak RSS is ~1.2 GiB.
+
+# 10. the 24-cell, and R = the 15 channels                            [~4 s / ~7 min]
+.venv/bin/python tools/leech/d4_triangle_partitions.py
+# RESULT answer ok=1 answer=YES perfect_partitions=40 max_weight=16 prop5_bound=16
+.venv/bin/python tools/structure/r_subspace_vs_channels.py
+# RESULT task2a ok=1 verdict='R (Kravatskiy) == T (our 15 channels)'
+.venv/bin/python tools/structure/arena_is_our_sublattice.py
+# RESULT task6-A2-arena ok=1
+#   r_subspace_vs_channels.py writes its JSON to $KISS_OUT (default: runs/).
+
+# 11. the largest regular simplex of edge sqrt(6), and coset classes    [~5 min / ~10 min]
+.venv/bin/python tools/leech/norm6_simplex.py
+# RESULT dim28-upper-bound ... MAXIMUM = 24, ATTAINED: True
+.venv/bin/python tools/coset/coset_sweep.py
+# RESULT EXACT Delsarte bound on ANY forced coset class: 13405743/14959 (= 896.16)
+#   The criterion <x-c, y-c> = rho - |x-y|^2/2 is centre-independent, so a class on a sphere
+#   of radius^2 rho is forced exactly when rho <= 8/3; the sweep is then over centres.
+
+# 12. the complete stars corroborating |A(v) n A(w)| = 33          [20 s, peak 1.3 GiB]
+.venv/bin/python tools/leech/second_shell_stars.py
+# RESULT pairs COMPLETE over 8 full stars = 2060800 ordered pairs: {33: 2060800}
+```
+
+See [`docs/reports/07-lines-vs-vectors.md`](docs/reports/07-lines-vs-vectors.md),
+[`docs/reports/08-the-second-shell.md`](docs/reports/08-the-second-shell.md),
+[`docs/reports/09-coset-classes.md`](docs/reports/09-coset-classes.md) and
+[`docs/reports/KRAVATSKIY-OVERLAP.md`](docs/reports/KRAVATSKIY-OVERLAP.md) for what each
+establishes.

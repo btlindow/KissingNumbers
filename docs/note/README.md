@@ -1,7 +1,7 @@
 # `docs/note/` — research note: K(27) >= 200540
 
 **Status:** the note below reports K(27) >= 200540. The result was communicated to
-Henry Cohn, who confirmed it is correct and reported that Alexey Kravatsky had found
+Henry Cohn, who confirmed it is correct and reported that Alexey Kravatskiy had found
 the same improvement independently at about the same time. It is not posted to arXiv.
 
 | File | Content |

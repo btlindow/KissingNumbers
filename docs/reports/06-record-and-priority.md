@@ -400,11 +400,11 @@ and n = 27 still read 200044.
 
 ---
 
-## 4. Independent co-discovery by Alexey Kravatsky
+## 4. Independent co-discovery by Alexey Kravatskiy
 
 **The same observation — that the cuboctahedron partitions into four disjoint equilateral triangles,
 giving weight 8 in the dimension-27 template and hence K(27) ≥ 200540 — was found independently, and
-at about the same time, by Alexey Kravatsky.** Neither discovery derives from the other.
+at about the same time, by Alexey Kravatskiy.** Neither discovery derives from the other.
 
 The dates on record here are:
 
@@ -412,9 +412,9 @@ The dates on record here are:
 |---|---|
 | 2026-08-26 | the four-triangle partition found in this project, and K(27) ≥ 200540 verified end to end the same day |
 | 2026-08-27 | the priority check of §3 run; the note and certificate assembled |
-| by 2026-08-30 | Kravatsky's independent discovery became known to this project; from that point the working notes refer to it as co-discovered, and to a Cohn–Kravatsky collaboration |
+| by 2026-08-30 | Kravatskiy's independent discovery became known to this project; from that point the working notes refer to it as co-discovered, and to a Cohn–Kravatskiy collaboration |
 
-No precise date for Kravatsky's own discovery is recorded in this repository, so "at about the same
+No precise date for Kravatskiy's own discovery is recorded in this repository, so "at about the same
 time" is as strong a statement as the material here supports; he is the authority on his own
 timeline. What is claimed to be co-discovered is specifically the R³ partition and the resulting
 bound. The 496-element sets, the extra spheres and the template itself are prior work by Ma et al.
