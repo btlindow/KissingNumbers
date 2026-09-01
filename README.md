@@ -60,6 +60,44 @@ unzip leech-496-artifacts.zip && cd leech-496-artifacts && python3 verify.py --a
 
 which needs only Python 3 and NumPy, takes about two minutes, and ends in a single `RESULT` line.
 
+## Licensing
+
+Two licenses, split by kind of material.
+
+**Source code — MIT** (see [`LICENSE`](LICENSE)):
+`src/`, `include/`, `cuda/`, `tools/`, `tests/`, `python/`, `scripts/`, `cmake/`,
+`configs/`, `CMakeLists.txt`, `CMakePresets.json`.
+
+**Data, certificates, documents and reports — CC BY 4.0** (see [`LICENSE-DATA`](LICENSE-DATA)):
+`data/`, `docs/`, `README.md`, `REPRODUCE.md`, and `leech-496-artifacts.zip`.
+
+Where a Python file both implements a method and embeds results, the code is MIT and the results
+it reports are CC BY 4.0.
+
+### Third-party material
+
+Two sets of vectors in this repository are not ours. Our licenses cover our own work and **do not
+purport to license anyone else's data**; if you reuse the material below, follow the terms of its
+source.
+
+* **The 496-element configuration** originates with C. Ma, T. T. Zhaowei, P. Li, M. Liu, H. Chen,
+  Z. Mao, B. Li, Y. Cheng, Y. Qi and Y. Yang, *Finding kissing numbers with game-theoretic
+  reinforcement learning*, arXiv:2511.13391 (2025); data at
+  <https://github.com/CDM1619/PackingStar>. It appears here only re-expressed in this repository's
+  coordinate convention — a permutation of the 24 coordinates. As a subset of the 196,560 Leech
+  minimal vectors it is theirs and unchanged. This covers `data/S496.txt`, the per-dimension
+  families under `data/families/`, the four sets in `docs/note/data/`, and everything derived from
+  them (including `data/S496_family/`, whose 64 sets are obtained from theirs by moves described in
+  the reports, and the copies inside `leech-496-artifacts.zip`).
+* **The 488-element configuration** originates with K. Kallal, T. Kan and E. Wang, *Improved lower
+  bounds for kissing numbers in dimensions 25 through 31*, arXiv:1608.07270; SIAM J. Discrete Math.
+  31 (2017), no. 3, 1895–1908; data at <https://github.com/kenzkallal/Kissing-Numbers>. It appears
+  here as `data/S488.txt`, likewise only re-expressed in this repository's coordinates.
+
+No third-party source code is vendored in this repository. The Leech lattice, the extended binary
+Golay code and the small root-system configurations are regenerated from their mathematical
+definitions by code here, not copied from any implementation.
+
 ## Provenance and method
 
 The work was carried out by AI agents (Claude) directed by the repository owner, over roughly a

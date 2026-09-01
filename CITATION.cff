@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+title: >-
+  60-degree-free subsets of the Leech minimal vectors, and kissing
+  numbers in dimensions 25-31
+message: >-
+  If you use this software or data, please cite it using the metadata
+  from this file.
+type: software
+authors:
+  - family-names: Lindow
+    given-names: Ben
+abstract: >-
+  A computational study of the maximum size of a subset S of the 196560
+  minimal vectors of the Leech lattice in which no two members subtend an
+  angle of exactly 60 degrees, and of the structure of the largest known
+  examples. Such sets drive the best known kissing-number lower bounds in
+  dimensions 25 through 31. Includes a new lower bound K(27) >= 200540, a
+  certified ladder 496 <= max|S| <= 837 whose upper end is a three-point
+  semidefinite program with an exact-rational dual certificate, at least 64
+  pairwise Co_0-inequivalent maximal 496-element sets, and a structural
+  account of those sets in terms of a Turyn decomposition.
+keywords:
+  - kissing number
+  - Leech lattice
+  - spherical codes
+  - independent set
+  - semidefinite programming
+  - association scheme
+license: MIT
+repository-code: 'https://github.com/btlindow/KissingNumbers'
+year: 2026
+date-released: '2026-09-01'
