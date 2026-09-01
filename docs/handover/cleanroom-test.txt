@@ -1,0 +1,891 @@
+==============================================================================
+verify.py -- Leech minimal vectors, 496-point 60-degree-free sets,
+             and the exact dual certificate of |S| <= 837
+==============================================================================
+python 3.10.12, numpy 1.21.5
+
+[1] regenerating the extended binary Golay code and the Leech minimal vectors
+  Golay code G24: 4096 codewords, weight distribution 0:1, 8:759, 12:2576, 16:759, 24:1; minimum distance 8; linear (span of 12 shifts of g(x)): OK
+  Leech minimal vectors: 196560 rows, all of squared norm 32, all distinct;
+    inner products lie in {-32,-16,-8,0,8,16,32}; valencies from a base
+    vector: -32:1, -16:4600, -8:47104, +0:93150, +8:47104, +16:4600, +32:1
+    the set is closed under negation (row i pairs with row 196560-1-i)
+  (0.2 s)
+
+[2] set file: S496.txt
+    sha256 124da421631195969b27ab756774694f7e3f026625fed9449d906698d954ba70
+  S496.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 9595151e9bad063c7384fe10fc629c58
+  S496.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2704, 9:8064, 10:31424, 11:52672, 12:49552, 13:31360, 14:13440, 15:2560, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_00.txt
+    sha256 75899def2dc3a8e978862a8750ba6f4daf1c56779f2969315e91d66d32e42c70
+  plateau/S_00.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 9595151e9bad063c7384fe10fc629c58
+  plateau/S_00.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2704, 9:8064, 10:31424, 11:52672, 12:49552, 13:31360, 14:13440, 15:2560, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_01.txt
+    sha256 c95a8af2667c3cbdc28ba1c427f50590fb77b672865c4a233318b9d292a1057a
+  plateau/S_01.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): deb1dd710da9e9ebf9aca0620f922fa7
+  plateau/S_01.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31312, 11:51584, 12:51616, 13:29312, 14:14912, 15:1792, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.6 s)
+
+[2] set file: plateau/S_02.txt
+    sha256 05f1ead189c93ff72a2f7045d96ed02929ee0136901638aef5a056fe36e985c1
+  plateau/S_02.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): e67ab51383393930d2b7424591d9f21c
+  plateau/S_02.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31056, 11:52864, 12:49056, 13:31872, 14:13632, 15:2048, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.6 s)
+
+[2] set file: plateau/S_03.txt
+    sha256 fc07f564ec38c72ade845d770aa6fc9f538c37cc2610a69009f3d95eb77ee30b
+  plateau/S_03.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): e1830b50f8124865433be98c2f4761aa
+  plateau/S_03.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2576, 9:8448, 10:31424, 11:52032, 12:49680, 13:31744, 14:13440, 15:2432, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_04.txt
+    sha256 f51b7022b03004c266ee481660f3d941d2eb1fd8b8407d911b3024ce9ae62c99
+  plateau/S_04.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 633114821f78c2fd5e7edf6a32c3b4e3
+  plateau/S_04.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31312, 11:51584, 12:51616, 13:29312, 14:14912, 15:1792, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_05.txt
+    sha256 8c5c8c07333153f06a334a42fd6ed8108d5e08e638e6acd36442d6bfe4f657d0
+  plateau/S_05.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 0577ed5c708b6c98875a6eaf16a882c6
+  plateau/S_05.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2704, 9:8064, 10:31424, 11:52672, 12:49552, 13:31360, 14:13440, 15:2560, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_06.txt
+    sha256 cafd6e095f77a61279ecdc0a5af2bd84dfba7dba14e5e275ae89d9a4f0fa1a26
+  plateau/S_06.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): e9694f29f4c6b4d2ba6af75e270a5faa
+  plateau/S_06.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2320, 9:9728, 10:28864, 11:54848, 12:47888, 13:32000, 14:13952, 15:2176, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_07.txt
+    sha256 63d88d2b01e606ee275d8362e53fa0ada2eb5e995ce57679b98056f4fc93842b
+  plateau/S_07.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): a493c91e92d03cb1b03983dbd8a72823
+  plateau/S_07.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31056, 11:52864, 12:49056, 13:31872, 14:13632, 15:2048, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_08.txt
+    sha256 8fce162de163720e58ffe8b7a9400b3e95848b80f7708eee4708be125f973a38
+  plateau/S_08.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): c0f9202ad455c9ec16b9788429488ee6
+  plateau/S_08.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31056, 11:52864, 12:49056, 13:31872, 14:13632, 15:2048, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_09.txt
+    sha256 3839b1668899b1a2ffbc9d1890b8ba5411781ec06033d6746243d09e8334ae8f
+  plateau/S_09.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): dcf0a8522c997656ebcd180100ce3281
+  plateau/S_09.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2320, 9:9728, 10:28864, 11:54848, 12:47888, 13:32000, 14:13952, 15:2176, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_10.txt
+    sha256 4c3c007b01ec41ce4cd33ed7206085c4b4f6f7a5f1ff94dcfeeedc8c213afb57
+  plateau/S_10.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 61e9a95d07d8fca2663f85aed06683ad
+  plateau/S_10.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2704, 9:8064, 10:31424, 11:52672, 12:49552, 13:31360, 14:13440, 15:2560, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_11.txt
+    sha256 33513fbc46a65c3caeef2e8d258e772c38dfcf41274153e2e7e2ad51a29bf8dc
+  plateau/S_11.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 6d5ccbc3c62f3fdee9b81599b821b6da
+  plateau/S_11.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31312, 11:51584, 12:51616, 13:29312, 14:14912, 15:1792, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_12.txt
+    sha256 139ed70bb7ec5236049c0ad8d18c73b9a16520943ea57d433daf184fa6519b3c
+  plateau/S_12.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): f509705b1b0e830e0950da4e621c5908
+  plateau/S_12.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2576, 9:8448, 10:31424, 11:52032, 12:49680, 13:31744, 14:13440, 15:2432, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_13.txt
+    sha256 a2d39fc5632e1a9fce93e32e5602346d7a7b8f5b69bf8385a78c8b92b9bacea8
+  plateau/S_13.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 0d0a97c73f4548285b9057fb52522cea
+  plateau/S_13.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31056, 11:52864, 12:49056, 13:31872, 14:13632, 15:2048, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_14.txt
+    sha256 19dbd9059d180116db18ce688394cc49ae811896cd1db9e5b47c3ee401fb7fe0
+  plateau/S_14.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 286c83130cdf0a1c720ee816fd864c63
+  plateau/S_14.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31312, 11:51584, 12:51616, 13:29312, 14:14912, 15:1792, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_15.txt
+    sha256 bebbeaee6eb6f4bdac29094a78a4c1bb4de9dab389b524aeb780f135513a43a1
+  plateau/S_15.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 6e836cd3c67309a465bf70eb0da33819
+  plateau/S_15.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2704, 9:8064, 10:31424, 11:52672, 12:49552, 13:31360, 14:13440, 15:2560, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_16.txt
+    sha256 f7fe3285437da857e5e87044b50e2ed114e1c3b9f254f8dcae5725d8889ea642
+  plateau/S_16.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 552cd358d5eb01b19e526e6d8e86e7bd
+  plateau/S_16.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2704, 9:8064, 10:31424, 11:52672, 12:49552, 13:31360, 14:13440, 15:2560, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_17.txt
+    sha256 8ef4da1d155a4be564784de2132cd570fe83c5132bd70985ccea3e3d77aa233f
+  plateau/S_17.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): b2353b8030c6afca0294e7e27de1b83d
+  plateau/S_17.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31056, 11:52864, 12:49056, 13:31872, 14:13632, 15:2048, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_18.txt
+    sha256 6623d3736ba6bb3cab24c3a9afd038328d98af3094cfb176d7a1756e244a2247
+  plateau/S_18.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 48dda56a58b8f6e78e7afaf819b6f91f
+  plateau/S_18.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31312, 11:51584, 12:51616, 13:29312, 14:14912, 15:1792, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_19.txt
+    sha256 c41976dd75221fe4d2e601d9fbb8034141a83c0faa1a718b713d6291916a19a7
+  plateau/S_19.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 720fe543e15db4d90a569bd0482803b8
+  plateau/S_19.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2576, 9:8448, 10:31424, 11:52032, 12:49680, 13:31744, 14:13440, 15:2432, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_20.txt
+    sha256 76c891a95f34f4eed668e9bcd9074b3df61c5e59fdb3db094dc79270ff169692
+  plateau/S_20.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 11f9cf8797a4224d7aea9407f30bc544
+  plateau/S_20.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31056, 11:52864, 12:49056, 13:31872, 14:13632, 15:2048, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_21.txt
+    sha256 b48c6d822eee1566e09aca769c8274c260d272616679dd15bfe584ecf4f9b382
+  plateau/S_21.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): c4814a207978132188af1421e11724a3
+  plateau/S_21.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2704, 9:8064, 10:31424, 11:52672, 12:49552, 13:31360, 14:13440, 15:2560, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_22.txt
+    sha256 74dcdf7887782c1a79f5124c99a53aa307d14ceb34d5b13a0d9d1720b7563c2c
+  plateau/S_22.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): ab9e9b140775ffb5b9d38b1e287884c2
+  plateau/S_22.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2320, 9:9728, 10:28864, 11:54848, 12:47888, 13:32000, 14:13952, 15:2176, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_23.txt
+    sha256 55f0216b6c13acc990a202f5ab832dbd8b4413cce13c5d9ea0be8035fda4b148
+  plateau/S_23.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): ed1e84f082abf34cc37da66170161e58
+  plateau/S_23.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31312, 11:51584, 12:51616, 13:29312, 14:14912, 15:1792, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_24.txt
+    sha256 230462e1d17487fa8f0b374a9a5dcb15fcfa836d3169b17bf9f9b4489ec40b43
+  plateau/S_24.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 82fb9480de8efddceb4f283c7f1c8b28
+  plateau/S_24.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31312, 11:51584, 12:51616, 13:29312, 14:14912, 15:1792, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_25.txt
+    sha256 3924401b419fc72c033bf6e857e96180132f128f00a9c6d3a8c2b1266089f9c0
+  plateau/S_25.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): f777453ece3c65318478e9957eab3489
+  plateau/S_25.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2320, 9:9728, 10:28864, 11:54848, 12:47888, 13:32000, 14:13952, 15:2176, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_26.txt
+    sha256 9cc2d322b2f97e9cfc7a0d475e6f762c81a35ac5db23328e8369aa9cfb04cd61
+  plateau/S_26.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): f2dec3978eeb8bd70f4b978c4e6de3b2
+  plateau/S_26.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2704, 9:8064, 10:31424, 11:52672, 12:49552, 13:31360, 14:13440, 15:2560, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_27.txt
+    sha256 8685fd222340a1a1c28c7bb3ca75f8d36e7d5d8a331002279321884b7f57a49f
+  plateau/S_27.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 99cad19671b8ccce6e21ee027fa5871f
+  plateau/S_27.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31056, 11:52864, 12:49056, 13:31872, 14:13632, 15:2048, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_28.txt
+    sha256 a01ec1c25ad60fdf4d1f36835dba8eee82726c23c476f2aaa3ff5640af744e2c
+  plateau/S_28.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 278d5b9ec36b269e015e4693ea31894f
+  plateau/S_28.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2576, 9:8448, 10:31424, 11:52032, 12:49680, 13:31744, 14:13440, 15:2432, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_29.txt
+    sha256 67480e2b0fcc84125795a3a18e93e05d02f1d98fcb03e8ba09ce02fba89916de
+  plateau/S_29.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): f8d5fbd15462c7ecf8f56a912c5c541b
+  plateau/S_29.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31312, 11:51584, 12:51616, 13:29312, 14:14912, 15:1792, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_30.txt
+    sha256 6341cc07e6e15c83665110b1a10856f6d9d6d3bef61de7124d70c1d72f135018
+  plateau/S_30.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 5ff15193615cdbed4d1ac54a006cbdcf
+  plateau/S_30.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31056, 11:52864, 12:49056, 13:31872, 14:13632, 15:2048, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_31.txt
+    sha256 bba055193801969714ccd4353622a44fbc6ac376702484ab9110231b1da07052
+  plateau/S_31.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 2542cd90c086d0515213b416b54a2772
+  plateau/S_31.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2704, 9:8064, 10:31424, 11:52672, 12:49552, 13:31360, 14:13440, 15:2560, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_32.txt
+    sha256 f213bd6057c256a297a8c8bd5c826a0186cb9fe2a77ddd4b2d8c2617b23dabb3
+  plateau/S_32.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 165fda9753e4e2228fe456c9490fdccb
+  plateau/S_32.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2704, 9:8064, 10:31424, 11:52672, 12:49552, 13:31360, 14:13440, 15:2560, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_33.txt
+    sha256 51d9b0493df78c463bc5dc58a3236c763e5e6633660404fe404013aca1eadb7a
+  plateau/S_33.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 91d66be7eb0c01b499716d7fbfcdd979
+  plateau/S_33.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31056, 11:52864, 12:49056, 13:31872, 14:13632, 15:2048, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_34.txt
+    sha256 6bb4f64255530c80a3e1ac28d45b6ff16aee31dc3a6de148a3d95be0be990f71
+  plateau/S_34.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 55d98641a5af2c34cab1be20dd4589c8
+  plateau/S_34.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31312, 11:51584, 12:51616, 13:29312, 14:14912, 15:1792, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_35.txt
+    sha256 217de2d62a78010620b773772425f02fba3351a6c79d5518fc01be7318771414
+  plateau/S_35.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 0d21415d531469e78424ad9a5aaa7279
+  plateau/S_35.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2576, 9:8448, 10:31424, 11:52032, 12:49680, 13:31744, 14:13440, 15:2432, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_36.txt
+    sha256 2a4e05c89e8eec7149eb22f4997e81490a2237df4d1038a2902d9e6d654f765c
+  plateau/S_36.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): e67379f0a6ad1be4faa3f3ca7cc556bd
+  plateau/S_36.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31056, 11:52864, 12:49056, 13:31872, 14:13632, 15:2048, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_37.txt
+    sha256 2cd35099b36b06fa5c485148d3de0aed00f48c13b9de451979ba1e33c2b8c770
+  plateau/S_37.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): c19b58a6cfa74bd1d23bac435cb94189
+  plateau/S_37.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2704, 9:8064, 10:31424, 11:52672, 12:49552, 13:31360, 14:13440, 15:2560, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_38.txt
+    sha256 1d8b83896e55c2a83ab525b2c6a42ca494ad83ddf45328bacd368eed6eaf27e9
+  plateau/S_38.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): fbab0af81136613056a81b30c2709343
+  plateau/S_38.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2320, 9:9728, 10:28864, 11:54848, 12:47888, 13:32000, 14:13952, 15:2176, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_39.txt
+    sha256 bb19c41cb1b113d0904b403d97d107179027338562e6f6bee3445493dcc50a94
+  plateau/S_39.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): e7d68e9128c71abb8768162f8a7a139d
+  plateau/S_39.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31312, 11:51584, 12:51616, 13:29312, 14:14912, 15:1792, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_40.txt
+    sha256 6b4cfd305fdc59925ceba180458f668f82cbc5660c823bb16afb38a98cd906b5
+  plateau/S_40.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): dc36c9a1affcabce2ce105520cfc82aa
+  plateau/S_40.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31312, 11:51584, 12:51616, 13:29312, 14:14912, 15:1792, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_41.txt
+    sha256 42e47f033696a2b1dd2ef237e43a870ba1f9cc0a7a5819a272f1ea9bd0395749
+  plateau/S_41.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 28a2cd1b438203e84912116d88b0e204
+  plateau/S_41.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2320, 9:9728, 10:28864, 11:54848, 12:47888, 13:32000, 14:13952, 15:2176, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_42.txt
+    sha256 3b28fd52ad9f2df82a15b97d51da5e784c6c9b2e91c1006e4d32e9f42009011e
+  plateau/S_42.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 0acc126e1f547a6e2de4e1e2bb920e55
+  plateau/S_42.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2704, 9:8064, 10:31424, 11:52672, 12:49552, 13:31360, 14:13440, 15:2560, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_43.txt
+    sha256 e208785e05ba7da57cd2e1854d3c84af5c8eec19d7f83f3b640e49c64089e194
+  plateau/S_43.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): c9a6971ff696546b6ce7ca1b7b610b79
+  plateau/S_43.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31056, 11:52864, 12:49056, 13:31872, 14:13632, 15:2048, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_44.txt
+    sha256 f8ec0298b0f2be5dbc559e14505764b314f8d16cf30ecfa8bc8404a5d7d86137
+  plateau/S_44.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): fcf6ac6687f178cb94289a8ecf2b24f2
+  plateau/S_44.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2576, 9:8448, 10:31424, 11:52032, 12:49680, 13:31744, 14:13440, 15:2432, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_45.txt
+    sha256 e908af4d57b90d3a0f16a7060c1097e5b9d29864c204751a234a5c569b490b3f
+  plateau/S_45.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): c347d720301d634d72e92dcd1ad2505c
+  plateau/S_45.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31312, 11:51584, 12:51616, 13:29312, 14:14912, 15:1792, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_46.txt
+    sha256 6b63b718508ac96b70ad059787076a1a222a699d0097f994bd621f5723c7eac1
+  plateau/S_46.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 39dfaf1c7838ae9d3465c4c86e7630eb
+  plateau/S_46.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31056, 11:52864, 12:49056, 13:31872, 14:13632, 15:2048, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_47.txt
+    sha256 f387f2ebca2a0aea51b1364f69de5515cf87c50e2273a9c87b00de1af611518d
+  plateau/S_47.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 8ce4000ee6a800b2bd2a9eac311ad1ad
+  plateau/S_47.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2704, 9:8064, 10:31424, 11:52672, 12:49552, 13:31360, 14:13440, 15:2560, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_48.txt
+    sha256 a048d1dbdd9b7e2bdc05f891327505fadd9b5569e6f41ee9d441a2bbf4fb9d4f
+  plateau/S_48.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): bef087b2d5c38d914e101961c8a7125c
+  plateau/S_48.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2704, 9:8064, 10:31424, 11:52672, 12:49552, 13:31360, 14:13440, 15:2560, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_49.txt
+    sha256 8dec21ee66db81d4a68ba9aab8e50f6241d40f0e94914452a6d5fa33d5c3073a
+  plateau/S_49.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): d927bb0cb32b040a9345475f2cf2ceaa
+  plateau/S_49.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31312, 11:51584, 12:51616, 13:29312, 14:14912, 15:1792, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_50.txt
+    sha256 998dfdc38e824541d18af6c1d8fad0b9729de54e9cdee2032faab67598b99093
+  plateau/S_50.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 8ae87fd072fb60862742d60ca820c1f2
+  plateau/S_50.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31056, 11:52864, 12:49056, 13:31872, 14:13632, 15:2048, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_51.txt
+    sha256 4483a961fd585bb5631ba7ff73aacd3d4451b77807b0e8d447ad803f45725909
+  plateau/S_51.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 51a928ded2e0f4a0bb8c3caff9d419a7
+  plateau/S_51.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2576, 9:8448, 10:31424, 11:52032, 12:49680, 13:31744, 14:13440, 15:2432, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_52.txt
+    sha256 2f229d3e740992dfc031702fe6ce015b9cc2a534b0134ab1965786c7579adf2f
+  plateau/S_52.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 872b2036addce1ffe10c73eb4040e295
+  plateau/S_52.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31312, 11:51584, 12:51616, 13:29312, 14:14912, 15:1792, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_53.txt
+    sha256 b70cd8733bf4f4d7d81c526f2c5ad466fb4205d449f81465f8d5307c7f448a08
+  plateau/S_53.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 9e30b95947233f32d66eaa3ffcc8a21e
+  plateau/S_53.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2704, 9:8064, 10:31424, 11:52672, 12:49552, 13:31360, 14:13440, 15:2560, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_54.txt
+    sha256 5d105da004b0ab8d9f8eeb4c8b61b84c9a17e16f26d1b438fc3c57caf05ec6d4
+  plateau/S_54.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 61c79c09fe07f0178b90ddd0bc53d50f
+  plateau/S_54.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2320, 9:9728, 10:28864, 11:54848, 12:47888, 13:32000, 14:13952, 15:2176, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_55.txt
+    sha256 e2aae3d323162a9063dfa83f59baaa38b37872097686cb8f0738ed3c249eeb4c
+  plateau/S_55.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 5d98f41c82636b2b141a69d4cf39fbca
+  plateau/S_55.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31056, 11:52864, 12:49056, 13:31872, 14:13632, 15:2048, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_56.txt
+    sha256 7585f4ff5a39590d170311af7e8193fb50ca5c7b0538331a735333b37b8d7472
+  plateau/S_56.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): a97fbc4c9ca6064fd18c34fa1fedc52e
+  plateau/S_56.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31056, 11:52864, 12:49056, 13:31872, 14:13632, 15:2048, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_57.txt
+    sha256 4219e2250bf7aa92c8b164fc041bf4ec5cdd982db48a2d0897d443bc0d099da1
+  plateau/S_57.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 6af88fbcb3257ad50fd33e36a41ff8d3
+  plateau/S_57.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2320, 9:9728, 10:28864, 11:54848, 12:47888, 13:32000, 14:13952, 15:2176, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.5 s)
+
+[2] set file: plateau/S_58.txt
+    sha256 9ff1ffb908714f4fbd138d65f2a98fa76dbe34cebe69f6b10c35f8f8cb6841be
+  plateau/S_58.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 8fb44d6f92818679943bfa24a60362cf
+  plateau/S_58.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2704, 9:8064, 10:31424, 11:52672, 12:49552, 13:31360, 14:13440, 15:2560, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_59.txt
+    sha256 ebc2a16430c8c656baddcb425093ece025c892b899cdf42c981d5367d37ce569
+  plateau/S_59.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 8374af7f442cffd52105e780d87d3888
+  plateau/S_59.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31312, 11:51584, 12:51616, 13:29312, 14:14912, 15:1792, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_60.txt
+    sha256 04fd7452410d59dab370863c043946400ae96a33516e0563f89be0f65781e1cb
+  plateau/S_60.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 4b2179f4235aaa37da29d87e5808a06d
+  plateau/S_60.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2576, 9:8448, 10:31424, 11:52032, 12:49680, 13:31744, 14:13440, 15:2432, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_61.txt
+    sha256 577da5aff78bec3b279f6e420a1f4ec609f3e59c4ddb4b2f5547f923da887830
+  plateau/S_61.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 2e3044a49b50126fd6939369ee6f0bf2
+  plateau/S_61.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31056, 11:52864, 12:49056, 13:31872, 14:13632, 15:2048, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_62.txt
+    sha256 c40c1db73819b96ed7200793abe09946a3a9b2957fc6cb53bcde5311b40c6c8a
+  plateau/S_62.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): 9f80667d7ed6d4db3689a6677a519fcd
+  plateau/S_62.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:672, 7:128, 8:2800, 9:8320, 10:31312, 11:51584, 12:51616, 13:29312, 14:14912, 15:1792, 16:1864, 18:848, 20:544, 22:128, 24:152
+  (1.4 s)
+
+[2] set file: plateau/S_63.txt
+    sha256 ee56722dd88c14486998914740afb740395723ea4c6d622d320aaca5d1dd3e5b
+  plateau/S_63.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs: {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+    set fingerprint (sha256 of the sorted canonical indices): f046d6fa154d68f288a2727ad9607049
+  plateau/S_63.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+    tightness histogram outside S: 4:80, 6:640, 7:256, 8:2704, 9:8064, 10:31424, 11:52672, 12:49552, 13:31360, 14:13440, 15:2560, 16:1480, 17:256, 18:704, 19:64, 20:528, 22:128, 24:152
+  (1.4 s)
+
+[2b] the 65 set files contain 64 distinct sets (two files describe the
+     same set exactly when their fingerprints above agree)
+
+[3] dual certificate: sdp3_certificate.json
+    sha256 47b4e0580caaa9a04b18c29165122b175a0cd211a076d927fc9654102069a8c3
+    orbital numbering: scheme_orbitals.json
+    sha256 ddb901420b483b610590b21eb55309c1b18e3e9562d186e888b407def3803d65
+  scheme: 7 classes with valencies (1, 4600, 47104, 93150, 47104, 4600, 1)
+    147 non-empty cells (i,j,k); the cell (3,3,3) of mutually orthogonal
+      triples splits into two orbitals of sizes 42240 and 924 per fixed y
+    -> D = 148 orbitals
+    orbit sizes per cell reproduce the measured intersection numbers p^i_jk
+    transpose and swap involutions re-derived from the lattice: OK
+    structure constants c[u,s,t] of the 148-dimensional algebra recomputed
+      from the lattice (one base pair per orbital, 148 sweeps of 196560 vectors)
+    exact checks on c: support, row and column sums, |u|c^u_st = |s|c^s_{ut^T}, unit, associativity: OK
+    -> the 148 labels are the orbitals and span a matrix *-algebra
+    certificate structure: N = 196560, D = 148 orbitals, 43 unordered-triple
+      variables, forbidden inner product 16 (60 degrees), 28 free variables
+    the two PSD multipliers are given as sums of 138 and 132 rank-one terms
+      m_i * p_i p_i^T / 2^e with m_i >= 0 and p_i integral, so they are
+      positive semidefinite by construction -- no numerical PSD test is used
+    exact rational recomputation of h_q = obj_q + <Y1,G_q> + <Y2,Gy_q>
+      + (mu^T Cy)_q - rho_q for all 43 variables: matches the stored h
+    bound = h_e + sum_{q free} rho_q + sum_{q free, q != e} max(0, h_q)
+          = 10027499845366351601842209731360841788731521999026778139 / 11972621413014756705924586149611790497021399392059392
+          = 837.5358661609
+    floor of the bound = 837   ->   every 60-degree-free set of Leech
+      minimal vectors has at most 837 elements
+  (9.8 s)
+
+RESULT ok=1 golay_words=4096 leech_vectors=196560 sets_checked=65 all_size_496=1 all_60deg_free=1 all_antipodal=1 distinct_sets=64 distinct_gram_histograms=1 free_vertices_total=0 all_maximal=1 min_tightness=4 distinct_tightness_spectra=5 certificate_bound_floor=837 elapsed_s=103.4

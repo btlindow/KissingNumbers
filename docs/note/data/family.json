@@ -1,0 +1,270 @@
+{
+ "schema_version": 1,
+ "dim": 27,
+ "d": 3,
+ "coordinates": "leech-sqrt8-integer",
+ "sets": [
+  {
+   "file": "S_01.txt",
+   "size": 496,
+   "sha256": "a6080fef3c2370069e8c9d51cdce379a3c7db6737ecb04e56a24bf93dede90f0",
+   "from": "set 1 of the 5 in Ma et al.'s dimension-27 configuration (27D_200044_coordinates.npy, sha256 b7dcb05e...6fee6d89); their families are nested, so the same set also occurs in their 25D/29D/30D/31D data",
+   "sha256_vectors": "79d5791c04dd34bb37023b66e65aa43e3276aea413aa439e729473aecad22820"
+  },
+  {
+   "file": "S_02.txt",
+   "size": 496,
+   "sha256": "dcb7810d0808b0e0b1502ce3b15a16870adde9c0963110937aa864ace86e9821",
+   "from": "set 2 of the 5 in Ma et al.'s dimension-27 configuration (27D_200044_coordinates.npy, sha256 b7dcb05e...6fee6d89); their families are nested, so the same set also occurs in their 25D/29D/30D/31D data",
+   "sha256_vectors": "cb02b6e8da31ea45448f6b4ee0c33a8be5bec4c1b31eb28e9416a3c1221a2b0f"
+  },
+  {
+   "file": "S_03.txt",
+   "size": 496,
+   "sha256": "473515c1a964c30fe03e5f5a1e9f541b62231355aa5a476fbaf375ce35882805",
+   "from": "set 3 of the 5 in Ma et al.'s dimension-27 configuration (27D_200044_coordinates.npy, sha256 b7dcb05e...6fee6d89); their families are nested, so the same set also occurs in their 25D/29D/30D/31D data",
+   "sha256_vectors": "035510864f07b6fb715b9134847b17225a1d51c14f49317a005de592428e85e0"
+  },
+  {
+   "file": "S_04.txt",
+   "size": 496,
+   "sha256": "471433649e81e3e0afc17f90fa70a3c5cbb462e708ba71179e81fcdc759f6dcb",
+   "from": "set 4 of the 5 in Ma et al.'s dimension-27 configuration (27D_200044_coordinates.npy, sha256 b7dcb05e...6fee6d89); their families are nested, so the same set also occurs in their 25D/29D/30D/31D data",
+   "sha256_vectors": "899f76ce60d258b2a0d538856641ac08376cb60c67767cec49b996106e73ddc9"
+  }
+ ],
+ "T": {
+  "config": "A3=D3",
+  "K": 12,
+  "ambient": 3,
+  "norm2": 2,
+  "vectors": [
+   [
+    -1,
+    -1,
+    0
+   ],
+   [
+    -1,
+    0,
+    -1
+   ],
+   [
+    -1,
+    0,
+    1
+   ],
+   [
+    -1,
+    1,
+    0
+   ],
+   [
+    0,
+    -1,
+    -1
+   ],
+   [
+    0,
+    -1,
+    1
+   ],
+   [
+    0,
+    1,
+    -1
+   ],
+   [
+    0,
+    1,
+    1
+   ],
+   [
+    1,
+    -1,
+    0
+   ],
+   [
+    1,
+    0,
+    -1
+   ],
+   [
+    1,
+    0,
+    1
+   ],
+   [
+    1,
+    1,
+    0
+   ]
+  ],
+  "groups": [
+   [
+    0,
+    6,
+    10
+   ],
+   [
+    1,
+    7,
+    8
+   ],
+   [
+    2,
+    4,
+    11
+   ],
+   [
+    3,
+    5,
+    9
+   ]
+  ]
+ },
+ "extra": {
+  "count": 12,
+  "sqrt": 2,
+  "den": 2,
+  "a": [
+   [
+    -2,
+    0,
+    0
+   ],
+   [
+    2,
+    0,
+    0
+   ],
+   [
+    -2,
+    0,
+    0
+   ],
+   [
+    2,
+    0,
+    0
+   ],
+   [
+    -2,
+    0,
+    0
+   ],
+   [
+    2,
+    0,
+    0
+   ],
+   [
+    -2,
+    0,
+    0
+   ],
+   [
+    2,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ],
+  "b": [
+   [
+    0,
+    -1,
+    1
+   ],
+   [
+    0,
+    -1,
+    1
+   ],
+   [
+    0,
+    -1,
+    -1
+   ],
+   [
+    0,
+    -1,
+    -1
+   ],
+   [
+    0,
+    1,
+    1
+   ],
+   [
+    0,
+    1,
+    1
+   ],
+   [
+    0,
+    1,
+    -1
+   ],
+   [
+    0,
+    1,
+    -1
+   ],
+   [
+    0,
+    2,
+    0
+   ],
+   [
+    0,
+    0,
+    2
+   ],
+   [
+    0,
+    0,
+    -2
+   ],
+   [
+    0,
+    -2,
+    0
+   ]
+  ]
+ },
+ "count": 200540,
+ "count_terms": {
+  "extra": 12,
+  "leech": 196560,
+  "lifted": 3968
+ },
+ "count_formula": "12 + 196560 + sum_i (|T_i| - 1) * |S_i|  (weights [2, 2, 2, 2])",
+ "provenance": {
+  "claim": "K(27) >= 200540",
+  "construction": "Cohn-Jiao-Kumar-Torquato, Geom. Topol. 15 (2011) 2235-2273, Theorem 7.5, with the cuboctahedron partitioned into 4 disjoint triangles (weight 8) instead of 2 triangles + 3 antipodal pairs (weight 7).",
+  "sets": "four of the five 496-element subsets of the Leech minimal vectors used by Ma et al. (arXiv:2511.13391) in dimension 27, re-expressed in the coordinates of the note; verified to match their 27D data set-for-set",
+  "extra_spheres": "the 12 extra spheres of Ma et al.'s dimension-27 configuration, unchanged",
+  "previous_record": 200044,
+  "date": "2026-08-27"
+ }
+}

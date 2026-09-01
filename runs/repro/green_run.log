@@ -1,0 +1,1135 @@
+T-REPRO green run  2026-08-31T14:56:41Z
+host: Linux 6.17.9-76061709-generic x86_64  cores: 16  load: 20.80 18.44 15.16
+NOTE: 7 kissat solvers were pinned at 99% on this box throughout; all
+      commands were run with 'nice -n 15'.  Times are inflated.
+
+
+##### 0. fresh clone of the committed state + overlay of the T-REPRO fix files #####
+$ git -C /tmp/claude-1000/-home-blinny-Projects-kissing/dd24891a-8cf9-4661-9f66-7c57965a5954/scratchpad/repro-clone3 log --oneline -1
+b73230c T-A4b: tightness-4 vertices are alternative wirings of the three frame channels; (80,80) moves are whole-channel-pair rewirings along sigma
+overlay: .gitattributes
+overlay: data/plateau_atoms_496.json
+overlay: REPRODUCE.md
+overlay: python/tools/materialize_64.py
+overlay: python/tools/plateau_equivalence.py
+overlay: python/tools/structure_t4.py
+overlay: python/tools/check_clique_g.py
+overlay: python/tools/plateau_isometry_closure.py
+overlay: python/tests/test_highdim.py
+$ file scripts/setup_venv.sh
+scripts/setup_venv.sh: Bourne-Again shell script, Unicode text, UTF-8 text executable
+
+##### 1. python environment  (REPRODUCE.md §2 step 1) #####
+$ bash scripts/setup_venv.sh
+setup_venv: created /tmp/claude-1000/-home-blinny-Projects-kissing/dd24891a-8cf9-4661-9f66-7c57965a5954/scratchpad/repro-clone3/.venv with 'python3 -m virtualenv'
+python 3.10.12 numpy 2.2.6 scipy 1.15.3 sympy 1.14.0 pytest 9.1.1
+RESULT ok=1 venv=/tmp/claude-1000/-home-blinny-Projects-kissing/dd24891a-8cf9-4661-9f66-7c57965a5954/scratchpad/repro-clone3/.venv
+
+##### 2. C++/CUDA build  (§2 step 2) #####
+$ cmake --preset release
+Preset CMake variables:
+
+  CMAKE_BUILD_TYPE="Release"
+  CMAKE_CUDA_ARCHITECTURES="86"
+  CMAKE_CUDA_COMPILER="/usr/local/cuda-12.8/bin/nvcc"
+  CMAKE_EXPORT_COMPILE_COMMANDS="ON"
+  KISS_ENABLE_GPU_TESTS="ON"
+
+-- The CXX compiler identification is GNU 11.4.0
+-- The CUDA compiler identification is NVIDIA 12.8.93
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/lib/ccache/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting CUDA compiler ABI info
+-- Detecting CUDA compiler ABI info - done
+-- Check for working CUDA compiler: /usr/local/cuda-12.8/bin/nvcc - skipped
+-- Detecting CUDA compile features
+-- Detecting CUDA compile features - done
+-- CUDA compiler : /usr/local/cuda-12.8/bin/nvcc (12.8.93)
+-- CUDA archs    : 86
+-- C++ compiler  : /usr/lib/ccache/c++ (11.4.0)
+-- Build type    : Release
+-- GPU tests     : ON   sanitize: OFF   werror: ON
+-- Found CUDAToolkit: /usr/local/cuda-12.8/include (found suitable version "12.8.93", minimum required is "12.8") 
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP: TRUE (found version "4.5") found components: CXX 
+-- kiss tools: build_adj;clique_g;disjoint_family;frames;gen_leech;gpu_mis;kiss_info;orbit_mis;plateau_walk;quad_stats;random_aut;scheme_numbers;swapsearch;triple_orbitals;triple_stats;verify_s
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /tmp/claude-1000/-home-blinny-Projects-kissing/dd24891a-8cf9-4661-9f66-7c57965a5954/scratchpad/repro-clone3/build/release
+$ cmake --build build/release -j 8
+[0/2] Re-checking globbed directories...
+[1/93] Building CXX object CMakeFiles/kiss.dir/src/adjacency.cpp.o
+[2/93] Building CXX object CMakeFiles/kiss.dir/src/golay.cpp.o
+[3/93] Building CXX object CMakeFiles/kiss.dir/src/io.cpp.o
+[4/93] Building CXX object CMakeFiles/kiss.dir/src/leech.cpp.o
+[5/93] Building CXX object CMakeFiles/kiss.dir/src/group.cpp.o
+[6/93] Building CXX object CMakeFiles/kiss.dir/src/run_config.cpp.o
+[7/93] Building CXX object CMakeFiles/kiss.dir/src/orbits.cpp.o
+[8/93] Building CXX object CMakeFiles/kiss.dir/src/plateau.cpp.o
+[9/93] Building CXX object CMakeFiles/kiss.dir/src/version.cpp.o
+[10/93] Building CXX object CMakeFiles/kiss.dir/src/verify.cpp.o
+[11/93] Building CUDA object CMakeFiles/kiss_cuda.dir/cuda/device_leech.cu.o
+[12/93] Building CXX object CMakeFiles/kiss.dir/src/family.cpp.o
+[13/93] Building CXX object CMakeFiles/kiss.dir/src/frames.cpp.o
+[14/93] Building CUDA object CMakeFiles/kiss_cuda.dir/cuda/build_adjacency.cu.o
+[15/93] Building CUDA object CMakeFiles/kiss_cuda.dir/cuda/ls_state.cu.o
+[16/93] Building CXX object CMakeFiles/kiss.dir/src/swaps.cpp.o
+[17/93] Linking CXX static library libkiss.a
+[18/93] Building CUDA object CMakeFiles/kiss_cuda.dir/cuda/pair_class_histogram.cu.o
+[19/93] Building CXX object CMakeFiles/build_adj.dir/tools/build_adj.cpp.o
+[20/93] Building CUDA object CMakeFiles/kiss_cuda.dir/cuda/version.cu.o
+[21/93] Building CUDA object CMakeFiles/kiss_cuda.dir/cuda/ls_moves.cu.o
+[22/93] Building CUDA object CMakeFiles/kiss_cuda.dir/cuda/quad_stats.cu.o
+[23/93] Building CXX object CMakeFiles/clique_g.dir/tools/clique_g.cpp.o
+[24/93] Building CXX object CMakeFiles/kiss_info.dir/tools/kiss_info.cpp.o
+[25/93] Building CXX object CMakeFiles/gen_leech.dir/tools/gen_leech.cpp.o
+[26/93] Building CUDA object CMakeFiles/kiss_cuda.dir/cuda/triple_stats.cu.o
+[27/93] Building CUDA object CMakeFiles/kiss_cuda.dir/cuda/tightness_full.cu.o
+[28/93] Building CXX object CMakeFiles/random_aut.dir/tools/random_aut.cpp.o
+[29/93] Building CXX object CMakeFiles/quad_stats.dir/tools/quad_stats.cpp.o
+[30/93] Building CXX object CMakeFiles/disjoint_family.dir/tools/disjoint_family.cpp.o
+[31/93] Building CXX object CMakeFiles/orbit_mis.dir/tools/orbit_mis.cpp.o
+[32/93] Building CXX object CMakeFiles/plateau_walk.dir/tools/plateau_walk.cpp.o
+[33/93] Building CXX object CMakeFiles/scheme_numbers.dir/tools/scheme_numbers.cpp.o
+[34/93] Building CXX object CMakeFiles/frames.dir/tools/frames.cpp.o
+[35/93] Building CXX object CMakeFiles/verify_s.dir/tools/verify_s.cpp.o
+[36/93] Building CUDA object tests/CMakeFiles/smoke_gpu.dir/smoke_gpu.cu.o
+[37/93] Building CXX object tests/CMakeFiles/test_golay.dir/test_golay.cpp.o
+[38/93] Building CUDA object CMakeFiles/kiss_cuda.dir/cuda/ls_search.cu.o
+[39/93] Linking CXX static library libkiss_cuda.a
+[40/93] Linking CXX executable tests/test_golay
+[41/93] Linking CXX executable tools/clique_g
+[42/93] Linking CXX executable tools/build_adj
+[43/93] Linking CXX executable tools/frames
+[44/93] Linking CXX executable tools/disjoint_family
+[45/93] Linking CXX executable tools/gen_leech
+[46/93] Building CXX object tests/CMakeFiles/test_clique_g.dir/__/tools/clique_g.cpp.o
+[47/93] Linking CXX executable tools/kiss_info
+[48/93] Linking CXX executable tools/orbit_mis
+[49/93] Linking CXX executable tools/plateau_walk
+[50/93] Linking CXX executable tools/quad_stats
+[51/93] Linking CXX executable tools/scheme_numbers
+[52/93] Linking CXX executable tools/verify_s
+[53/93] Linking CXX executable tools/random_aut
+[54/93] Linking CXX executable tests/smoke_gpu
+[55/93] Linking CXX executable tests/test_clique_g
+[56/93] Building CXX object tests/CMakeFiles/test_leech.dir/test_leech.cpp.o
+[57/93] Building CXX object tests/CMakeFiles/test_adjacency.dir/test_adjacency.cpp.o
+[58/93] Building CXX object CMakeFiles/triple_orbitals.dir/tools/triple_orbitals.cpp.o
+[59/93] Linking CXX executable tests/test_leech
+[60/93] Linking CXX executable tests/test_adjacency
+[61/93] Linking CXX executable tools/triple_orbitals
+[62/93] Building CXX object CMakeFiles/swapsearch.dir/tools/swapsearch.cpp.o
+[63/93] Linking CXX executable tools/swapsearch
+[64/93] Building CXX object tests/CMakeFiles/test_swaps.dir/test_swaps.cpp.o
+[65/93] Building CXX object CMakeFiles/triple_stats.dir/tools/triple_stats.cpp.o
+[66/93] Linking CXX executable tools/triple_stats
+[67/93] Linking CXX executable tests/test_swaps
+[68/93] Building CXX object tests/CMakeFiles/test_plateau.dir/test_plateau.cpp.o
+[69/93] Linking CXX executable tests/test_plateau
+[70/93] Building CXX object tests/CMakeFiles/test_verify.dir/test_verify.cpp.o
+[71/93] Linking CXX executable tests/test_verify
+[72/93] Building CUDA object tests/CMakeFiles/test_scheme_gpu.dir/test_scheme_gpu.cu.o
+[73/93] Linking CXX executable tests/test_scheme_gpu
+[74/93] Building CUDA object tests/CMakeFiles/test_tightness_gpu.dir/test_tightness_gpu.cu.o
+[75/93] Linking CXX executable tests/test_tightness_gpu
+[76/93] Building CXX object CMakeFiles/gpu_mis.dir/tools/gpu_mis.cpp.o
+[77/93] Linking CXX executable tools/gpu_mis
+[78/93] Building CUDA object tests/CMakeFiles/test_triple_gpu.dir/test_triple_gpu.cu.o
+[79/93] Linking CXX executable tests/test_triple_gpu
+[80/93] Building CXX object tests/CMakeFiles/test_family.dir/test_family.cpp.o
+[81/93] Building CXX object tests/CMakeFiles/test_group.dir/test_group.cpp.o
+[82/93] Linking CXX executable tests/test_family
+[83/93] Building CXX object tests/CMakeFiles/test_frames.dir/test_frames.cpp.o
+[84/93] Building CXX object tests/CMakeFiles/test_gpu_mis.dir/test_gpu_mis.cpp.o
+[85/93] Linking CXX executable tests/test_gpu_mis
+[86/93] Linking CXX executable tests/test_frames
+[87/93] Linking CXX executable tests/test_group
+[88/93] Building CXX object tests/CMakeFiles/test_orbits.dir/test_orbits.cpp.o
+[89/93] Linking CXX executable tests/test_orbits
+[90/93] Building CUDA object tests/CMakeFiles/test_ls_moves.dir/test_ls_moves.cu.o
+[91/93] Linking CXX executable tests/test_ls_moves
+[92/93] Building CUDA object tests/CMakeFiles/test_ls_search.dir/test_ls_search.cu.o
+[93/93] Linking CXX executable tests/test_ls_search
+
+##### 3. fixtures + checksums  (§2 step 3) #####
+$ build/release/tools/gen_leech data/
+aea59406d9129ec635ab03c6221e7ac7c308bf860205c57f1d931aa8ddb1c111  leech_min.i8
+5a9cb899e141ecf1f894c11412aa9356f2a84b44839d70e4e11d0990aa5eed57  neg.u32
+24cadb80ff2e7ea6062cea611fd4981595a8e601a251e98013ee95fbb83f045c  leech_packed.u32
+683a6828bcbe1d6ff54f38083646b33044d1b0ac4ded66d2bb00be594c62b6da  leech_min.txt
+RESULT ok=1 n=196560 shape_octad=97152 shape_31=98304 shape_44=1104 roundtrip=1 sha256_i8=aea59406d9129ec635ab03c6221e7ac7c308bf860205c57f1d931aa8ddb1c111 dir=data/ gen_ms=413.2 write_ms=1522.9 verify_ms=151.7
+$ build/release/tools/build_adj data/
+leech           : loaded from data/
+device memory   : free 7.50 / total 7.66 GiB before build
+build           : chunk_rows=4096 upload_s=0.187 build_s=10.072 (kernel+copy+fwrite)
+83dd4d9bc42c9373a9e15fc71ace1b4a52807d1707cf5917a9b8340a66bc14e1  adj.u32   (sha256 in 39.3 s)
+RESULT ok=1 rows=196560 deg=4600 bytes=3616704000 sha256=83dd4d9bc42c9373a9e15fc71ace1b4a52807d1707cf5917a9b8340a66bc14e1 build_s=10.072 chunk_rows=4096 sha_s=39.3 total_s=49.8 file=data/adj.u32
+$ (cd data && sha256sum -c adj.sha256 && sha256sum -c checksums.sha256)
+adj.u32: OK
+leech_min.i8: OK
+neg.u32: OK
+leech_packed.u32: OK
+leech_min.txt: OK
+
+##### 4. K(27) >= 200540  (§2 step 4) #####
+$ .venv/bin/python docs/note/data/verify.py
+building the Golay code and the Leech minimal vectors ...
+  Golay G24: weights {0: 1, 8: 759, 12: 2576, 16: 759, 24: 1}
+  C: 196560 vectors, squared norm 32, membership + histogram ok
+A. sets: k=4 sizes=[496, 496, 496, 496], each in C, distinct, pairwise inner products <= 8, pairwise disjoint, union 1984
+B. T: 12 vectors, pairwise angle >= 60 deg; 4 groups [[0, 6, 10], [1, 7, 8], [2, 4, 11], [3, 5, 9]], sizes [3, 3, 3, 3], disjoint, within-group angle >= 120 deg; weight sum(|T_i|-1) = 8
+C. extra: 12 spheres in Q(sqrt 2), pairwise angle >= 60 deg, angle >= 30 deg to every T vector
+D. count: 12 + 196560 + 3968 = 200540  (rows: equatorial 194576 + lifted 5952 + extra 12 = 200540)
+E1. eq-eq: <x,x'> <= 16 for distinct minimal vectors (Leech minimum 32); rerun with --full for the brute-force pass
+E2. eq-lift max ip = 16 (needs <= 16 < 8 sqrt 6); lift-lift max ip within one S_i = 8 (needs <= 8), across the union = 16 (needs <= 16; 16 with cos = 1/2 gives exactly 2)
+E3. lift-lift same x: within-group cos <= -1/2 (B).  extra-lift: cos <= sqrt3/2 (C).  extra-extra: cos <= 1/2 (C).  extra-eq: inner product 0.
+E4. pairs eq-eq=18929812600 eq-lift=1158116352 lift-lift-same-x=5952 lift-lift-same-set=4419360 lift-lift-cross-set=13284864 extra-eq=2334912 extra-lift=71424 extra-extra=66 total=20108045530=C(200540,2)
+RESULT ok=1 dim=27 sets=4 weight=8 count=200540
+$ .venv/bin/python python/verify_dimN.py data/families/dim27_improved --strict
+family      : data/families/dim27_improved  dim=27 d=3 sets=4 T=12 groups=4 extra=12 claimed_count=200540
+config      : cpus=16 workers=8 tile=(512, 1024) OPENBLAS_NUM_THREADS=1
+sets        : k=4 sizes=[496, 496, 496, 496] union=1984 pairwise disjoint, each independent; equatorial = C \ U = 194576  (4.4 s)
+T           : 12 vectors in Z^3-ambient field, norms ['2'], pairwise cos <= 1/2 (max 0.500000); groups: 4 triangles + 0 pairs, disjoint, within-group cos <= -1/2  (0.3 s)
+extra       : 12 vectors (K(3) = 12), pairwise cos <= 1/2 (max 0.500000), cos to every T vector <= sqrt3/2 (max 0.853553)  (0.8 s)
+rank        : span(T u extra) has exact rank 3 <= d = 3
+count       : #extra + 196560 + sum_i (|T_i|-1)|S_i| = 12 + 196560 + 3968 = 200540  (rows: equatorial 194576 + lifted 5952 + extra 12)
+exact       : eq-lift max ip = 16 (needs <= 16 < 8 sqrt6); lift-lift max ip same set = 8 (needs <= 8), cross set = 16 (needs <= 16; 16 with cos(y,y') = 1/2 is exactly 2)
+exact       : eq-eq full pass over all 19317818520 pairs of C: max off-diagonal ip = 16, min = -32, values seen [-32, -16, -8, 0, 8, 16] (49.3 s)
+exact       : lift-lift same x: within-group cos <= -1/2 (B); extra-lift: cos <= sqrt3/2 (C); extra-extra: cos <= 1/2 (C); extra-eq: 0
+exact       : pairs eq-eq=18929812600 eq-lift=1158116352 lift-lift-same-x=5952 lift-lift-same-set=4419360 lift-lift-cross-set=13284864 extra-eq=2334912 extra-lift=71424 extra-extra=66 total=20108045530=C(200540,2)
+exact       : count = 200540  (81.1 s)
+float       : 200540 vectors in R^27; max off-diagonal inner product = 2.000000000000 (tol 2+1e-9) at pair (194623, 195615) class=lift-lift-same-x; min -4.000000  (87.2 s, 38612 tiles)
+RESULT ok=1 dim=27 d=3 sets=4 count=200540 count_exact=200540 count_float=200540 max_offdiag=2.000000000000 max_class=lift-lift-same-x extra=12 K=12 exact_s=81.1 float_s=87.2 s=182.5
+
+##### 5. |S| <= 837  (§2 step 5) #####
+$ .venv/bin/python -c from bounds.sdp3_scheme import verify_certificate as v; print(v('data/scheme/sdp3_certificate.json'))
+{'bound': Fraction(10027499845366351601842209731360841788731521999026778139, 11972621413014756705924586149611790497021399392059392), 'bound_floor': 837, 'D': 148, 'vars': 43, 'forbidden_dots': [16], 'matches_stored': True}
+
+##### 6. clique cuts inert  (§2 step 6) #####
+$ .venv/bin/python -c from bounds.sdp3_cliques import verify_cuts_certificate as v; print(v('data/scheme/sdp3_cliques_certificate.json'))
+{'bound': Fraction(20054972405675645203988040071066914786279262349234669529, 23945242826029513411849172299223580994042798784118784), 'bound_floor': 837, 'cuts': 225, 'forbidden_dots': [16], 'matches_stored': True}
+
+##### 7. two-point methods = 9360/11  (§2 step 7) #####
+$ .venv/bin/python python/bounds/lp_scheme.py
+scheme: N = 196560, classes = (-32, -16, -8, 0, 8, 16, 32), valencies = (1, 4600, 47104, 93150, 47104, 4600, 1), multiplicities m = (1, 24, 299, 2576, 17250, 95680, 80730)
+Q (rows: classes a(dot); columns: eigenspaces E_0..E_6), Q_ir = m_r P_ri / v_i:
+    a(-32):          1        -24        299      -2576      17250     -95680      80730
+    a(-16):          1        -12         65       -196        285        208       -351
+    a( -8):          1         -6       13/2       77/2   -1875/16      -65/2    1755/16
+    a(  0):          1          0        -13          0         90          0        -78
+    a(  8):          1          6       13/2      -77/2   -1875/16       65/2    1755/16
+    a( 16):          1         12         65        196        285       -208       -351
+    a( 32):          1         24        299       2576      17250      95680      80730
+
+== main: S independent in the conflict graph: a_16 = 0 (the T2.2 bound)
+  fixed: a(16) = 0, a(32) = 1
+  free classes: a(-32), a(-16), a(-8), a(0), a(8)
+  HiGHS (float): 850.909090909
+  exact optimum: 9360/11 = 850.909090909   floor 850   [20 feasible vertices, 1 optimal]
+  a* (inner distribution attaining it): a(-32) = 1, a(-16) = 0, a(-8) = 2944/11, a(0) = 3450/11, a(8) = 2944/11, a(16) = 0, a(32) = 1
+  (a* Q)_r = 9360/11, 0, 0, 0, 0, 0, 2152800/11   (all >= 0; zeros = active Delsarte inequalities)
+  dual certificate beta_r (r = eigenspace E_r, multiplicity m_r):
+      r    m_r        beta_r          beta_r * q_r
+      0       1                0                0
+      1      24          116/231           928/77
+      2     299            17/77          5083/77
+      3    2576           37/462          6808/33
+      4   17250            8/385         27600/77
+      5   95680            1/462        47840/231
+      6   80730                0                0
+  q_r = sum_(fixed i) Q_ir a_i = 1, 24, 299, 2576, 17250, 95680, 80730
+  bound = sum_(fixed) a_i + sum_r beta_r q_r = 1 + 9349/11 = 9360/11
+  check on every free class i:  F(i) := sum_r beta_r Q_ir  <= -1
+      class a(-32):  F =         -1   ok
+      class a(-16):  F =         -1   ok
+      class a( -8):  F =         -1   ok
+      class a(  0):  F =         -1   ok
+      class a(  8):  F =         -1   ok
+  rationalised HiGHS marginals also verify: beta = (0, 116/231, 17/77, 37/462, 8/385, 1/462, 0) -> identical to the exact dual
+
+== antipodal: additionally S = -S: a_-32 = 1
+  fixed: a(-32) = 1, a(16) = 0, a(32) = 1
+  free classes: a(-16), a(-8), a(0), a(8)
+  HiGHS (float): 850.909090909
+  exact optimum: 9360/11 = 850.909090909   floor 850   [4 feasible vertices, 1 optimal]
+  a* (inner distribution attaining it): a(-32) = 1, a(-16) = 0, a(-8) = 2944/11, a(0) = 3450/11, a(8) = 2944/11, a(16) = 0, a(32) = 1
+  (a* Q)_r = 9360/11, 0, 0, 0, 0, 0, 2152800/11   (all >= 0; zeros = active Delsarte inequalities)
+  dual certificate beta_r (r = eigenspace E_r, multiplicity m_r):
+      r    m_r        beta_r          beta_r * q_r
+      0       1                0                0
+      1      24              1/2                0
+      2     299            17/77         10166/77
+      3    2576             6/77                0
+      4   17250            8/385         55200/77
+      5   95680                0                0
+      6   80730                0                0
+  q_r = sum_(fixed i) Q_ir a_i = 2, 0, 598, 0, 34500, 0, 161460
+  bound = sum_(fixed) a_i + sum_r beta_r q_r = 2 + 9338/11 = 9360/11
+  check on every free class i:  F(i) := sum_r beta_r Q_ir  <= -1
+      class a(-16):  F =         -1   ok
+      class a( -8):  F =         -1   ok
+      class a(  0):  F =         -1   ok
+      class a(  8):  F =         -1   ok
+  rationalised HiGHS marginals also verify: beta = (0, 1/2, 17/77, 6/77, 8/385, 0, 0) -> identical to the exact dual
+
+== forbid_16_8: cos <= 0 only (README section 8 item 2): a_16 = a_8 = 0; T2.1 gives 48
+  fixed: a(8) = 0, a(16) = 0, a(32) = 1
+  free classes: a(-32), a(-16), a(-8), a(0)
+  HiGHS (float): 48.000000000
+  exact optimum: 48 = 48.000000000   floor 48   [8 feasible vertices, 1 optimal]
+  a* (inner distribution attaining it): a(-32) = 1, a(-16) = 0, a(-8) = 0, a(0) = 46, a(8) = 0, a(16) = 0, a(32) = 1
+  (a* Q)_r = 48, 0, 0, 0, 38640, 0, 157872   (all >= 0; zeros = active Delsarte inequalities)
+  dual certificate beta_r (r = eigenspace E_r, multiplicity m_r):
+      r    m_r        beta_r          beta_r * q_r
+      0       1                0                0
+      1      24          116/231           928/77
+      2     299             1/13               23
+      3    2576                0                0
+      4   17250                0                0
+      5   95680           1/8008           920/77
+      6   80730                0                0
+  q_r = sum_(fixed i) Q_ir a_i = 1, 24, 299, 2576, 17250, 95680, 80730
+  bound = sum_(fixed) a_i + sum_r beta_r q_r = 1 + 47 = 48
+  check on every free class i:  F(i) := sum_r beta_r Q_ir  <= -1
+      class a(-32):  F =         -1   ok
+      class a(-16):  F =         -1   ok
+      class a( -8):  F =   -443/176   ok
+      class a(  0):  F =         -1   ok
+  rationalised HiGHS marginals also verify: beta = (0, 116/231, 1/13, 0, 0, 1/8008, 0) -> identical to the exact dual
+
+== none: nothing forbidden: must return N = 196560
+  fixed: a(32) = 1
+  free classes: a(-32), a(-16), a(-8), a(0), a(8), a(16)
+  HiGHS (float): 196560.000000001
+  exact optimum: 196560 = 196560.000000000   floor 196560   [61 feasible vertices, 1 optimal]
+  a* (inner distribution attaining it): a(-32) = 1, a(-16) = 4600, a(-8) = 47104, a(0) = 93150, a(8) = 47104, a(16) = 4600, a(32) = 1
+  (a* Q)_r = 196560, 0, 0, 0, 0, 0, 0   (all >= 0; zeros = active Delsarte inequalities)
+  dual certificate beta_r (r = eigenspace E_r, multiplicity m_r):
+      r    m_r        beta_r          beta_r * q_r
+      0       1                0                0
+      1      24                1               24
+      2     299                1              299
+      3    2576                1             2576
+      4   17250                1            17250
+      5   95680                1            95680
+      6   80730                1            80730
+  q_r = sum_(fixed i) Q_ir a_i = 1, 24, 299, 2576, 17250, 95680, 80730
+  bound = sum_(fixed) a_i + sum_r beta_r q_r = 1 + 196559 = 196560
+  check on every free class i:  F(i) := sum_r beta_r Q_ir  <= -1
+      class a(-32):  F =         -1   ok
+      class a(-16):  F =         -1   ok
+      class a( -8):  F =         -1   ok
+      class a(  0):  F =         -1   ok
+      class a(  8):  F =         -1   ok
+      class a( 16):  F =         -1   ok
+  rationalised HiGHS marginals also verify: beta = (0, 1, 1, 1, 1, 1, 1) -> identical to the exact dual
+
+== only_pm32: only +-32 allowed: must return 2
+  fixed: a(-16) = 0, a(-8) = 0, a(0) = 0, a(8) = 0, a(16) = 0, a(32) = 1
+  free classes: a(-32)
+  HiGHS (float): 2.000000000
+  exact optimum: 2 = 2.000000000   floor 2   [2 feasible vertices, 1 optimal]
+  a* (inner distribution attaining it): a(-32) = 1, a(-16) = 0, a(-8) = 0, a(0) = 0, a(8) = 0, a(16) = 0, a(32) = 1
+  (a* Q)_r = 2, 0, 598, 0, 34500, 0, 161460   (all >= 0; zeros = active Delsarte inequalities)
+  dual certificate beta_r (r = eigenspace E_r, multiplicity m_r):
+      r    m_r        beta_r          beta_r * q_r
+      0       1                0                0
+      1      24                0                0
+      2     299                0                0
+      3    2576                0                0
+      4   17250                0                0
+      5   95680          1/95680                1
+      6   80730                0                0
+  q_r = sum_(fixed i) Q_ir a_i = 1, 24, 299, 2576, 17250, 95680, 80730
+  bound = sum_(fixed) a_i + sum_r beta_r q_r = 1 + 1 = 2
+  check on every free class i:  F(i) := sum_r beta_r Q_ir  <= -1
+      class a(-32):  F =         -1   ok
+  rationalised HiGHS marginals also verify: beta = (0, 1/24, 0, 0, 0, 0, 0) -> a different optimal dual
+
+RESULT bound_exact=9360/11 bound_floor=850 highs=850.909091 antipodal=9360/11 antipodal_floor=850 forbid_16_8=48 none=196560 only_pm32=2
+$ .venv/bin/python python/bounds/theta_prime.py
+conflict graph G: N = 196560  valency k = 4600
+spectrum (eigenvalue^multiplicity): 4600^1 2300^24 1000^299 350^2576 76^17250 -10^95680 -20^80730
+Hoffman ratio bound N(-lmin)/(k-lmin) = 196560*20/(4600+20) = 9360/11 = 850.909090909
+
+== theta' (Schrijver) = scheme LP with a >= 0
+  fixed: a(16) = 0, a(32) = 1
+  free classes: a(-32), a(-16), a(-8), a(0), a(8)
+  HiGHS (float): 850.909090909
+  exact optimum: 9360/11 = 850.909090909   floor 850   [20 feasible vertices, 1 optimal]
+  a* (inner distribution attaining it): a(-32) = 1, a(-16) = 0, a(-8) = 2944/11, a(0) = 3450/11, a(8) = 2944/11, a(16) = 0, a(32) = 1
+  (a* Q)_r = 9360/11, 0, 0, 0, 0, 0, 2152800/11   (all >= 0; zeros = active Delsarte inequalities)
+  dual certificate beta_r (r = eigenspace E_r, multiplicity m_r):
+      r    m_r        beta_r          beta_r * q_r
+      0       1                0                0
+      1      24          116/231           928/77
+      2     299            17/77          5083/77
+      3    2576           37/462          6808/33
+      4   17250            8/385         27600/77
+      5   95680            1/462        47840/231
+      6   80730                0                0
+  q_r = sum_(fixed i) Q_ir a_i = 1, 24, 299, 2576, 17250, 95680, 80730
+  bound = sum_(fixed) a_i + sum_r beta_r q_r = 1 + 9349/11 = 9360/11
+  check on every free class i:  F(i) := sum_r beta_r Q_ir  <= -1
+      class a(-32):  F =         -1   ok
+      class a(-16):  F =         -1   ok
+      class a( -8):  F =         -1   ok
+      class a(  0):  F =         -1   ok
+      class a(  8):  F =         -1   ok
+  rationalised HiGHS marginals also verify: beta = (0, 116/231, 17/77, 37/462, 8/385, 1/462, 0) -> identical to the exact dual
+
+== theta (Lovasz, symmetry-reduced) = scheme LP WITHOUT a_i >= 0 on the free classes
+  fixed: a(16) = 0, a(32) = 1
+  free classes: a(-32), a(-16), a(-8), a(0), a(8)   (NO sign constraints on the free a_i)
+  HiGHS (float): 850.909090909
+  exact optimum: 9360/11 = 850.909090909   floor 850   [10 feasible vertices, 1 optimal]
+  a* (inner distribution attaining it): a(-32) = 1, a(-16) = 0, a(-8) = 2944/11, a(0) = 3450/11, a(8) = 2944/11, a(16) = 0, a(32) = 1
+  (a* Q)_r = 9360/11, 0, 0, 0, 0, 0, 2152800/11   (all >= 0; zeros = active Delsarte inequalities)
+  dual certificate beta_r (r = eigenspace E_r, multiplicity m_r):
+      r    m_r        beta_r          beta_r * q_r
+      0       1                0                0
+      1      24          116/231           928/77
+      2     299            17/77          5083/77
+      3    2576           37/462          6808/33
+      4   17250            8/385         27600/77
+      5   95680            1/462        47840/231
+      6   80730                0                0
+  q_r = sum_(fixed i) Q_ir a_i = 1, 24, 299, 2576, 17250, 95680, 80730
+  bound = sum_(fixed) a_i + sum_r beta_r q_r = 1 + 9349/11 = 9360/11
+  check on every free class i:  F(i) := sum_r beta_r Q_ir  = -1
+      class a(-32):  F =         -1   ok
+      class a(-16):  F =         -1   ok
+      class a( -8):  F =         -1   ok
+      class a(  0):  F =         -1   ok
+      class a(  8):  F =         -1   ok
+  rationalised HiGHS marginals also verify: beta = (0, 116/231, 17/77, 37/462, 8/385, 1/462, 0) -> identical to the exact dual
+
+== Hoffman's certificate as a dual solution of the LP: beta_r = (lambda_r - lambda_min)/(k - lambda_min), r >= 1
+   beta = 0, 116/231, 17/77, 37/462, 8/385, 1/462, 0
+   proves |S| <= 9360/11   (equals the LP optimum: True; equals the exact dual found by enumeration: True)
+
+Ordering: alpha(G) <= theta' <= theta_sym <= Hoffman  ->  9360/11 <= 9360/11 <= 9360/11
+All three coincide: dropping a >= 0 gains nothing (theta = theta'), and the LP cannot beat the
+ratio bound because its optimal dual IS the Hoffman certificate (F(i) = -1 on every allowed class).
+
+RESULT hoffman=9360/11 theta_sym=9360/11 theta_prime=9360/11 lp=9360/11 hoffman_cert_ok=1 all_equal=1
+$ .venv/bin/python python/bounds/lp_delsarte.py
+== restricted (README W1): A = {-1, -1/2, -1/4, 0, 1/4}, n = 24
+   d       HiGHS float     exact (limit_denominator)                  exact vertex  floor
+  10        850.909091                    850.909091                    850.909091  850
+  20        850.909091                    850.909091                    850.909091  850
+  30        850.909091                    850.909091                    850.909091  850
+  40        850.909091                    850.909091                    850.909091  850
+  60        850.909091                    850.909091                    850.909091  850
+-- best exact certificate (degree 10):
+n = 24, degree 10, A = {-1, -1/2, -1/4, 0, 1/4}
+  f_0   = 1
+  f_1   = 24
+  f_2   = 5083/77
+  f_3   = 4416/11
+  f_4   = 27600/77
+  values f(t) on A:
+    f(  -1) = 0
+    f(-1/2) = -234/11
+    f(-1/4) = 0
+    f(   0) = 0
+    f( 1/4) = 0
+  f(1)/f_0 = 9360/11 = 850.909091  ->  floor = 850
+
+== all Leech inner products: A = {-1, -1/2, -1/4, 0, 1/4, 1/2}, n = 24
+   d       HiGHS float     exact (limit_denominator)                  exact vertex  floor
+  10     196560.000000                 196560.000000                 196560.000000  196560
+  20     196560.000000                 196560.000000                 196560.000000  196560
+  30     196560.000000                 196560.000000                 196560.000000  196560
+  40     196560.000000                 196560.000000                 196560.000000  196560
+  60     196560.000000                 196560.000000                 196560.000000  196560
+
+== cos <= 0 variant (README section 8): A = {-1, -1/2, -1/4, 0}, n = 24
+   d       HiGHS float     exact (limit_denominator)                  exact vertex  floor
+  10         48.000000                     48.000000                     48.000000  48
+  20         48.000000                     48.000000                     48.000000  48
+  30         48.000000                     48.000000                     48.000000  48
+  40         48.000000                     48.000000                     48.000000  48
+  60         48.000000                     48.000000                     48.000000  48
+-- best exact certificate (degree 10):
+n = 24, degree 10, A = {-1, -1/2, -1/4, 0}
+  f_0   = 1
+  f_1   = 928/77
+  f_2   = 23
+  f_5   = 920/77
+  values f(t) on A:
+    f(  -1) = 0
+    f(-1/2) = 0
+    f(-1/4) = -267/176
+    f(   0) = 0
+  f(1)/f_0 = 48 = 48.000000  ->  floor = 48
+
+RESULT bound_restricted=850 bound_all_leech=196560 bound_nonpos=48 grid_classical=skipped
+
+##### 8. omega(G) = 24  (§2 step 8) #####
+$ .venv/bin/python python/tools/check_clique_g.py
+clique     : 24 indices of data/leech_min.i8, norms all 32, Gram = 16(I+J), rank 24
+upper bound: k pairwise-16 norm-32 vectors have Gram 16(I+J_k), rank k, so k <= 24
+census     : through edge (0, 1) (891 common neighbours, 336-regular); size 8: 49896, size 12: 2810142720, size 15: 279417600, size 17: 69797376, size 23: 1868106240, size 24: 518400
+RESULT ok=1 omega=24 clique_gram=16(I+J) rank=24 maximal_sizes=8,12,15,17,23,24 census_total=5028032232 census_complete=1
+
+##### 9. four-point scoping  (§2 step 9) #####
+$ .venv/bin/python -m bounds.sdp4_scoping
+(CVXPY) Aug 31 10:13:49 AM: Encountered unexpected exception importing solver GLOP:
+RuntimeError('Unrecognized new version of ortools (9.15.6755). Expected < 9.15.0. Please open a feature request on cvxpy to enable support for this version.')
+(CVXPY) Aug 31 10:13:49 AM: Encountered unexpected exception importing solver PDLP:
+RuntimeError('Unrecognized new version of ortools (9.15.6755). Expected < 9.15.0. Please open a feature request on cvxpy to enable support for this version.')
+quad_orbits.json checks: anchors OK (classes 0/6 give dim T = 148; 1~5 and 2~4 agree); all classes exact: False
+dim T(x, y_i) per pair class (PSD block dimension of a four-point SDP):
+  class  dot   z-orbits  dim T [hist, labels]  exact
+  0      -32       7    [148, 148]      yes
+  1      -16      25    [1893, 1893]      yes
+  2       -8      27    [2971, 2972]      NO
+  3        0      30    [4097, 4107]      NO
+  4        8      27    [2971, 2972]      NO
+  5       16      25    [1893, 1893]      yes
+  6       32       7    [148, 148]      yes
+ordered 4-tuple orbits of Co_0 (all patterns): 14133 (lower bound 14121)
+  admissible (no dot-16 pair): 6183; with 4 distinct points: 5721
+  S_4-symmetrised variable count in [258, 6183]
+  conflict-graph structure: 1 ordered-triangle orbits, 1 ordered-4-clique orbits
+PSD blocks (17): class 0 both-in 148x148, class 0 one-in 148x148, class 0 both-out 148x148, class 1 both-in 1893x1893, class 1 one-in 1893x1893, class 1 both-out 1893x1893, class 2 both-in 2972x2972, class 2 one-in 2972x2972, class 2 both-out 2972x2972, class 3 both-in 4107x4107, class 3 one-in 4107x4107, class 3 both-out 4107x4107, class 4 both-in 2972x2972, class 4 one-in 2972x2972, class 4 both-out 2972x2972, diag (T2.3 M1) 148x148, diag (T2.3 M2) 148x148
+  sum d^2 = 1.145e+08, sum d^3 = 3.857e+11, largest block 4107
+  structure-constant tensors (LRR trick), est. nonzeros per class: 0: 1.1e+04, 1: 1.9e+06, 2: 4.6e+06, 3: 8.8e+06, 4: 4.6e+06
+  cone scalars sum d(d+1)/2 = 5.72e+07; interior-point memory ~ 6.8 GB; time ~ 1 h (60 iterations, 10 sum d^3 flops each at 5e10/s) — EXCLUDING Schur-complement formation
+three-point optimum: 837.533238 (optimal)
+  variables: 28 free (+15 forced to 0 by the forbidden class)
+  x at 0: 11  [4, 9, 10, 11, 12, 13, 14, 15, 16, 17, 34]
+  x at 1: 0  []
+  x interior: 16
+  y = Cy x >= 0: 65 of 148 tight
+  block1: 120 (near-)zero eigenvalues of 148 [min -1.84e-11, max 1.34e+00]
+  block2: 80 (near-)zero eigenvalues of 148 [min 0.00e+00, max 1.24e+00]
+  x_diag per class (pair-class density: optimum vs the 496, and their ratio):
+    class 0: 0.999998   496: 1.000000   ratio    1.000
+    class 1: 0.000000   496: 0.000000   ratio        -
+    class 2: 0.005587   496: 0.003210   ratio    1.740
+    class 3: 0.003319   496: 0.002056   ratio    1.614
+    class 4: 0.005587   496: 0.003210   ratio    1.740
+    class 5: 0.000000   496: 0.000000   ratio        -
+    class 6: 1.000000   496: 1.000000   ratio    1.000
+  max|x* - x(S496)| = 0.0024; the optimal pseudo-set is antipodal (x_diag(0) = 1), shares the 496's support (no dot -16 or +16 pairs) and is close to a |bound|/496 scaling of the 496's pair distribution
+RESULT ok=1 dimT=148,1893,2972,4107,2972,1893,148 ordered=14133 admissible=6183 vars_lo=258 max_block=4107 clique4=1
+
+##### 10. the record set + swap-optimality to k = 12  (§2 step 10) #####
+$ .venv/bin/python python/verify_S.py data/S496.txt
+file      : data/S496.txt
+C source  : kiss_ref.leech.leech_min_vectors() (196560 vectors, 0.34 s)
+rows      : 496
+antipodal : 1
+gram      : -32:248,-8:37504,0:47504,8:37504 (unordered pairs by inner product)
+RESULT ok=1 size=496 antipodal=1 max_offdiag=8 gram=-32:248,-8:37504,0:47504,8:37504 file="data/S496.txt" s=0.36
+$ build/release/tools/swapsearch data/S496.txt --kmax 12 --time-limit 600
+leech            : loaded from data
+adjacency        : data/adj.u32 (mmap, 3616704000 bytes)
+input            : data/S496.txt  |S|=496  antipodal=1  independent(Gram<=8)=1
+tightness        : histogram over v not in S (value:count): 4:80 6:640 7:256 8:2704 9:8064 10:31424 11:52672 12:49552 13:31360 14:13440 15:2560 16:1480 17:256 18:704 19:64 20:528 22:128 24:152
+tightness        : free vertices (tight==0, not in S) = 0; S members with tight!=0: 0
+tightness        : minimum tightness outside S = 4
+antipodal        : tight[-v]!=tight[v] for 0 vertices; conf(-v)!=-conf(v) for 0 of 145392 candidates (tight<=12)
+(1,2)-swaps      : hits=0  |L_x| hist: 0:496  total=0 max=0  0.043 s
+(2,3)-swaps      : hits=0  pairs=122760 nonempty=0 |P|>=3: 0  tight2=0  |P| hist: 0:122760  max=0  0.097 s
+conf structure   : tightness-4 vertices: 80 in 80 distinct conf sets; group-size hist (size:count): 1:80 ; max MIS in a group = 1 (need 5 for a (4,5)-swap)
+conf structure   : |conf_a ∩ conf_b| over 3160 pairs of distinct conf sets (size:count): 0:2888 1:192 2:80 
+conf structure   : S members covered by the conf sets: 112 of 496; multiplicity hist (#sets:count): 2:64 4:48 
+conf structure   : Gram among the 80 tightness-4 vertices (ip:count): -32:40 -8:640 0:1840 8:640 ; -v also tightness-4 for 80 of them; conf(v) antipode-free for 80
+  conf=[783 52674 77422 84290] (S pos {2,130,194,214}) gram(conf)=0,0,0,0,0,0  members=1 [6081] shapes(2^8/3,1^23/4^2)=1/0/0  member-gram  MIS=1
+  conf=[783 52674 112269 119137] (S pos {2,130,281,301}) gram(conf)=0,0,0,0,0,0  members=1 [15280] shapes(2^8/3,1^23/4^2)=1/0/0  member-gram  MIS=1
+  conf=[2821 4989 51386 155763] (S pos {8,14,127,392}) gram(conf)=0,0,0,0,0,0  members=1 [4901] shapes(2^8/3,1^23/4^2)=1/0/0  member-gram  MIS=1
+  conf=[2821 40590 40796 113087] (S pos {8,101,103,286}) gram(conf)=0,0,0,0,0,0  members=1 [4479] shapes(2^8/3,1^23/4^2)=1/0/0  member-gram  MIS=1
+  conf=[2821 40796 83472 155969] (S pos {8,103,209,394}) gram(conf)=0,0,0,0,0,0  members=1 [26476] shapes(2^8/3,1^23/4^2)=0/1/0  member-gram  MIS=1
+  conf=[2821 145173 155763 191570] (S pos {8,368,392,481}) gram(conf)=0,0,0,0,0,0  members=1 [144263] shapes(2^8/3,1^23/4^2)=0/1/0  member-gram  MIS=1
+  conf=[4989 40590 83472 145173] (S pos {14,101,209,368}) gram(conf)=0,0,0,0,0,0  members=1 [27189] shapes(2^8/3,1^23/4^2)=0/1/0  member-gram  MIS=1
+  conf=[4989 40796 51386 193738] (S pos {14,103,127,487}) gram(conf)=0,0,0,0,0,0  members=1 [52296] shapes(2^8/3,1^23/4^2)=0/1/0  member-gram  MIS=1
+  conf=[4989 113087 145173 155969] (S pos {14,286,368,394}) gram(conf)=0,0,0,0,0,0  members=1 [85215] shapes(2^8/3,1^23/4^2)=1/0/0  member-gram  MIS=1
+  conf=[5105 38033 126936 162757] (S pos {15,94,324,409}) gram(conf)=0,0,0,0,0,0  members=1 [49911] shapes(2^8/3,1^23/4^2)=0/1/0  member-gram  MIS=1
+conf structure   : ... (70 groups not listed)
+kswap            : kmax=12 time_limit=600s/level max_sets=10000000 threads=16
+k=1 cand_eq=0 cand_le=0 distinct_conf=0 R_total=0 R_examined=0 largest_pool=0 mean_pool=0.00 best_m=0 plateau=0 plateau_connected=0 improving=0 exhaustive=1 time_s=0.00
+k=2 cand_eq=0 cand_le=0 distinct_conf=0 R_total=0 R_examined=0 largest_pool=0 mean_pool=0.00 best_m=0 plateau=0 plateau_connected=0 improving=0 exhaustive=1 time_s=0.00
+k=3 cand_eq=0 cand_le=0 distinct_conf=0 R_total=0 R_examined=0 largest_pool=0 mean_pool=0.00 best_m=0 plateau=0 plateau_connected=0 improving=0 exhaustive=1 time_s=0.00
+k=4 cand_eq=80 cand_le=80 distinct_conf=80 R_total=80 R_examined=80 largest_pool=1 mean_pool=1.00 best_m=1 plateau=0 plateau_connected=0 improving=0 exhaustive=1 time_s=0.12
+k=5 cand_eq=0 cand_le=80 distinct_conf=0 R_total=0 R_examined=0 largest_pool=0 mean_pool=0.00 best_m=0 plateau=0 plateau_connected=0 improving=0 exhaustive=1 time_s=0.07
+k=6 cand_eq=640 cand_le=720 distinct_conf=640 R_total=720 R_examined=720 largest_pool=2 mean_pool=1.11 best_m=2 plateau=0 plateau_connected=0 improving=0 exhaustive=1 time_s=0.21
+k=7 cand_eq=256 cand_le=976 distinct_conf=256 R_total=448 R_examined=448 largest_pool=2 mean_pool=1.43 best_m=2 plateau=0 plateau_connected=0 improving=0 exhaustive=1 time_s=0.26
+k=8 cand_eq=2704 cand_le=3680 distinct_conf=2704 R_total=5620 R_examined=5620 largest_pool=4 mean_pool=1.54 best_m=4 plateau=0 plateau_connected=0 improving=0 exhaustive=1 time_s=0.75
+k=9 cand_eq=8064 cand_le=11744 distinct_conf=8064 R_total=11360 R_examined=11360 largest_pool=3 mean_pool=1.33 best_m=3 plateau=0 plateau_connected=0 improving=0 exhaustive=1 time_s=2.92
+k=10 cand_eq=31424 cand_le=43168 distinct_conf=31424 R_total=91808 R_examined=91808 largest_pool=6 mean_pool=1.73 best_m=6 plateau=0 plateau_connected=0 improving=0 exhaustive=1 time_s=19.67
+k=11 cand_eq=52672 cand_le=95840 distinct_conf=52672 R_total=123944 R_examined=123944 largest_pool=8 mean_pool=1.72 best_m=8 plateau=0 plateau_connected=0 improving=0 exhaustive=1 time_s=95.84
+k=12 cand_eq=49552 cand_le=145392 distinct_conf=49552 R_total=666692 R_examined=666692 largest_pool=12 mean_pool=2.14 best_m=12 plateau=4 plateau_connected=4 improving=0 exhaustive=1 time_s=251.92
+   plateau (12,12): remove [2821 4989 40590 40796 51386 83472 113087 145173 155763 155969 191570 193738] (S pos {8,14,101,103,127,209,286,368,392,394,481,487}) add [4479 4901 26476 27189 52296 85215 111344 144263 169370 170083 191658 192080] tight [4 4 4 4 4 4 4 4 4 4 4 4]
+   plateau (12,12): remove [33495 53670 56487 66834 75927 80861 115698 120632 129725 140072 142889 163064] (S pos {84,133,138,162,189,203,292,306,333,357,362,411}) add [33755 45348 63855 70602 73008 79976 116583 123551 125957 132704 151211 162804] tight [4 4 4 4 4 4 4 4 4 4 4 4]
+   plateau (12,12): remove [16692 20000 20659 36862 87833 91462 105097 108726 159697 175900 176559 179867] (S pos {43,51,53,89,223,234,261,272,406,442,444,452}) add [7694 19999 45656 61824 70844 87859 108700 125715 134735 150903 176560 188865] tight [4 4 4 4 4 4 4 4 4 4 4 4]
+   plateau (12,12): remove [11552 13868 46937 58261 59485 69731 126828 137074 138298 149622 182691 185007] (S pos {30,36,119,144,148,172,323,347,351,376,459,465}) add [13131 17682 24333 39173 55836 94360 102199 140723 157386 172226 178877 183428] tight [4 4 4 4 4 4 4 4 4 4 4 4]
+kswap            : unions of size<=12 enumerated: 900672  kmax_exhaustive=12  improving=0  plateau_total=4 (connected 4)  372.00 s
+RESULT ok=1 size=496 improving=0 new_size=496 kmax=12 kmax_exhaustive=12 plateau_moves=4 plateau_connected=4 free=0 min_tight=4 unions=900672 antipodal=1 found_file=- total_s=373.83
+
+##### 11. the 64 certified plateau sets  (§2 step 11) #####
+$ .venv/bin/python python/tools/materialize_64.py --out /tmp/claude-1000/-home-blinny-Projects-kissing/dd24891a-8cf9-4661-9f66-7c57965a5954/scratchpad/S496_family_green
+atoms     : 6 atoms (12,12,12,12,80,80), pairwise disjoint, negation-closed, valid plateau moves on S; remove_S_pos consistent; 208 added vectors mutually non-adjacent
+S_00 : atoms [none (the record set itself)] overlap 496 free 0 min_tight 4 t123 [0, 0, 0] fp 0 iso 0
+S_01 : atoms [                      0] overlap 484 free 0 min_tight 4 t123 [0, 0, 0] fp 1 iso 1
+S_02 : atoms [                      1] overlap 484 free 0 min_tight 4 t123 [0, 0, 0] fp 2 iso 2
+S_03 : atoms [                    0,1] overlap 472 free 0 min_tight 4 t123 [0, 0, 0] fp 3 iso 3
+S_04 : atoms [                      2] overlap 484 free 0 min_tight 4 t123 [0, 0, 0] fp 1 iso 4
+S_05 : atoms [                    0,2] overlap 472 free 0 min_tight 4 t123 [0, 0, 0] fp 0 iso 5
+S_06 : atoms [                    1,2] overlap 472 free 0 min_tight 4 t123 [0, 0, 0] fp 4 iso 6
+S_07 : atoms [                  0,1,2] overlap 460 free 0 min_tight 4 t123 [0, 0, 0] fp 2 iso 7
+S_08 : atoms [                      3] overlap 484 free 0 min_tight 4 t123 [0, 0, 0] fp 2 iso 7
+S_09 : atoms [                    0,3] overlap 472 free 0 min_tight 4 t123 [0, 0, 0] fp 4 iso 6
+S_10 : atoms [                    1,3] overlap 472 free 0 min_tight 4 t123 [0, 0, 0] fp 0 iso 5
+S_11 : atoms [                  0,1,3] overlap 460 free 0 min_tight 4 t123 [0, 0, 0] fp 1 iso 4
+S_12 : atoms [                    2,3] overlap 472 free 0 min_tight 4 t123 [0, 0, 0] fp 3 iso 3
+S_13 : atoms [                  0,2,3] overlap 460 free 0 min_tight 4 t123 [0, 0, 0] fp 2 iso 2
+S_14 : atoms [                  1,2,3] overlap 460 free 0 min_tight 4 t123 [0, 0, 0] fp 1 iso 1
+S_15 : atoms [                0,1,2,3] overlap 448 free 0 min_tight 4 t123 [0, 0, 0] fp 0 iso 0
+S_16 : atoms [                      4] overlap 416 free 0 min_tight 4 t123 [0, 0, 0] fp 0 iso 6
+S_17 : atoms [                    0,4] overlap 404 free 0 min_tight 4 t123 [0, 0, 0] fp 2 iso 1
+S_18 : atoms [                    1,4] overlap 404 free 0 min_tight 4 t123 [0, 0, 0] fp 1 iso 2
+S_19 : atoms [                  0,1,4] overlap 392 free 0 min_tight 4 t123 [0, 0, 0] fp 3 iso 5
+S_20 : atoms [                    2,4] overlap 404 free 0 min_tight 4 t123 [0, 0, 0] fp 2 iso 4
+S_21 : atoms [                  0,2,4] overlap 392 free 0 min_tight 4 t123 [0, 0, 0] fp 0 iso 3
+S_22 : atoms [                  1,2,4] overlap 392 free 0 min_tight 4 t123 [0, 0, 0] fp 4 iso 0
+S_23 : atoms [                0,1,2,4] overlap 380 free 0 min_tight 4 t123 [0, 0, 0] fp 1 iso 7
+S_24 : atoms [                    3,4] overlap 404 free 0 min_tight 4 t123 [0, 0, 0] fp 1 iso 7
+S_25 : atoms [                  0,3,4] overlap 392 free 0 min_tight 4 t123 [0, 0, 0] fp 4 iso 0
+S_26 : atoms [                  1,3,4] overlap 392 free 0 min_tight 4 t123 [0, 0, 0] fp 0 iso 3
+S_27 : atoms [                0,1,3,4] overlap 380 free 0 min_tight 4 t123 [0, 0, 0] fp 2 iso 4
+S_28 : atoms [                  2,3,4] overlap 392 free 0 min_tight 4 t123 [0, 0, 0] fp 3 iso 5
+S_29 : atoms [                0,2,3,4] overlap 380 free 0 min_tight 4 t123 [0, 0, 0] fp 1 iso 2
+S_30 : atoms [                1,2,3,4] overlap 380 free 0 min_tight 4 t123 [0, 0, 0] fp 2 iso 1
+S_31 : atoms [              0,1,2,3,4] overlap 368 free 0 min_tight 4 t123 [0, 0, 0] fp 0 iso 6
+S_32 : atoms [                      5] overlap 416 free 0 min_tight 4 t123 [0, 0, 0] fp 0 iso 3
+S_33 : atoms [                    0,5] overlap 404 free 0 min_tight 4 t123 [0, 0, 0] fp 2 iso 1
+S_34 : atoms [                    1,5] overlap 404 free 0 min_tight 4 t123 [0, 0, 0] fp 1 iso 2
+S_35 : atoms [                  0,1,5] overlap 392 free 0 min_tight 4 t123 [0, 0, 0] fp 3 iso 0
+S_36 : atoms [                    2,5] overlap 404 free 0 min_tight 4 t123 [0, 0, 0] fp 2 iso 4
+S_37 : atoms [                  0,2,5] overlap 392 free 0 min_tight 4 t123 [0, 0, 0] fp 0 iso 6
+S_38 : atoms [                  1,2,5] overlap 392 free 0 min_tight 4 t123 [0, 0, 0] fp 4 iso 5
+S_39 : atoms [                0,1,2,5] overlap 380 free 0 min_tight 4 t123 [0, 0, 0] fp 1 iso 7
+S_40 : atoms [                    3,5] overlap 404 free 0 min_tight 4 t123 [0, 0, 0] fp 1 iso 7
+S_41 : atoms [                  0,3,5] overlap 392 free 0 min_tight 4 t123 [0, 0, 0] fp 4 iso 5
+S_42 : atoms [                  1,3,5] overlap 392 free 0 min_tight 4 t123 [0, 0, 0] fp 0 iso 6
+S_43 : atoms [                0,1,3,5] overlap 380 free 0 min_tight 4 t123 [0, 0, 0] fp 2 iso 4
+S_44 : atoms [                  2,3,5] overlap 392 free 0 min_tight 4 t123 [0, 0, 0] fp 3 iso 0
+S_45 : atoms [                0,2,3,5] overlap 380 free 0 min_tight 4 t123 [0, 0, 0] fp 1 iso 2
+S_46 : atoms [                1,2,3,5] overlap 380 free 0 min_tight 4 t123 [0, 0, 0] fp 2 iso 1
+S_47 : atoms [              0,1,2,3,5] overlap 368 free 0 min_tight 4 t123 [0, 0, 0] fp 0 iso 3
+S_48 : atoms [                    4,5] overlap 336 free 0 min_tight 4 t123 [0, 0, 0] fp 0 iso 5
+S_49 : atoms [                  0,4,5] overlap 324 free 0 min_tight 4 t123 [0, 0, 0] fp 1 iso 1
+S_50 : atoms [                  1,4,5] overlap 324 free 0 min_tight 4 t123 [0, 0, 0] fp 2 iso 2
+S_51 : atoms [                0,1,4,5] overlap 312 free 0 min_tight 4 t123 [0, 0, 0] fp 3 iso 6
+S_52 : atoms [                  2,4,5] overlap 324 free 0 min_tight 4 t123 [0, 0, 0] fp 1 iso 4
+S_53 : atoms [                0,2,4,5] overlap 312 free 0 min_tight 4 t123 [0, 0, 0] fp 0 iso 0
+S_54 : atoms [                1,2,4,5] overlap 312 free 0 min_tight 4 t123 [0, 0, 0] fp 4 iso 3
+S_55 : atoms [              0,1,2,4,5] overlap 300 free 0 min_tight 4 t123 [0, 0, 0] fp 2 iso 7
+S_56 : atoms [                  3,4,5] overlap 324 free 0 min_tight 4 t123 [0, 0, 0] fp 2 iso 7
+S_57 : atoms [                0,3,4,5] overlap 312 free 0 min_tight 4 t123 [0, 0, 0] fp 4 iso 3
+S_58 : atoms [                1,3,4,5] overlap 312 free 0 min_tight 4 t123 [0, 0, 0] fp 0 iso 0
+S_59 : atoms [              0,1,3,4,5] overlap 300 free 0 min_tight 4 t123 [0, 0, 0] fp 1 iso 4
+S_60 : atoms [                2,3,4,5] overlap 312 free 0 min_tight 4 t123 [0, 0, 0] fp 3 iso 6
+S_61 : atoms [              0,2,3,4,5] overlap 300 free 0 min_tight 4 t123 [0, 0, 0] fp 2 iso 2
+S_62 : atoms [              1,2,3,4,5] overlap 300 free 0 min_tight 4 t123 [0, 0, 0] fp 1 iso 1
+S_63 : atoms [            0,1,2,3,4,5] overlap 288 free 0 min_tight 4 t123 [0, 0, 0] fp 0 iso 5
+fp check  : 5 distinct tightness histograms, sizes 16/16/16/8/8, partition identical to T3.4b's fingerprint classes
+RESULT ok=1 sets=64 free_total=0 min_tight_all=4 t123_total=0 fp_classes=5 sizes=16/16/16/8/8 out=/tmp/claude-1000/-home-blinny-Projects-kissing/dd24891a-8cf9-4661-9f66-7c57965a5954/scratchpad/S496_family_green
+$ diff -r /tmp/claude-1000/-home-blinny-Projects-kissing/dd24891a-8cf9-4661-9f66-7c57965a5954/scratchpad/S496_family_green data/S496_family
+regenerated byte-identically
+$ .venv/bin/python python/tools/check_64.py data/S496_family
+dir       : data/S496_family (64 set files, expected 64)
+C source  : kiss_ref.leech.leech_min_vectors() (196560 vectors, regenerated)
+S_00.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2704,9:8064,10:31424,11:52672,12:49552,13:31360,14:13440,15:2560,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_01.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31312,11:51584,12:51616,13:29312,14:14912,15:1792,16:1864,18:848,20:544,22:128,24:152
+S_02.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31056,11:52864,12:49056,13:31872,14:13632,15:2048,16:1864,18:848,20:544,22:128,24:152
+S_03.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2576,9:8448,10:31424,11:52032,12:49680,13:31744,14:13440,15:2432,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_04.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31312,11:51584,12:51616,13:29312,14:14912,15:1792,16:1864,18:848,20:544,22:128,24:152
+S_05.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2704,9:8064,10:31424,11:52672,12:49552,13:31360,14:13440,15:2560,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_06.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2320,9:9728,10:28864,11:54848,12:47888,13:32000,14:13952,15:2176,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_07.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31056,11:52864,12:49056,13:31872,14:13632,15:2048,16:1864,18:848,20:544,22:128,24:152
+S_08.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31056,11:52864,12:49056,13:31872,14:13632,15:2048,16:1864,18:848,20:544,22:128,24:152
+S_09.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2320,9:9728,10:28864,11:54848,12:47888,13:32000,14:13952,15:2176,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_10.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2704,9:8064,10:31424,11:52672,12:49552,13:31360,14:13440,15:2560,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_11.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31312,11:51584,12:51616,13:29312,14:14912,15:1792,16:1864,18:848,20:544,22:128,24:152
+S_12.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2576,9:8448,10:31424,11:52032,12:49680,13:31744,14:13440,15:2432,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_13.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31056,11:52864,12:49056,13:31872,14:13632,15:2048,16:1864,18:848,20:544,22:128,24:152
+S_14.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31312,11:51584,12:51616,13:29312,14:14912,15:1792,16:1864,18:848,20:544,22:128,24:152
+S_15.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2704,9:8064,10:31424,11:52672,12:49552,13:31360,14:13440,15:2560,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_16.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2704,9:8064,10:31424,11:52672,12:49552,13:31360,14:13440,15:2560,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_17.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31056,11:52864,12:49056,13:31872,14:13632,15:2048,16:1864,18:848,20:544,22:128,24:152
+S_18.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31312,11:51584,12:51616,13:29312,14:14912,15:1792,16:1864,18:848,20:544,22:128,24:152
+S_19.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2576,9:8448,10:31424,11:52032,12:49680,13:31744,14:13440,15:2432,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_20.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31056,11:52864,12:49056,13:31872,14:13632,15:2048,16:1864,18:848,20:544,22:128,24:152
+S_21.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2704,9:8064,10:31424,11:52672,12:49552,13:31360,14:13440,15:2560,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_22.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2320,9:9728,10:28864,11:54848,12:47888,13:32000,14:13952,15:2176,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_23.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31312,11:51584,12:51616,13:29312,14:14912,15:1792,16:1864,18:848,20:544,22:128,24:152
+S_24.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31312,11:51584,12:51616,13:29312,14:14912,15:1792,16:1864,18:848,20:544,22:128,24:152
+S_25.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2320,9:9728,10:28864,11:54848,12:47888,13:32000,14:13952,15:2176,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_26.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2704,9:8064,10:31424,11:52672,12:49552,13:31360,14:13440,15:2560,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_27.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31056,11:52864,12:49056,13:31872,14:13632,15:2048,16:1864,18:848,20:544,22:128,24:152
+S_28.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2576,9:8448,10:31424,11:52032,12:49680,13:31744,14:13440,15:2432,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_29.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31312,11:51584,12:51616,13:29312,14:14912,15:1792,16:1864,18:848,20:544,22:128,24:152
+S_30.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31056,11:52864,12:49056,13:31872,14:13632,15:2048,16:1864,18:848,20:544,22:128,24:152
+S_31.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2704,9:8064,10:31424,11:52672,12:49552,13:31360,14:13440,15:2560,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_32.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2704,9:8064,10:31424,11:52672,12:49552,13:31360,14:13440,15:2560,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_33.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31056,11:52864,12:49056,13:31872,14:13632,15:2048,16:1864,18:848,20:544,22:128,24:152
+S_34.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31312,11:51584,12:51616,13:29312,14:14912,15:1792,16:1864,18:848,20:544,22:128,24:152
+S_35.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2576,9:8448,10:31424,11:52032,12:49680,13:31744,14:13440,15:2432,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_36.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31056,11:52864,12:49056,13:31872,14:13632,15:2048,16:1864,18:848,20:544,22:128,24:152
+S_37.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2704,9:8064,10:31424,11:52672,12:49552,13:31360,14:13440,15:2560,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_38.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2320,9:9728,10:28864,11:54848,12:47888,13:32000,14:13952,15:2176,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_39.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31312,11:51584,12:51616,13:29312,14:14912,15:1792,16:1864,18:848,20:544,22:128,24:152
+S_40.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31312,11:51584,12:51616,13:29312,14:14912,15:1792,16:1864,18:848,20:544,22:128,24:152
+S_41.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2320,9:9728,10:28864,11:54848,12:47888,13:32000,14:13952,15:2176,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_42.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2704,9:8064,10:31424,11:52672,12:49552,13:31360,14:13440,15:2560,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_43.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31056,11:52864,12:49056,13:31872,14:13632,15:2048,16:1864,18:848,20:544,22:128,24:152
+S_44.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2576,9:8448,10:31424,11:52032,12:49680,13:31744,14:13440,15:2432,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_45.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31312,11:51584,12:51616,13:29312,14:14912,15:1792,16:1864,18:848,20:544,22:128,24:152
+S_46.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31056,11:52864,12:49056,13:31872,14:13632,15:2048,16:1864,18:848,20:544,22:128,24:152
+S_47.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2704,9:8064,10:31424,11:52672,12:49552,13:31360,14:13440,15:2560,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_48.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2704,9:8064,10:31424,11:52672,12:49552,13:31360,14:13440,15:2560,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_49.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31312,11:51584,12:51616,13:29312,14:14912,15:1792,16:1864,18:848,20:544,22:128,24:152
+S_50.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31056,11:52864,12:49056,13:31872,14:13632,15:2048,16:1864,18:848,20:544,22:128,24:152
+S_51.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2576,9:8448,10:31424,11:52032,12:49680,13:31744,14:13440,15:2432,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_52.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31312,11:51584,12:51616,13:29312,14:14912,15:1792,16:1864,18:848,20:544,22:128,24:152
+S_53.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2704,9:8064,10:31424,11:52672,12:49552,13:31360,14:13440,15:2560,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_54.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2320,9:9728,10:28864,11:54848,12:47888,13:32000,14:13952,15:2176,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_55.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31056,11:52864,12:49056,13:31872,14:13632,15:2048,16:1864,18:848,20:544,22:128,24:152
+S_56.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31056,11:52864,12:49056,13:31872,14:13632,15:2048,16:1864,18:848,20:544,22:128,24:152
+S_57.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2320,9:9728,10:28864,11:54848,12:47888,13:32000,14:13952,15:2176,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_58.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2704,9:8064,10:31424,11:52672,12:49552,13:31360,14:13440,15:2560,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_59.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31312,11:51584,12:51616,13:29312,14:14912,15:1792,16:1864,18:848,20:544,22:128,24:152
+S_60.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2576,9:8448,10:31424,11:52032,12:49680,13:31744,14:13440,15:2432,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+S_61.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31056,11:52864,12:49056,13:31872,14:13632,15:2048,16:1864,18:848,20:544,22:128,24:152
+S_62.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:672,7:128,8:2800,9:8320,10:31312,11:51584,12:51616,13:29312,14:14912,15:1792,16:1864,18:848,20:544,22:128,24:152
+S_63.txt: ok=1 size=496 antipodal=1 gram=-32:248,-8:37504,0:47504,8:37504 free=0 min_tight=4 t1=0 t2=0 t3=0 tight_hist=4:80,6:640,7:256,8:2704,9:8064,10:31424,11:52672,12:49552,13:31360,14:13440,15:2560,16:1480,17:256,18:704,19:64,20:528,22:128,24:152
+summary   : 64/64 files pass; free vertices total 0; min-tightness values [(4, 64)]; distinct tightness histograms 5
+RESULT ok=1 files=64 pass=64 fail=0 free_total=0 min_tight=4 distinct_hists=5
+
+##### 12. A4 structure  (§2 step 12) #####
+$ .venv/bin/python python/tools/structure_496.py
+S = S496.txt, |S| = 496
+shape counts: octad=258 31=232 44=6
+distinct octad supports: 119 multiplicities {2: 109, 4: 10}
+distinct 3-positions: 24 multiplicities {12: 5, 10: 3, 14: 5, 16: 1, 4: 2, 2: 1, 6: 5, 8: 2}
+44 supports: [[7, 12], [2, 22], [1, 3]]
+coordinate colour classes: 24 sizes [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+base points [0, 1, 2, 3, 4] (colour classes [1, 1, 1, 1, 1]), full base [0, 1, 2, 3, 4, 5, 6], chain orbit sizes [24, 23, 22, 21, 20, 16, 3], product 244823040, 5-point stabiliser 48
+5-tuples tried: 1 (bound 1) x 48, pi preserving all support multisets: 1, 0.0s
+monomial stabiliser: 2 elements
+structure: {'order': 2, 'abelian': True, 'element_orders': {1: 1, 2: 1}, 'centre_order': 2, 'derived_order': 1}
+-I in stabiliser: True
+distinct coordinate permutations (image in M24): 1; sign kernel order: 2
+cycle types of the M24 image (non-trivial cycles): {(): 1}
+orbits on S: 248, sizes {2: 248}
+generators written: 1
+orbits on C: 98280, sizes {2: 98280}
+S is a union of stabiliser orbits on C: True
+Gram colour refinement: 28 classes, sizes {4: 6, 8: 3, 16: 10, 32: 9}
+Gram automorphisms (exact): 64
+|Aut(Gram(S))| = 64; x->-x among them: True
+Gram automorphisms extending to Leech automorphisms: 8 of 64
+full Co_0 stabiliser: |Stab_Co0(S)| = 8; structure {'order': 8, 'abelian': True, 'element_orders': {1: 1, 2: 7}, 'centre_order': 8, 'derived_order': 1, 'orbits_on_S': [(4, 124)]}
+Co_0 stabiliser generators written: 3
+RESULT ok=1 set='S496.txt' size=496 stab_order=2 m24_image=1 sign_kernel=2 abelian=1 orbits_on_S=248 orbits_on_C=98280 gram_aut=64 gram_classes=28 co0_stab_order=8 seconds=78.8
+RESULT section=S0 size=496 gram_offdiag_pairs={-32:248,-8:37504,0:47504,8:37504} avoids_dot=+16 and -16 shapes=octad=258,31=232,44=6 antipodal=True classes=248 seconds=0.0
+stabiliser file missing; regenerating via python/tools/stabilizer_496.py ...
+RESULT section=S1 stab_order=8 structure=elementary_abelian_2^3 abelian=True traces={+24,+8x3,-8x3,-24} product_rule=t_i*t_j=-t_k (NOT t_k): the three trace+8 involutions do not form a Klein group group_is=blockwise {+-1}^3 on three 8-dim blocks (see S2) fixed_on_S=t1:208,t2:144,t3:144 nonmonomial=True lambda_preserved=True s_preserved=True seconds=95.5
+# basis: fed 1088 minimal vectors, |det B| = 2^36, 8*B^-1 integral, max|8B^-1| = 59 (0.8s)
+RESULT section=S2a block=1 dim=8 gram_div16=integral even, det 1 identification=sqrt2E8 (unique 8-dim even unimodular lattice = E8) shortvec_hist_ours={32: 240, 64: 2160}
+RESULT section=S2a block=2 dim=8 gram_div16=integral even, det 1 identification=sqrt2E8 (unique 8-dim even unimodular lattice = E8) shortvec_hist_ours={32: 240, 64: 2160}
+RESULT section=S2a block=3 dim=8 gram_div16=integral even, det 1 identification=sqrt2E8 (unique 8-dim even unimodular lattice = E8) shortvec_hist_ours={32: 240, 64: 2160}
+RESULT section=S2b fix_of=t1 dim=16 det_std=256 even_std=True
+RESULT section=S2b fix_of=t2 dim=16 det_std=256 even_std=True
+RESULT section=S2b fix_of=t3 dim=16 det_std=256 even_std=True
+RESULT section=S2c index_sqrt2E8cubed_in_Lambda=4096 glue_group=[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2] interpretation=Lambda contains sqrt2(E8+E8+E8) with index 2^12: Turyn-type construction
+RESULT section=S2d pair=B2+B3 det_std_fix=256 index_in_fix=16 glue_group_pair=[2, 2, 2, 2]
+RESULT section=S2d pair=B1+B3 det_std_fix=256 index_in_fix=16 glue_group_pair=[2, 2, 2, 2]
+RESULT section=S2d pair=B1+B2 det_std_fix=256 index_in_fix=16 glue_group_pair=[2, 2, 2, 2]
+RESULT section=S2 seconds=0.4
+RESULT section=S3c pair_lattice_kissing=4320 identification=Fix(t_i): 16-dim even, det_std 2^8, min 4, kissing 4320 = extremal 2-modular => Barnes-Wall BW16 (Quebbemann uniqueness)
+RESULT section=S3a patterns_in_S={'(0, 16, 16)': 208, '(16, 0, 16)': 144, '(16, 16, 0)': 144} S_all_duads=True lambda_min_duads={'(0, 16, 16)': 3840, '(16, 0, 16)': 3840, '(16, 16, 0)': 3840} total_duads=11520 S_fraction_of_duads=496/11520 S_equals_all_duads=False
+RESULT section=S3b full_pattern_histogram={'(0, 0, 32)': 240, '(0, 16, 16)': 3840, '(0, 32, 0)': 240, '(8, 8, 16)': 61440, '(8, 16, 8)': 61440, '(16, 0, 16)': 3840, '(16, 8, 8)': 61440, '(16, 16, 0)': 3840, '(32, 0, 0)': 240} norm32_wholly_in_block={'(32, 0, 0)': 240, '(0, 32, 0)': 240, '(0, 0, 32)': 240} n_patterns=9 seconds=1.5
+RESULT section=S3e family_files=64 all_64_sets_are_duad_sets=True support_splits={(208, 144, 144): 64} seconds=0.2
+RESULT section=S4a classes_mod2=248 all_distinct=True gf2_rank=20 coset_stabiliser_order=1 union_of_cosets=False
+RESULT section=S4b orbits=124 orbit_types=t1-fixed:52,t2-fixed:36,t3-fixed:36 distinct_crosses=14 cross_multiplicities={8: 11, 12: 3} per_type_distinct={0: 8, 1: 7, 2: 7} cross_gf2_rank=4 crosses_meet_S_classes=0 cross_coset_stabiliser_order=2 halfsum_vectors_per_type={0: (52, 104), 1: (36, 72), 2: (36, 72)} seconds=0.0
+RESULT section=S6a maximal_cliques=2718 size_hist={8: 1280, 10: 800, 12: 448, 16: 171, 18: 4, 20: 8, 22: 4, 24: 3} full_frames=3 pairwise_disjoint=True classes_covered=72
+RESULT section=S6b frame=0 external_classes=224 distinct_octads=21 span_dim=7 span_weight_dist={0: 1, 8: 39, 12: 48, 16: 39, 24: 1} span_is_golay=False
+RESULT section=S6b frame=1 external_classes=224 distinct_octads=21 span_dim=7 span_weight_dist={0: 1, 8: 39, 12: 48, 16: 39, 24: 1} span_is_golay=False
+RESULT section=S6b frame=2 external_classes=224 distinct_octads=28 span_dim=9 span_weight_dist={0: 1, 4: 12, 8: 135, 12: 216, 16: 135, 20: 12, 24: 1} span_is_golay=False
+RESULT section=S6c frame=0 classes_by_support={'{B2,B3}': 8, '{B1,B3}': 8, '{B1,B2}': 8}
+RESULT section=S6c frame=1 classes_by_support={'{B2,B3}': 8, '{B1,B3}': 8, '{B1,B2}': 8}
+RESULT section=S6c frame=2 classes_by_support={'{B2,B3}': 8, '{B1,B3}': 8, '{B1,B2}': 8}
+RESULT section=S6 seconds=0.3
+RESULT section=S7a tightness_hist_outside=matches T3.1 exactly min_tightness_outside=4 t4_count=80 plus16_equals_minus16_tightness=True S_maximal_pm16free=True union_min_degree_outside=8
+RESULT section=S7b degree_plus16=4600 degree_minus16=4600 union_degree=9200
+RESULT section=S7c lp_pm16free_exact=9360/11 lp_pm16free_floor=850 lp_pm16free_antipodal=9360/11 lp_pm16free_antipodal_floor=850 lp_conflict_only_T22=9360/11 (=850.9) seconds=2.6
+RESULT section=S5 lattice=<S>_Z rank=24 index_in_Lambda=16 quotient=[2, 2, 2, 2]
+RESULT section=S5 lattice=frame0 rank=24 index_in_Lambda=16777216 quotient=[2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+RESULT section=S5 lattice=frame1 rank=24 index_in_Lambda=16777216 quotient=[2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+RESULT section=S5 lattice=frame2 rank=24 index_in_Lambda=16777216 quotient=[4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+RESULT section=S5 lattice=tightness4_80 rank=24 index_in_Lambda=65536 quotient=[2, 2, 2, 2, 4, 4, 4, 4, 4, 4]
+RESULT section=S5 lattice=orbit_sums_248 rank=24 index_in_Lambda=16777216 quotient=[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4]
+RESULT section=S5 seconds=0.3
+RESULT section=S5b min_vectors_of_genS=12240 of_which_in_S=496 S_equals_min_of_genS=False extra_min_vectors=11744 extra_by_pattern={'(0, 0, 32)': 240, '(0, 16, 16)': 3632, '(0, 32, 0)': 240, '(16, 0, 16)': 3696, '(16, 16, 0)': 3696, '(32, 0, 0)': 240} t4_in_genS=80 seconds=1.7
+RESULT section=S4c sum_vector_pairs_used_per_block={'B1': 72, 'B2': 88, 'B3': 88} sum_vectors_per_block={'B1': 72, 'B2': 88, 'B3': 88} available_pairs_per_block=1080 (=2160/2 norm-64 vectors of sqrt2E8) seconds=0.0
+RESULT section=S2e genS_equals_sum_of_pair_lattices=True index_both=16 seconds=0.1
+RESULT section=S4d block=1 norm64_vectors=2160 distinct_classes=135 pairs_per_class={8: 135} classes_are_orthogonal_frames=True
+RESULT section=S4d block=2 norm64_vectors=2160 distinct_classes=135 pairs_per_class={8: 135} classes_are_orthogonal_frames=True
+RESULT section=S4d block=3 norm64_vectors=2160 distinct_classes=135 pairs_per_class={8: 135} classes_are_orthogonal_frames=True
+RESULT section=S4e pair=B2+B3 shared_channels=15 available_orbits=960 available_duads=3840
+RESULT section=S4e pair=B1+B3 shared_channels=15 available_orbits=960 available_duads=3840
+RESULT section=S4e pair=B1+B2 shared_channels=15 available_orbits=960 available_duads=3840
+RESULT section=S4e2 channels_common_to_all_pairs=15 channels_union=15 union_gf2_rank=4 union_closed_under_xor=True union_is_subspace_minus_0=True pair_sets_identical=True
+RESULT section=S4f S_channels_used={0: 8, 1: 7, 2: 7} S_usage_per_channel={0: [4, 4, 4, 8, 8, 8, 8, 8], 1: [4, 4, 4, 4, 4, 8, 8], 2: [4, 4, 4, 4, 4, 8, 8]}
+RESULT section=S4g cross_span_size=16 crosses_used=14 span_elements_unused=1 unused_are_valid_channels=[True] seconds=0.3
+RESULT section=S4h cells_full_permutation=9 cells_half=13 usage_is_partial_permutation_in_every_cell=True channel_orbit_totals={8: 11, 12: 3} channelwise_K888_matching=True frame_channels_are_perfect_matchings=3 note=124 = 3 frame channels x 12 (perfect matchings of K888) + 9 channels x 8 (one-pair permutations) + 2 channels x (4+4) seconds=0.0
+RESULT section=S4i pair=0 channels_used=8 full=5 half=3 unused_is_subspace=True used_is_subspace=False half_is_subspace=False full_is_subspace=False half_rank=3 full_rank=4 unused_rank=3
+RESULT section=S4i pair=1 channels_used=7 full=2 half=5 unused_is_subspace=False used_is_subspace=False half_is_subspace=False full_is_subspace=False half_rank=3 full_rank=2 unused_rank=4
+RESULT section=S4i pair=2 channels_used=7 full=2 half=5 unused_is_subspace=False used_is_subspace=False half_is_subspace=False full_is_subspace=False half_rank=3 full_rank=2 unused_rank=4
+RESULT section=S4i globally_unused_channels=1 per_channel_orbit_totals={0: 1, 8: 11, 12: 3}
+RESULT section=S3d pair_duads=3840 S_on_pair=208 degrees=[252] hoffman_bound_float=282.35 min_conflicts_outside_pairS=0 S208_maximal_within_pair=False seconds=19.4
+RESULT section=S6e frame=0 orbits=12 cells={'pair0/ch315': 4, 'pair1/ch315': 4, 'pair2/ch315': 4} orbits_per_cell=[4, 4, 4]
+RESULT section=S6e frame=1 orbits=12 cells={'pair0/ch938': 4, 'pair1/ch938': 4, 'pair2/ch938': 4} orbits_per_cell=[4, 4, 4]
+RESULT section=S6e frame=2 orbits=12 cells={'pair0/ch827': 4, 'pair1/ch827': 4, 'pair2/ch827': 4} orbits_per_cell=[4, 4, 4]
+RESULT section=S7d t4_patterns={'(0, 16, 16)': 48, '(16, 0, 16)': 16, '(16, 16, 0)': 16}
+RESULT section=S8 co0_order=8315553613086720000 order_div_by_31=False note=496=2^4*31 (perfect number) and 248=dim(E8 Lie algebra): 31 does not divide |Co0|; no 31-fold symmetry can exist; numerology rejected
+RESULT section=A4 ok=1 seconds=123.7
+
+##### 13. A4b channel rewirings  (§2 step 13) #####
+$ .venv/bin/python python/tools/structure_t4.py
+# basis: fed 1088 minimal vectors, |det B| = 2^36, 8*B^-1 integral, max|8B^-1| = 59 (0.6s)
+RESULT section=U0 stab_reverified=True fixed_on_S=208,144,144 seconds=14.5
+# channel legend: {'c00': 568597, 'c01': 1140100, 'cF2': 1689745, 'cF1': 2490447, 'c02': 3059034, 'c03': 3630539, 'c04': 4180190, 'cF0': 4388112, 'c05': 4872197, 'c06': 5476500, 'c07': 5979521, 'cE': 6616415, 'c08': 7100490, 'c09': 7704795, 'c10': 8207822}
+RESULT section=U0b s_orbits=124 s_cell_table_matches_A4=True
+RESULT section=U1a t4_count=80 antipodal_pairs=40 mutually_nonadjacent=True gram_pairs={-32: 40, -8: 640, 0: 1840, 8: 640} duad_patterns={'(0, 16, 16)': 48, '(16, 0, 16)': 16, '(16, 16, 0)': 16}
+RESULT section=U1b orbits=20 orbit_sizes=all 4 orbits_by_pair={0: 12, 1: 4, 2: 4} distinct_channels=3 per_channel_orbits={1689745: 12, 2490447: 4, 4388112: 4} cells={'pair0/1689745': 4, 'pair0/2490447': 4, 'pair0/4388112': 4, 'pair1/1689745': 4, 'pair2/1689745': 4}
+RESULT section=U1 seconds=3.2
+RESULT section=U2a atom=0 size=12 remove_orbits=3 add_orbits=3 add_orbits_that_are_t4=3 remove_cells={'pair0/cF2': 1, 'pair1/cF2': 1, 'pair2/cF2': 1} add_cells={'pair0/cF2': 1, 'pair1/cF2': 1, 'pair2/cF2': 1} same_physical_rows=True rows_removed=6 rows_added=6 rows_common=6 row_degree_hist={2: 6} every_row_one_removed_one_added=True alternating_cycle_lengths=[6]
+RESULT section=U2a atom=1 size=12 remove_orbits=3 add_orbits=3 add_orbits_that_are_t4=3 remove_cells={'pair0/cF2': 1, 'pair1/cF2': 1, 'pair2/cF2': 1} add_cells={'pair0/cF2': 1, 'pair1/cF2': 1, 'pair2/cF2': 1} same_physical_rows=True rows_removed=6 rows_added=6 rows_common=6 row_degree_hist={2: 6} every_row_one_removed_one_added=True alternating_cycle_lengths=[6]
+RESULT section=U2a atom=2 size=12 remove_orbits=3 add_orbits=3 add_orbits_that_are_t4=3 remove_cells={'pair0/cF2': 1, 'pair1/cF2': 1, 'pair2/cF2': 1} add_cells={'pair0/cF2': 1, 'pair1/cF2': 1, 'pair2/cF2': 1} same_physical_rows=True rows_removed=6 rows_added=6 rows_common=6 row_degree_hist={2: 6} every_row_one_removed_one_added=True alternating_cycle_lengths=[6]
+RESULT section=U2a atom=3 size=12 remove_orbits=3 add_orbits=3 add_orbits_that_are_t4=3 remove_cells={'pair0/cF2': 1, 'pair1/cF2': 1, 'pair2/cF2': 1} add_cells={'pair0/cF2': 1, 'pair1/cF2': 1, 'pair2/cF2': 1} same_physical_rows=True rows_removed=6 rows_added=6 rows_common=6 row_degree_hist={2: 6} every_row_one_removed_one_added=True alternating_cycle_lengths=[6]
+RESULT section=U2a atom=4 size=80 remove_orbits=20 add_orbits=20 add_orbits_that_are_t4=4 remove_cells={'pair0/cF0': 4, 'pair1/cF0': 4, 'pair1/c07': 4, 'pair2/cF0': 4, 'pair2/c07': 4} add_cells={'pair0/cF0': 4, 'pair1/cF0': 4, 'pair1/c07': 4, 'pair2/cF0': 4, 'pair2/c07': 4} same_physical_rows=False rows_removed=40 rows_added=40 rows_common=32 row_degree_hist={1: 16, 2: 32} every_row_one_removed_one_added=False alternating_cycle_lengths=['n/a']
+RESULT section=U2a atom=5 size=80 remove_orbits=20 add_orbits=20 add_orbits_that_are_t4=4 remove_cells={'pair0/cF1': 4, 'pair1/cF1': 4, 'pair1/c04': 4, 'pair2/cF1': 4, 'pair2/c04': 4} add_cells={'pair0/cF1': 4, 'pair1/cF1': 4, 'pair1/c04': 4, 'pair2/cF1': 4, 'pair2/c04': 4} same_physical_rows=False rows_removed=40 rows_added=40 rows_common=32 row_degree_hist={1: 16, 2: 32} every_row_one_removed_one_added=False alternating_cycle_lengths=['n/a']
+RESULT section=U2a2 atom=0 channels=['cF2'] removes_all_S_orbits_of_its_channels=False s_orbits_in_channels=12
+RESULT section=U2a2 atom=1 channels=['cF2'] removes_all_S_orbits_of_its_channels=False s_orbits_in_channels=12
+RESULT section=U2a2 atom=2 channels=['cF2'] removes_all_S_orbits_of_its_channels=False s_orbits_in_channels=12
+RESULT section=U2a2 atom=3 channels=['cF2'] removes_all_S_orbits_of_its_channels=False s_orbits_in_channels=12
+RESULT section=U2a2 atom=4 channels=['c07', 'cF0'] removes_all_S_orbits_of_its_channels=True s_orbits_in_channels=20
+RESULT section=U2a2 atom=5 channels=['c04', 'cF1'] removes_all_S_orbits_of_its_channels=True s_orbits_in_channels=20
+RESULT section=U2b frame_swap_remove_channels=['cF2'] frame_swap_add_channels=['cF2'] same_single_channel=True remove_is_perfect_matching=True add_is_perfect_matching=True add_rows_equal_remove_rows=True
+RESULT section=U2b2 four_12atoms_remove_eq_S_cF2=True four_12atoms_add_eq_t4_cF2=True
+RESULT section=U2b3 t4_orbits_subset_of_atom_adds=True t4_orbits_in_adds=20 atom_add_orbits=52
+RESULT section=U2d sigma_pairs_moved_by_plateau={0,cF2},{cF0,c07},{cF1,c04} cF0_xor_c07_eq_cF2=True cF1_xor_c04_eq_cF2=True cF0_xor_cF1_eq_cE=True frame_span_dim=3 frame_span_size=8 frame_span_names=['c04', 'c07', 'c10', 'cE', 'cF0', 'cF1', 'cF2'] empty_channel_in_frame_span=True
+RESULT section=U2c atom=4 remove_cells={'pair0/cF0': 4, 'pair1/c07': 4, 'pair1/cF0': 4, 'pair2/c07': 4, 'pair2/cF0': 4} add_cells={'pair0/cF0': 4, 'pair1/c07': 4, 'pair1/cF0': 4, 'pair2/c07': 4, 'pair2/cF0': 4} cell_usage_delta={}
+RESULT section=U2c atom=5 remove_cells={'pair0/cF1': 4, 'pair1/c04': 4, 'pair1/cF1': 4, 'pair2/c04': 4, 'pair2/cF1': 4} add_cells={'pair0/cF1': 4, 'pair1/c04': 4, 'pair1/cF1': 4, 'pair2/c04': 4, 'pair2/cF1': 4} cell_usage_delta={}
+RESULT section=U2 seconds=0.0
+RESULT section=U3a union_size=576 note=576=24^2 gram_offdiag={-32: 576, -16: 640, -8: 100352, 0: 128640, 8: 100352, 16: 640} conflicts_pm16=1280 sum_vvT_eq_768I=False frame_const=768 S_alone_tight_frame=False S_sum_vvT_diag=[608, 656, 672, 688] t4_sum_vvT_diag=[80, 96, 112, 128]
+RESULT section=U3b union_orbits=144 union_cell_table={'c00': [0, 0, 8], 'c01': [8, 0, 0], 'cF2': [8, 8, 8], 'cF1': [8, 4, 4], 'c02': [8, 0, 0], 'c03': [0, 8, 0], 'c04': [0, 4, 4], 'cF0': [8, 4, 4], 'c05': [8, 0, 0], 'c06': [0, 8, 0], 'c07': [0, 4, 4], 'cE': [0, 0, 0], 'c08': [0, 0, 8], 'c09': [8, 0, 0], 'c10': [8, 0, 0]} per_channel_totals={'c00': 8, 'c01': 8, 'cF2': 24, 'cF1': 16, 'c02': 8, 'c03': 8, 'c04': 8, 'cF0': 16, 'c05': 8, 'c06': 8, 'c07': 8, 'cE': 0, 'c08': 8, 'c09': 8, 'c10': 8} channel_total_hist={0: 1, 8: 11, 16: 2, 24: 1}
+RESULT section=U3c t4_vertex_conf=4 t4_orbit_conflict_S_orbits={2: 20} conflicts_are_exactly_shared_rook_rows_same_channel=True
+RESULT section=U3d conflict_components=12 isolated_S_orbits=96 component_profile_Sorbits_t4orbits={(2, 1): 8, (3, 3): 4} components=[(3, 3, ['cF2']), (3, 3, ['cF2']), (3, 3, ['cF2']), (3, 3, ['cF2']), (2, 1, ['cF0']), (2, 1, ['cF1']), (2, 1, ['cF1']), (2, 1, ['cF1']), (2, 1, ['cF0']), (2, 1, ['cF0']), (2, 1, ['cF1']), (2, 1, ['cF0'])]
+RESULT section=U3 seconds=0.0
+RESULT section=U5 clique_verified=Gram=16(I+J) monads=0 duads=0 triads=24 patterns={'(8, 8, 16)': 6, '(8, 16, 8)': 9, '(16, 8, 8)': 9} seconds=0.0
+RESULT section=A4b ok=1 seconds=17.8
+
+##### 14. Turyn-slice model + proved sub-facts  (§2 step 14) #####
+$ .venv/bin/python python/tools/channel_opt.py build
+# permutations built (3.1s)
+# orbit sizes {8: 23040, 4: 2880, 2: 360} (4.7s)
+# basis: fed 1088 minimal vectors, |det B| = 2^36, 8*B^-1 integral, max|8B^-1| = 59 (0.6s)
+# 3 blocks x 135 frames; 15 shared channels = PG(3,2) (6.3s)
+# metadata: 2880 duads = 3 pairs x 15 channels x 64 rook cells; 360 monads = 3 blocks x 120 (6.7s)
+# conflict graph: 3240 orbits, 456480 edges == T3.4 (8.5s)
+# reference S: 124 orbits, weight 496, independent, channel table == A4 (8.5s)
+# census: {'xchan': 322560, 'xpair_same_chan': 23040, 'md': 80640, 'rook': 20160, 'mm': 10080} (sum 456480) (9.0s)
+# monad->conflicting (chan,line) count hist {14: 360}; lines-per-channel hist {2: 2520}
+# cross-channel same-pair edge counts per (pair, chan<chan') hist {1024: 315}
+RESULT section=build orbits=3240 edges=456480 census={'xchan': 322560, 'xpair_same_chan': 23040, 'md': 80640, 'rook': 20160, 'mm': 10080} ref=496 ok=1 seconds=9.4
+$ .venv/bin/python python/tools/channel_opt.py structure
+# line table: 15 channels x 3 blocks x 8 lines, frames verified (0.3s)
+# H_b: cross-channel line dots hist {0: 22680, 32: 20160}; each line: 4 at |32| per foreign channel (0.4s)
+# duad-duad conflicts == line factorisation, all 365760 edges (0.6s)
+# monad conflicts factor: m-d via |m.u|=32 (14 lines: 2 in each of 7 channels), m-m via |m.m'|=16 in-block (0.7s)
+RESULT section=structure factorisation=verified line_dot_hist={0: 22680, 32: 20160} ok=1 seconds=0.7
+$ .venv/bin/python python/tools/channel_opt.py monadkill
+# u(1) = 14 [OPTIMAL, lb=14.0] (0.5s)
+# u(2) = 26 [OPTIMAL, lb=26.0] (0.5s)
+# u(3) = 36 [OPTIMAL, lb=36.0] (0.6s)
+# u(4) = 44 [OPTIMAL, lb=44.0] (0.7s)
+# u(5) = 50 [OPTIMAL, lb=50.0] (0.8s)
+# u(6) = 54 [OPTIMAL, lb=54.0] (0.9s)
+# u(7) = 56 [OPTIMAL, lb=56.0] (1.1s)
+# u(8) = 56 [OPTIMAL, lb=56.0] (1.1s)
+RESULT section=monadkill u=[14, 26, 36, 44, 50, 54, 56, 56] statuses=['OPTIMAL', 'OPTIMAL', 'OPTIMAL', 'OPTIMAL', 'OPTIMAL', 'OPTIMAL', 'OPTIMAL', 'OPTIMAL'] seconds=1.1
+$ .venv/bin/python python/tools/channel_opt.py combine
+#   ingredient: channel pairwise <= 8 (structural)
+#   ingredient: pair line<=16 plane<=32 total<=64 (chancuts+pairs PROVED)
+#   ingredient: pair+monads <= 288 (pairs PROVED)
+#   ingredient: block kill: duads_b <= 120 - u(mon_b) (PROVED)
+# maximising profile: pair sums = [60, 60, 60], monads = [0, 0, 0]
+# NOTE: the CERTIFIED upper bound for the original problem is best_bound=720.0 (equals the incumbent only when OPTIMAL)
+RESULT section=combine status=OPTIMAL profile_incumbent=720 certified_bound=720.0 ingredients=4 seconds=0.6
+
+##### 15. the K(25..31) families  (§2 step 15) #####
+$ .venv/bin/python python/verify_dimN.py data/families/dim26 --strict
+family      : data/families/dim26  dim=26 d=2 sets=2 T=6 groups=2 extra=6 claimed_count=198550
+config      : cpus=16 workers=8 tile=(512, 1024) OPENBLAS_NUM_THREADS=1
+sets        : k=2 sizes=[496, 496] union=992 pairwise disjoint, each independent; equatorial = C \ U = 195568  (0.0 s)
+T           : 6 vectors in Z^3-ambient field, norms ['2'], pairwise cos <= 1/2 (max 0.500000); groups: 2 triangles + 0 pairs, disjoint, within-group cos <= -1/2  (0.0 s)
+extra       : 6 vectors (K(2) = 6), pairwise cos <= 1/2 (max 0.500000), cos to every T vector <= sqrt3/2 (max 0.866025)  (0.0 s)
+rank        : span(T u extra) has exact rank 2 <= d = 2
+count       : #extra + 196560 + sum_i (|T_i|-1)|S_i| = 6 + 196560 + 1984 = 198550  (rows: equatorial 195568 + lifted 2976 + extra 6)
+exact       : eq-lift max ip = 16 (needs <= 16 < 8 sqrt6); lift-lift max ip same set = 8 (needs <= 8), cross set = 16 (needs <= 16; 16 with cos(y,y') = 1/2 is exactly 2)
+exact       : eq-eq full pass over all 19317818520 pairs of C: max off-diagonal ip = 16, min = -32, values seen [-32, -16, -8, 0, 8, 16] (24.0 s)
+exact       : lift-lift same x: within-group cos <= -1/2 (B); extra-lift: cos <= sqrt3/2 (C); extra-extra: cos <= 1/2 (C); extra-eq: 0
+exact       : pairs eq-eq=19123323528 eq-lift=582010368 lift-lift-same-x=2976 lift-lift-same-set=2209680 lift-lift-cross-set=2214144 extra-eq=1173408 extra-lift=17856 extra-extra=15 total=19710951975=C(198550,2)
+exact       : count = 198550  (27.2 s)
+float       : 198550 vectors in R^26; max off-diagonal inner product = 2.000000000000 (tol 2+1e-9) at pair (195610, 196602) class=lift-lift-same-x; min -4.000000  (54.5 s, 37830 tiles)
+RESULT ok=1 dim=26 d=2 sets=2 count=198550 count_exact=198550 count_float=198550 max_offdiag=2.000000000000 max_class=lift-lift-same-x extra=6 K=6 exact_s=27.2 float_s=54.5 s=82.1
+$ .venv/bin/python python/verify_dimN.py data/families/dim27 --strict
+family      : data/families/dim27  dim=27 d=3 sets=5 T=12 groups=5 extra=12 claimed_count=200044
+config      : cpus=16 workers=8 tile=(512, 1024) OPENBLAS_NUM_THREADS=1
+sets        : k=5 sizes=[496, 496, 496, 496, 496] union=2480 pairwise disjoint, each independent; equatorial = C \ U = 194080  (0.1 s)
+T           : 12 vectors in Z^3-ambient field, norms ['2'], pairwise cos <= 1/2 (max 0.500000); groups: 2 triangles + 3 pairs, disjoint, within-group cos <= -1/2  (0.0 s)
+extra       : 12 vectors (K(3) = 12), pairwise cos <= 1/2 (max 0.500000), cos to every T vector <= sqrt3/2 (max 0.853553)  (0.0 s)
+rank        : span(T u extra) has exact rank 3 <= d = 3
+count       : #extra + 196560 + sum_i (|T_i|-1)|S_i| = 12 + 196560 + 3472 = 200044  (rows: equatorial 194080 + lifted 5952 + extra 12)
+exact       : eq-lift max ip = 16 (needs <= 16 < 8 sqrt6); lift-lift max ip same set = 8 (needs <= 8), cross set = 16 (needs <= 16; 16 with cos(y,y') = 1/2 is exactly 2)
+exact       : eq-eq full pass over all 19317818520 pairs of C: max off-diagonal ip = 16, min = -32, values seen [-32, -16, -8, 0, 8, 16] (23.1 s)
+exact       : lift-lift same x: within-group cos <= -1/2 (B); extra-lift: cos <= sqrt3/2 (C); extra-extra: cos <= 1/2 (C); extra-eq: 0
+exact       : pairs eq-eq=18833426160 eq-lift=1155164160 lift-lift-same-x=4464 lift-lift-same-set=3682800 lift-lift-cross-set=14022912 extra-eq=2328960 extra-lift=71424 extra-extra=66 total=20008700946=C(200044,2)
+exact       : count = 200044  (26.4 s)
+float       : 200044 vectors in R^27; max off-diagonal inner product = 2.000000000000 (tol 2+1e-9) at pair (194127, 195119) class=lift-lift-same-x; min -4.000000  (49.5 s, 38416 tiles)
+RESULT ok=1 dim=27 d=3 sets=5 count=200044 count_exact=200044 count_float=200044 max_offdiag=2.000000000000 max_class=lift-lift-same-x extra=12 K=12 exact_s=26.4 float_s=49.5 s=76.3
+$ .venv/bin/python python/verify_dimN.py data/families/dim28 --strict
+family      : data/families/dim28  dim=28 d=4 sets=8 T=24 groups=8 extra=24 claimed_count=204520
+config      : cpus=16 workers=8 tile=(512, 1024) OPENBLAS_NUM_THREADS=1
+sets        : k=8 sizes=[496, 496, 496, 496, 496, 496, 496, 496] union=3968 pairwise disjoint, each independent; equatorial = C \ U = 192592  (0.2 s)
+T           : 24 vectors in Z^4-ambient field, norms ['2'], pairwise cos <= 1/2 (max 0.500000); groups: 8 triangles + 0 pairs, disjoint, within-group cos <= -1/2  (0.0 s)
+extra       : 24 vectors (K(4) = 24), pairwise cos <= 1/2 (max 0.500000), cos to every T vector <= sqrt3/2 (max 0.866025)  (0.1 s)
+rank        : span(T u extra) has exact rank 4 <= d = 4
+count       : #extra + 196560 + sum_i (|T_i|-1)|S_i| = 24 + 196560 + 7936 = 204520  (rows: equatorial 192592 + lifted 11904 + extra 24)
+exact       : eq-lift max ip = 16 (needs <= 16 < 8 sqrt6); lift-lift max ip same set = 8 (needs <= 8), cross set = 16 (needs <= 16; 16 with cos(y,y') = 1/2 is exactly 2)
+exact       : eq-eq full pass over all 19317818520 pairs of C: max off-diagonal ip = 16, min = -32, values seen [-32, -16, -8, 0, 8, 16] (25.6 s)
+exact       : lift-lift same x: within-group cos <= -1/2 (B); extra-lift: cos <= sqrt3/2 (C); extra-extra: cos <= 1/2 (C); extra-eq: 0
+exact       : pairs eq-eq=18545742936 eq-lift=2292615168 lift-lift-same-x=11904 lift-lift-same-set=8838720 lift-lift-cross-set=61996032 extra-eq=4622208 extra-lift=285696 extra-extra=276 total=20914112940=C(204520,2)
+exact       : count = 204520  (31.2 s)
+float       : 204520 vectors in R^28; max off-diagonal inner product = 2.000000000000 (tol 2+1e-9) at pair (193024, 193520) class=lift-lift-same-x; min -4.000000  (57.0 s, 40200 tiles)
+RESULT ok=1 dim=28 d=4 sets=8 count=204520 count_exact=204520 count_float=204520 max_offdiag=2.000000000000 max_class=lift-lift-same-x extra=24 K=24 exact_s=31.2 float_s=57.0 s=88.7
+$ .venv/bin/python python/verify_dimN.py data/families/dim29 --strict
+family      : data/families/dim29  dim=29 d=5 sets=14 T=40 groups=14 extra=40 claimed_count=209496
+config      : cpus=16 workers=8 tile=(512, 1024) OPENBLAS_NUM_THREADS=1
+sets        : k=14 sizes=[496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496] union=6944 pairwise disjoint, each independent; equatorial = C \ U = 189616  (0.3 s)
+T           : 40 vectors in Z^5-ambient field, norms ['2'], pairwise cos <= 1/2 (max 0.500000); groups: 12 triangles + 2 pairs, disjoint, within-group cos <= -1/2  (0.0 s)
+extra       : 40 vectors (K(5) = 40), pairwise cos <= 1/2 (max 0.500000), cos to every T vector <= sqrt3/2 (max 0.853553)  (0.1 s)
+rank        : span(T u extra) has exact rank 5 <= d = 5
+count       : #extra + 196560 + sum_i (|T_i|-1)|S_i| = 40 + 196560 + 12896 = 209496  (rows: equatorial 189616 + lifted 19840 + extra 40)
+exact       : eq-lift max ip = 16 (needs <= 16 < 8 sqrt6); lift-lift max ip same set = 8 (needs <= 8), cross set = 16 (needs <= 16; 16 with cos(y,y') = 1/2 is exactly 2)
+exact       : eq-eq full pass over all 19317818520 pairs of C: max off-diagonal ip = 16, min = -32, values seen [-32, -16, -8, 0, 8, 16] (23.8 s)
+exact       : lift-lift same x: within-group cos <= -1/2 (B); extra-lift: cos <= sqrt3/2 (C); extra-extra: cos <= 1/2 (C); extra-eq: 0
+exact       : pairs eq-eq=17977018920 eq-lift=3761981440 lift-lift-same-x=18848 lift-lift-same-set=14240160 lift-lift-cross-set=182543872 extra-eq=7584640 extra-lift=793600 extra-extra=780 total=21944182260=C(209496,2)
+exact       : count = 209496  (33.2 s)
+float       : 209496 vectors in R^29; max off-diagonal inner product = 2.000000000000 (tol 2+1e-9) at pair (192000, 192496) class=lift-lift-same-x; min -4.000000  (42.3 s, 42230 tiles)
+warning     : group 13: pair [27, 32] is not antipodal (cos = -0.500000, 120.00 deg; two vertices of a triangle is allowed by the template and SCHEMA.md 3.3)
+warning     : group 14: pair [21, 3] is not antipodal (cos = -0.500000, 120.00 deg; two vertices of a triangle is allowed by the template and SCHEMA.md 3.3)
+RESULT ok=1 dim=29 d=5 sets=14 count=209496 count_exact=209496 count_float=209496 max_offdiag=2.000000000000 max_class=lift-lift-same-x extra=40 K=40 exact_s=33.2 float_s=42.3 s=76.3
+$ .venv/bin/python python/verify_dimN.py data/families/dim30 --strict
+family      : data/families/dim30  dim=30 d=6 sets=24 T=72 groups=24 extra=72 claimed_count=220440
+config      : cpus=16 workers=8 tile=(512, 1024) OPENBLAS_NUM_THREADS=1
+sets        : k=24 sizes=[496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496] union=11904 pairwise disjoint, each independent; equatorial = C \ U = 184656  (0.3 s)
+T           : 72 vectors in Z^8-ambient field, norms ['8'], pairwise cos <= 1/2 (max 0.500000); groups: 24 triangles + 0 pairs, disjoint, within-group cos <= -1/2  (0.1 s)
+extra       : 72 vectors (K(6) = 72), pairwise cos <= 1/2 (max 0.500000), cos to every T vector <= sqrt3/2 (max 0.866025)  (0.5 s)
+rank        : span(T u extra) has exact rank 6 <= d = 6
+count       : #extra + 196560 + sum_i (|T_i|-1)|S_i| = 72 + 196560 + 23808 = 220440  (rows: equatorial 184656 + lifted 35712 + extra 72)
+exact       : eq-lift max ip = 16 (needs <= 16 < 8 sqrt6); lift-lift max ip same set = 8 (needs <= 8), cross set = 16 (needs <= 16; 16 with cos(y,y') = 1/2 is exactly 2)
+exact       : eq-eq full pass over all 19317818520 pairs of C: max off-diagonal ip = 16, min = -32, values seen [-32, -16, -8, 0, 8, 16] (8.9 s)
+exact       : lift-lift same x: within-group cos <= -1/2 (B); extra-lift: cos <= sqrt3/2 (C); extra-extra: cos <= 1/2 (C); extra-eq: 0
+exact       : pairs eq-eq=17048826840 eq-lift=6594435072 lift-lift-same-x=35712 lift-lift-same-set=26516160 lift-lift-cross-set=611103744 extra-eq=13295232 extra-lift=2571264 extra-extra=2556 total=24296786580=C(220440,2)
+exact       : count = 220440  (17.6 s)
+float       : 220440 vectors in R^30; max off-diagonal inner product = 2.000000000000 (tol 2+1e-9) at pair (190112, 219383) class=lift-lift-cross-set; min -4.000000  (40.1 s, 46656 tiles)
+RESULT ok=1 dim=30 d=6 sets=24 count=220440 count_exact=220440 count_float=220440 max_offdiag=2.000000000000 max_class=lift-lift-cross-set extra=72 K=72 exact_s=17.6 float_s=40.1 s=58.8
+$ .venv/bin/python python/verify_dimN.py data/families/dim31 --strict
+family      : data/families/dim31  dim=31 d=7 sets=42 T=126 groups=42 extra=126 claimed_count=238350
+config      : cpus=16 workers=8 tile=(512, 1024) OPENBLAS_NUM_THREADS=1
+sets        : k=42 sizes=[496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496, 496] union=20832 pairwise disjoint, each independent; equatorial = C \ U = 175728  (0.6 s)
+T           : 126 vectors in Z^8-ambient field, norms ['8'], pairwise cos <= 1/2 (max 0.500000); groups: 42 triangles + 0 pairs, disjoint, within-group cos <= -1/2  (0.6 s)
+extra       : 126 vectors (K(7) = 126), pairwise cos <= 1/2 (max 0.500000), cos to every T vector <= sqrt3/2 (max 0.853553)  (2.6 s)
+rank        : span(T u extra) has exact rank 7 <= d = 7
+count       : #extra + 196560 + sum_i (|T_i|-1)|S_i| = 126 + 196560 + 41664 = 238350  (rows: equatorial 175728 + lifted 62496 + extra 126)
+exact       : eq-lift max ip = 16 (needs <= 16 < 8 sqrt6); lift-lift max ip same set = 8 (needs <= 8), cross set = 16 (needs <= 16; 16 with cos(y,y') = 1/2 is exactly 2)
+exact       : eq-eq full pass over all 19317818520 pairs of C: max off-diagonal ip = 16, min = -32, values seen [-32, -16, -8, 0, 8, 16] (8.4 s)
+exact       : lift-lift same x: within-group cos <= -1/2 (B); extra-lift: cos <= sqrt3/2 (C); extra-extra: cos <= 1/2 (C); extra-eq: 0
+exact       : pairs eq-eq=15440077128 eq-lift=10982297088 lift-lift-same-x=62496 lift-lift-same-set=46403280 lift-lift-cross-set=1906377984 extra-eq=22141728 extra-lift=7874496 extra-extra=7875 total=28405242075=C(238350,2)
+exact       : count = 238350  (19.5 s)
+float       : 238350 vectors in R^31; max off-diagonal inner product = 2.000000000000 (tol 2+1e-9) at pair (176170, 210886) class=lift-lift-cross-set; min -4.000000  (46.2 s, 54522 tiles)
+RESULT ok=1 dim=31 d=7 sets=42 count=238350 count_exact=238350 count_float=238350 max_offdiag=2.000000000000 max_class=lift-lift-cross-set extra=126 K=126 exact_s=19.5 float_s=46.2 s=69.8
+
+##### 16. ctest, serial  (§3) #####
+$ ctest --preset release
+Test project /tmp/claude-1000/-home-blinny-Projects-kissing/dd24891a-8cf9-4661-9f66-7c57965a5954/scratchpad/repro-clone3/build/release
+      Start  1: smoke_gpu
+ 1/19 Test  #1: smoke_gpu ........................   Passed    0.44 sec
+      Start  2: test_golay
+ 2/19 Test  #2: test_golay .......................   Passed    0.16 sec
+      Start  3: test_leech
+ 3/19 Test  #3: test_leech .......................   Passed    1.56 sec
+      Start  4: kiss_info
+ 4/19 Test  #4: kiss_info ........................   Passed    0.17 sec
+      Start  5: test_clique_g
+ 5/19 Test  #5: test_clique_g ....................   Passed    0.22 sec
+      Start  6: test_verify
+ 6/19 Test  #6: test_verify ......................   Passed    2.33 sec
+      Start  7: test_tightness_gpu
+ 7/19 Test  #7: test_tightness_gpu ...............   Passed    5.82 sec
+      Start  8: test_adjacency
+ 8/19 Test  #8: test_adjacency ...................   Passed   40.73 sec
+      Start  9: test_scheme_gpu
+ 9/19 Test  #9: test_scheme_gpu ..................   Passed    0.96 sec
+      Start 10: test_triple_gpu
+10/19 Test #10: test_triple_gpu ..................   Passed    3.07 sec
+      Start 11: test_swaps
+11/19 Test #11: test_swaps .......................   Passed    0.90 sec
+      Start 12: test_plateau
+12/19 Test #12: test_plateau .....................   Passed    0.92 sec
+      Start 13: test_ls_moves
+13/19 Test #13: test_ls_moves ....................   Passed  224.48 sec
+      Start 14: test_ls_search
+14/19 Test #14: test_ls_search ...................   Passed   73.36 sec
+      Start 15: test_gpu_mis
+15/19 Test #15: test_gpu_mis .....................   Passed  192.40 sec
+      Start 16: test_frames
+16/19 Test #16: test_frames ......................   Passed   26.65 sec
+      Start 17: test_orbits
+17/19 Test #17: test_orbits ......................   Passed    2.90 sec
+      Start 18: test_group
+18/19 Test #18: test_group .......................   Passed    7.36 sec
+      Start 19: test_family
+19/19 Test #19: test_family ......................   Passed    1.63 sec
+
+100% tests passed, 0 tests failed out of 19
+
+Label Time Summary:
+gpu    = 541.26 sec*proc (8 tests)
+
+Total Test time (real) = 586.10 sec
+
+##### 17. pytest  (§3) #####
+$ .venv/bin/python -m pytest python/tests -q
+........................................s............................... [ 24%]
+........................................................................ [ 48%]
+........................................................................ [ 73%]
+........................................................................ [ 97%]
+.......                                                                  [100%]
+=============================== warnings summary ===============================
+python/tests/test_sdp3.py::test_bound_nothing_forbidden
+  /tmp/claude-1000/-home-blinny-Projects-kissing/dd24891a-8cf9-4661-9f66-7c57965a5954/scratchpad/repro-clone3/.venv/lib/python3.10/site-packages/cvxpy/problems/problem.py:1539: UserWarning: Solution may be inaccurate. Try another solver, adjusting the solver settings, or solve with verbose=True for more information.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+294 passed, 1 skipped, 1 warning in 301.93s (0:05:01)
+
+##### 18. GPU G1: gpu_mis soak  (§4) #####
+$ build/release/tests/test_gpu_mis
+test_gpu_mis: tool /tmp/claude-1000/-home-blinny-Projects-kissing/dd24891a-8cf9-4661-9f66-7c57965a5954/scratchpad/repro-clone3/build/release/tests/../tools/gpu_mis, cwd /tmp/claude-1000/-home-blinny-Projects-kissing/dd24891a-8cf9-4661-9f66-7c57965a5954/scratchpad/repro-clone3, soak 3.00 min
+
+== stage json ==
+config    : configs/default.json ok (B=1024 K=50 antipodal=0.75 target=497 stall=2000)
+config    : configs/record_neighbourhood.json ok (B=2048 K=50 antipodal=0.75 target=497 stall=2000)
+config    : configs/soak_10min.json ok (B=512 K=50 antipodal=0.50 target=497 stall=2000)
+
+== stage custody (target 490, 480-subsets of the 496, B = 64) ==
+$ /tmp/claude-1000/-home-blinny-Projects-kissing/dd24891a-8cf9-4661-9f66-7c57965a5954/scratchpad/repro-clone3/build/release/tests/../tools/gpu_mis configs/soak_10min.json --run-name test_custody --set B=64 --set K=20 --target 490 --set delete_frac_min=0.032 --set delete_frac_max=0.033 --set seed_mix.s496=1 --set seed_mix.s488=0 --set seed_mix.plateau496=0 --set seed_mix.elite=0 --set seed_mix.greedy=0 --set checkpoint_minutes=0 --set hist_per_launch=8 --set verify_per_launch=4 --set watchdog_seconds=0 --max-launches 3 --minutes 0
+run dir   : runs/gpu_mis/test_custody
+gpu       : 7.36 GB free of 7.66 GB (need 5.50 GB)
+fixtures  : |S496|=496 |S488|=488 plateau atoms=0
+adjacency : uploaded in 10.7 s, 3.98 GB free afterwards
+engines   : anti B=32 slots=32  plain B=32 slots=32  | 3.95 GB free
+seeds anti : s496=32 
+seeds plain: s496=32 
+
+>>> candidate |S| = 496 (anti/chain8/launch1) written to runs/gpu_mis/test_custody/found/S_496_20260831T154924Z_250398b9.txt
+[   11.1s] launch     1 epoch   1 best 496 mean 496.00 impr   64 restart    0 it/s    14872 elite  14 distinct   15 found 1 rec 0 hash 2b903d8d
+>>> verified |S| = 496 (below 497, not a record): runs/gpu_mis/test_custody/found/S_496_20260831T154924Z_250398b9.txt
+[   11.9s] launch     2 epoch   1 best 496 mean 496.00 impr    0 restart    0 it/s    16583 elite  19 distinct   19 found 1 rec 0 hash 9cbeef23
+[   12.0s] launch     3 epoch   1 best 496 mean 496.00 impr    0 restart    0 it/s    16082 elite  24 distinct   24 found 1 rec 0 hash cd90eab1
+checkpoint: launch 3, epoch -> 2, runs/gpu_mis/test_custody/checkpoint.txt
+run          test_custody
+config       configs/soak_10min.json
+git          b73230cd5cb1
+stop_reason  max_launches
+elapsed_s    11.9799
+launches     3  (K = 20, B = 64)
+iterations   3840  (320.538 it/s aggregate)
+best         496
+epochs       1  reseed passes 0
+elite pool   24
+found files  1  (duplicates suppressed 63)
+records      0  verify-fail 0  rejected seeds 0
+distinct sets >= 490 by size: 496:24
+state anti   B=32 best=496 iters=1920 force_adds=1853 swaps=67 device_restarts=0 plateau=146 improvements=32
+state plain   B=32 best=496 iters=1920 force_adds=1407 swaps=513 device_restarts=0 plateau=99 improvements=32
+RESULT ok=1 run=test_custody best=496 launches=3 iterations=3840 records=0 verify_fail=0 found=1 distinct=24 bad_seeds=0 elapsed_s=12.0 stop=max_launches
+  S_496_20260831T154924Z_250398b9.txt
+    verify_s : RESULT ok=1 size=496 antipodal=1 max_offdiag=8 gram=-32:248,-8:37504,0:47504,8:37504 free=0 maximal=1 tight_hist=4:80,6:640,7:256,8:2704,9:8064,10:31424,11:52672,12:49552,13:31360,14:13440,15:2560,16:1480,17:256,18:704,19:64,20:528,22:128,24:152 file="runs/gpu_mis/test_custody/found/S_496_20260831T154924Z_250398b9.txt" ms=114
+    verify_S.py: RESULT ok=1 size=496 antipodal=1 max_offdiag=8 gram=-32:248,-8:37504,0:47504,8:37504 file="runs/gpu_mis/test_custody/found/S_496_20260831T154924Z_250398b9.txt" s=0.26
+
+== stage resume (--max-launches 4 + --resume vs an uninterrupted run) ==
+  launch 1  A 11861e99 / 404.281   B 11861e99 / 404.281
+  launch 2  A 99299df9 / 408.062   B 99299df9 / 408.062
+  launch 3  A d445fffc / 410.281   B d445fffc / 410.281
+  launch 4  A 0cf75c45 / 412.125   B 0cf75c45 / 412.125
+  launch 5  A de28209a / 412.969   B de28209a / 412.969
+  launch 6  A 79aba638 / 413.984   B 79aba638 / 413.984
+  launch 7  A 7ec587d2 / 414.609   B 7ec587d2 / 414.609
+  launch 8  A 3b660c64 / 415.297   B 3b660c64 / 415.297
+
+== stage soak (3.0 min, --selfcheck) ==
+$ /tmp/claude-1000/-home-blinny-Projects-kissing/dd24891a-8cf9-4661-9f66-7c57965a5954/scratchpad/repro-clone3/build/release/tests/../tools/gpu_mis configs/soak_10min.json --run-name test_soak --minutes 3 --selfcheck 20 --set checkpoint_minutes=1 --set watchdog_seconds=20
+...ors=0 (tight=0 conflicts=0 antipodal=0)
+selfcheck : plain launch 480 — errors=0 (tight=0 conflicts=0 antipodal=0)
+[  177.1s] launch   481 epoch  25 best 496 mean 418.31 impr    0 restart    0 it/s   112701 elite 128 distinct   64 found 0 rec 0 hash 5a64c4c5 gpu 70,62.50,1590,6001,100
+[  177.4s] launch   482 epoch  25 best 496 mean 418.33 impr    0 restart    0 it/s   114654 elite 128 distinct   64 found 0 rec 0 hash 8e6eb37f gpu 70,62.50,1590,6001,100
+[  177.7s] launch   483 epoch  25 best 496 mean 418.34 impr    0 restart    0 it/s   113312 elite 128 distinct   64 found 0 rec 0 hash cec73a27 gpu 70,62.50,1590,6001,100
+[  178.0s] launch   484 epoch  25 best 496 mean 418.35 impr    0 restart    0 it/s   118114 elite 128 distinct   64 found 0 rec 0 hash e8b77c2c gpu 70,62.50,1590,6001,100
+[  178.3s] launch   485 epoch  25 best 496 mean 418.35 impr    0 restart    0 it/s   114966 elite 128 distinct   64 found 0 rec 0 hash 84e842e5 gpu 70,62.50,1590,6001,100
+[  178.7s] launch   486 epoch  25 best 496 mean 418.37 impr    0 restart    0 it/s   113665 elite 128 distinct   64 found 0 rec 0 hash af2b6ac3 gpu 70,62.50,1590,6001,100
+[  179.0s] launch   487 epoch  25 best 496 mean 418.38 impr    0 restart    0 it/s   119419 elite 128 distinct   64 found 0 rec 0 hash ca13c6ed gpu 70,62.50,1590,6001,100
+[  179.3s] launch   488 epoch  25 best 496 mean 418.38 impr    0 restart    0 it/s   118351 elite 128 distinct   64 found 0 rec 0 hash fe99ea28 gpu 70,62.50,1590,6001,100
+[  179.6s] launch   489 epoch  25 best 496 mean 418.40 impr    0 restart    0 it/s   111529 elite 128 distinct   64 found 0 rec 0 hash 45ee61c1 gpu 70,62.50,1590,6001,100
+[  179.9s] launch   490 epoch  25 best 496 mean 418.41 impr    0 restart    0 it/s   114563 elite 128 distinct   64 found 0 rec 0 hash 0b95a80e gpu 70,62.50,1590,6001,100
+[  180.2s] launch   491 epoch  25 best 496 mean 418.42 impr    0 restart    0 it/s   112413 elite 128 distinct   64 found 0 rec 0 hash 9f7bac51 gpu 70,62.50,1590,6001,100
+checkpoint: launch 491, epoch -> 26, runs/gpu_mis/test_soak/checkpoint.txt
+run          test_soak
+config       configs/soak_10min.json
+git          b73230cd5cb1
+stop_reason  wall_clock
+elapsed_s    180.246
+launches     491  (K = 50, B = 512)
+iterations   12569600  (69735.8 it/s aggregate)
+best         496
+epochs       25  reseed passes 22
+elite pool   128
+found files  0  (duplicates suppressed 0)
+records      0  verify-fail 0  rejected seeds 0
+distinct sets >= 490 by size: 496:64
+gpu          max_temp 70 C, max_power 64.96 W, mean_clk 1648.5 MHz, min_clk 1485 MHz over 10 samples
+state anti   B=256 best=496 iters=6284800 force_adds=6140899 swaps=143901 device_restarts=2208 plateau=2299165 improvements=19362
+state plain   B=256 best=496 iters=6284800 force_adds=5706122 swaps=578678 device_restarts=1958 plateau=2408140 improvements=30514
+RESULT ok=1 run=test_soak best=496 launches=491 iterations=12569600 records=0 verify_fail=0 found=0 distinct=64 bad_seeds=0 elapsed_s=180.2 stop=wall_clock
+
+soak      : 491 CSV rows, best 496, 491 launches
+
+RESULT ok=1 failures=0 soak_minutes=3.00
+
+##### green run finished 2026-08-31T15:52:31Z  FAILED=0 #####

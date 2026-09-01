@@ -1,0 +1,43 @@
+// T3.2c — 10-minute soak: small B for fast launches, self-check on, frequent
+// checkpoints. Used by tests/test_gpu_mis (with --minutes 3) and as the
+// smoke test after any engine change.
+{
+  "out_dir": "runs/gpu_mis",
+  "data_dir": "data",
+  "plateau_atoms": "runs/ls_search/plateau_atoms_496.json",
+
+  "seed": 7,
+  "B": 512,
+  "K": 50,
+  "antipodal_fraction": 0.5,
+  "target": 497,
+  "wall_clock_minutes": 10,
+  "checkpoint_minutes": 2,
+  "selfcheck_every": 20,
+  "watchdog_seconds": 60,
+  "log_every": 1,
+
+  "seed_mix": {
+    "s496": 0.20,
+    "s488": 0.20,
+    "plateau496": 0.20,
+    "co0_496": 0.00,
+    "co0_488": 0.00,
+    "elite": 0.10,
+    "greedy": 0.30
+  },
+  "delete_frac_min": 0.05,
+  "delete_frac_max": 0.15,
+  "co0_count": 0,
+  "elite_cap": 128,
+  "elite_min_size": 400,
+  "log_min_size": 490,
+  "hist_per_launch": 16,
+  "verify_per_launch": 2,
+
+  "engine": {
+    "stall_limit": 2000,
+    "restart_del": 8,
+    "max_drop": 24
+  }
+}

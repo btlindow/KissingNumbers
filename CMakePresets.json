@@ -1,0 +1,46 @@
+{
+  "version": 5,
+  "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_CUDA_COMPILER": "/usr/local/cuda-12.8/bin/nvcc",
+        "CMAKE_CUDA_ARCHITECTURES": "86",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "KISS_ENABLE_GPU_TESTS": "ON"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Release (-O3 -DNDEBUG, nvcc -O3 -lineinfo)",
+      "inherits": "base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    },
+    {
+      "name": "debug",
+      "displayName": "Debug (-O0 -g, nvcc -G)",
+      "inherits": "base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "sanitize",
+      "displayName": "Debug + host ASan/UBSan",
+      "inherits": "debug",
+      "cacheVariables": { "KISS_SANITIZE": "ON" }
+    }
+  ],
+  "buildPresets": [
+    { "name": "release",  "configurePreset": "release" },
+    { "name": "debug",    "configurePreset": "debug" },
+    { "name": "sanitize", "configurePreset": "sanitize" }
+  ],
+  "testPresets": [
+    { "name": "release",  "configurePreset": "release",  "output": { "outputOnFailure": true } },
+    { "name": "debug",    "configurePreset": "debug",    "output": { "outputOnFailure": true } },
+    { "name": "sanitize", "configurePreset": "sanitize", "output": { "outputOnFailure": true } }
+  ]
+}

@@ -1,0 +1,8 @@
+# Sextet of our Golay code through the tetrad {0,1,2,3}: one tetrad per line;
+# the union of any two tetrads is an octad.
+0 1 2 3
+4 7 10 12
+5 14 17 23
+6 9 11 22
+8 15 16 19
+13 18 20 21

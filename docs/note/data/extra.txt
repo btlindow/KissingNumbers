@@ -1,0 +1,37 @@
+# The 12 extra spheres of the dimension-27 configuration, in exact form.
+#
+# Each row is a vector y'_i in R^3 written as  y'_i = (a_i + b_i * sqrt(2)) / 2
+# with integer vectors a_i, b_i.  Every y'_i has squared norm 2 (the same norm as
+# the T vectors); only the directions matter.  These are the K(3) = 12 extra
+# spheres of Ma et al. (2025), copied verbatim from their dimension-27
+# configuration -- they depend on T only as a set, not on how T is partitioned,
+# and are therefore unchanged by the improvement in this note.
+#
+#  i      a_i              b_i                y'_i = (a_i + b_i sqrt2)/2
+    0    -2   0   0      0  -1   1        (-1, -sqrt2/2,  sqrt2/2)
+    1     2   0   0      0  -1   1        ( 1, -sqrt2/2,  sqrt2/2)
+    2    -2   0   0      0  -1  -1        (-1, -sqrt2/2, -sqrt2/2)
+    3     2   0   0      0  -1  -1        ( 1, -sqrt2/2, -sqrt2/2)
+    4    -2   0   0      0   1   1        (-1,  sqrt2/2,  sqrt2/2)
+    5     2   0   0      0   1   1        ( 1,  sqrt2/2,  sqrt2/2)
+    6    -2   0   0      0   1  -1        (-1,  sqrt2/2, -sqrt2/2)
+    7     2   0   0      0   1  -1        ( 1,  sqrt2/2, -sqrt2/2)
+    8     0   0   0      0   2   0        ( 0,  sqrt2,    0      )
+    9     0   0   0      0   0   2        ( 0,  0,        sqrt2  )
+   10     0   0   0      0   0  -2        ( 0,  0,       -sqrt2  )
+   11     0   0   0      0  -2   0        ( 0, -sqrt2,    0      )
+#
+# Normalised to unit length these are
+#
+#     (0, +-1, 0), (0, 0, +-1),  and  (+-1/sqrt2, +-1/2, +-1/2)  (all 8 signs),
+#
+# i.e. the cuboctahedron rotated by 45 degrees in the plane spanned by
+# (1,1,0) and (1,-1,0).
+#
+# Verified exactly (sign tests on A + B sqrt(2) with integer A, B):
+#   * pairwise cos <= 1/2   (maximum exactly 1/2), so the extra spheres are
+#     themselves a kissing configuration in R^3;
+#   * cos to every one of the 12 T vectors <= sqrt(3)/2, i.e. angle >= 30
+#     degrees (maximum exactly (2 + sqrt2)/4 = 0.85355..., 31.40 degrees).
+#
+# In the assembled R^27 configuration these contribute the rows (0, 2 y'_i/|y'_i|).

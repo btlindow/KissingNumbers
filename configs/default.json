@@ -1,0 +1,49 @@
+// T3.2c — default gpu_mis configuration: the diverse seed mix.
+// Every key has a default in include/kiss/run_config.h; unknown keys are an error.
+// Override from the command line with  --set key=value  /  --set engine.stall_limit=4000.
+{
+  "out_dir": "runs/gpu_mis",
+  "data_dir": "data",
+  "plateau_atoms": "runs/ls_search/plateau_atoms_496.json",
+
+  "seed": 1,
+  "B": 1024,                     // 1024 chains: ~215 it/s per chain (T3.2b table)
+  "K": 50,                       // ILS iterations per launch (~0.25 s at B = 1024)
+  "antipodal_fraction": 0.75,    // 768 antipodal + 256 plain chains
+  "target": 497,
+  "wall_clock_minutes": 30,
+  "checkpoint_minutes": 5,
+  "watchdog_seconds": 60,
+  "selfcheck_every": 200,
+  "log_every": 1,
+
+  // The diverse mix: records, their plateau images, Co_0 images, elites, greedy.
+  "seed_mix": {
+    "s496": 0.20,
+    "s488": 0.15,
+    "plateau496": 0.20,
+    "co0_496": 0.20,
+    "co0_488": 0.10,
+    "elite": 0.05,
+    "greedy": 0.10
+  },
+  "delete_frac_min": 0.05,
+  "delete_frac_max": 0.15,
+  "co0_count": 64,
+  "elite_cap": 256,
+  "elite_min_size": 400,
+  "reseed_elite_prob": 0.5,
+  "log_min_size": 490,
+  "hist_per_launch": 32,
+  "max_set_files": 512,
+  "verify_per_launch": 4,
+
+  "engine": {
+    "stall_limit": 2000,         // T3.2b: nothing improves after ~2000 stalled iterations
+    "restart_del": 8,
+    "max_drop": 24,
+    "tmin": 1,
+    "tmax": 8,
+    "warps_per_block": 8
+  }
+}

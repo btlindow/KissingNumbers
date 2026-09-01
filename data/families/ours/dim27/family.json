@@ -1,0 +1,271 @@
+{
+ "schema_version": 1,
+ "dim": 27,
+ "d": 3,
+ "coordinates": "leech-sqrt8-integer",
+ "sets": [
+  {
+   "file": "../dim31/S_01.txt",
+   "size": 496,
+   "sha256": "758d910207b212e1942486895afccb480330ee5e379fb5cc6e7dee6c9de435fc"
+  },
+  {
+   "file": "../dim31/S_02.txt",
+   "size": 496,
+   "sha256": "93a0f46ad373fcbd642766a5c55f67d258c894738a1f72f6503a7806569fe565"
+  },
+  {
+   "file": "../dim31/S_03.txt",
+   "size": 496,
+   "sha256": "ffa3a931a37b8c79ec220dfff12dba7a7d19b07a918f96449d19c03d5ea56e4f"
+  },
+  {
+   "file": "../dim31/S_04.txt",
+   "size": 496,
+   "sha256": "eb9396a67dfe525641086769d56b36ed9b4624ff418cd98d3450241b3df867eb"
+  },
+  {
+   "file": "../dim31/S_05.txt",
+   "size": 496,
+   "sha256": "47c13918469bd4cdeb0c9cdf6e0fc933ee6cb58020b8a54e5f8dcfed38a5b0e7"
+  }
+ ],
+ "T": {
+  "config": "A3",
+  "K": 12,
+  "ambient": 3,
+  "norm2": 2,
+  "vectors": [
+   [
+    -1,
+    -1,
+    0
+   ],
+   [
+    -1,
+    0,
+    -1
+   ],
+   [
+    -1,
+    0,
+    1
+   ],
+   [
+    -1,
+    1,
+    0
+   ],
+   [
+    0,
+    -1,
+    -1
+   ],
+   [
+    0,
+    -1,
+    1
+   ],
+   [
+    0,
+    1,
+    -1
+   ],
+   [
+    0,
+    1,
+    1
+   ],
+   [
+    1,
+    -1,
+    0
+   ],
+   [
+    1,
+    0,
+    -1
+   ],
+   [
+    1,
+    0,
+    1
+   ],
+   [
+    1,
+    1,
+    0
+   ]
+  ],
+  "groups": [
+   [
+    0,
+    6,
+    10
+   ],
+   [
+    11,
+    5,
+    1
+   ],
+   [
+    3,
+    8
+   ],
+   [
+    7,
+    4
+   ],
+   [
+    2,
+    9
+   ]
+  ]
+ },
+ "extra": {
+  "count": 12,
+  "sqrt": 2,
+  "den": 2,
+  "a": [
+   [
+    -2,
+    0,
+    0
+   ],
+   [
+    2,
+    0,
+    0
+   ],
+   [
+    -2,
+    0,
+    0
+   ],
+   [
+    2,
+    0,
+    0
+   ],
+   [
+    -2,
+    0,
+    0
+   ],
+   [
+    2,
+    0,
+    0
+   ],
+   [
+    -2,
+    0,
+    0
+   ],
+   [
+    2,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ],
+  "b": [
+   [
+    0,
+    -1,
+    1
+   ],
+   [
+    0,
+    -1,
+    1
+   ],
+   [
+    0,
+    -1,
+    -1
+   ],
+   [
+    0,
+    -1,
+    -1
+   ],
+   [
+    0,
+    1,
+    1
+   ],
+   [
+    0,
+    1,
+    1
+   ],
+   [
+    0,
+    1,
+    -1
+   ],
+   [
+    0,
+    1,
+    -1
+   ],
+   [
+    0,
+    2,
+    0
+   ],
+   [
+    0,
+    0,
+    2
+   ],
+   [
+    0,
+    0,
+    -2
+   ],
+   [
+    0,
+    -2,
+    0
+   ]
+  ]
+ },
+ "count": 200044,
+ "count_terms": {
+  "extra": 12,
+  "leech": 196560,
+  "lifted": 3472
+ },
+ "count_formula": "12 + 196560 + sum_i (|T_i| - 1) * |S_i|",
+ "provenance": {
+  "tool": "python/tools/nest_family.py",
+  "note": "S_1..S_5 of the dim31 chain family dim31 (S_i = g^(i-1) S, pairwise disjoint, see its family.json / g.txt); T and extra copied from data/families/dim27/family.json",
+  "dim31_provenance": {
+   "tool": "tools/disjoint_family (kiss::write_family_dir)",
+   "note": "chain S_i = g^{i-1} S (i = 1..42) of a random element g of Co_0 (g = x_m x_l x_j over a pool of 1024 product-replacement elements, seed 1, 2590263 candidates tested, 40.235446 s); g in g.txt (rational matrix) / g.u32 (index permutation); order of g on antipodal pairs 42, L(g) = 42; S = data/S496.txt",
+   "template": "data/families/dim31/family.json"
+  },
+  "date": "2026-08-26"
+ }
+}

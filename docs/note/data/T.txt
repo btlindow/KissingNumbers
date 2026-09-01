@@ -1,0 +1,50 @@
+# T: the 12-point kissing configuration in R^3 (the cuboctahedron), and its
+# partition into four equilateral triangles.
+#
+# Model: the D3 = A3 root system, the 12 integer vectors (+-1, +-1, 0) up to
+# coordinate order, each of squared norm 2, listed in lexicographic order.
+# Index i (0-based) below is the index used by "groups" in family.json.
+#
+#  i   y_i
+    0   -1  -1   0
+    1   -1   0  -1
+    2   -1   0   1
+    3   -1   1   0
+    4    0  -1  -1
+    5    0  -1   1
+    6    0   1  -1
+    7    0   1   1
+    8    1  -1   0
+    9    1   0  -1
+   10    1   0   1
+   11    1   1   0
+#
+# Pairwise: <y_i, y_j> in {-2, -1, 0, 1} for i != j, so cos <= 1/2 (angle >= 60
+# degrees) throughout -- T is a kissing configuration in R^3.
+#
+# The partition into four triangles (T_1, T_2, T_3, T_4).  Each group has
+# pairwise inner product -1, i.e. cos = -1/2 (angle 120 degrees), and each sums
+# to zero.  Every index 0..11 occurs exactly once, so the four triangles are
+# pairwise disjoint and cover the whole cuboctahedron.  Weight of the partition
+# = sum_i (|T_i| - 1) = 4 * 2 = 8.
+#
+#  set     indices        vectors
+   S_01    0   6  10      (-1,-1, 0)  ( 0, 1,-1)  ( 1, 0, 1)
+   S_02    1   7   8      (-1, 0,-1)  ( 0, 1, 1)  ( 1,-1, 0)
+   S_03    2   4  11      (-1, 0, 1)  ( 0,-1,-1)  ( 1, 1, 0)
+   S_04    3   5   9      (-1, 1, 0)  ( 0,-1, 1)  ( 1, 0,-1)
+#
+# In the isometric A3 model {e_i - e_j : 1 <= i != j <= 4} inside the sum-zero
+# hyperplane of R^4, the same partition is the set of four directed triangles
+#
+#     (1 2 3), (1 3 4), (1 4 2), (2 4 3),
+#
+# where the cycle (i j k) stands for {e_i - e_j, e_j - e_k, e_k - e_i}.  The
+# twelve arcs of these four 3-cycles are exactly the twelve arcs of the complete
+# directed graph on {1,2,3,4} (a Mendelsohn triple system of order 4).  The
+# isometry A3 -> D3 used above is the linear map determined by
+#
+#     e_1 - e_2 |-> (-1,-1, 0),   e_2 - e_3 |-> ( 0, 1,-1),   e_3 - e_4 |-> ( 1,-1, 0);
+#
+# it sends e_1-e_3 |-> (-1,0,-1), e_1-e_4 |-> (0,-1,-1), e_2-e_4 |-> (1,0,-1),
+# and the reverse arcs to the negatives of these.

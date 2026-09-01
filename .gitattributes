@@ -1,0 +1,7 @@
+# Never rewrite line endings on checkout/checkin. This repo is byte-exact:
+# committed data files (data/*.txt, data/scheme/*.json, data/families/**) are
+# referenced by sha256 in reports and certificates, and scripts/*.sh break
+# under CRLF. A clone on a box with core.autocrlf=true would otherwise check
+# everything out with CRLF (observed: scripts/setup_venv.sh fails with
+# "set: pipefail: invalid option name").
+* -text

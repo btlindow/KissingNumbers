@@ -1,0 +1,505 @@
+% An improved kissing number in dimension 27.
+% Build: pdflatex kissing27 && pdflatex kissing27   (bibliography is inline; no bibtex)
+\documentclass[11pt,reqno]{amsart}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage[margin=1in]{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Lat}{\Lambda_{24}}
+\newcommand{\ip}[2]{\langle #1, #2\rangle}
+\DeclareMathOperator{\wt}{w}
+
+\begin{document}
+
+\title[An improved kissing number in dimension 27]
+      {An improved kissing number in dimension~27}
+
+\author{Ben Lindow}
+\email{benlindow@gmail.com}
+\date{\today}
+
+\subjclass[2020]{Primary 52C17; Secondary 05B30, 11H31, 11H71}
+\keywords{kissing number, Leech lattice, spherical codes, cuboctahedron,
+Mendelsohn triple system}
+
+\begin{abstract}
+The best known lower bounds for the kissing number in dimensions $25$ through
+$31$ all come from a single construction of Cohn, Jiao, Kumar and Torquato,
+which lifts subsets of the minimal vectors of the Leech lattice into $d = n-24$
+extra dimensions along a partition of a kissing configuration in $\R^{d}$.  For
+$n = 27$ that configuration is the cuboctahedron, and both Kallal--Kan--Wang and
+Ma et al.\ partition it into two equilateral triangles and three antipodal
+pairs, of total weight $7$.  We observe that the cuboctahedron instead
+partitions into \emph{four} pairwise disjoint equilateral triangles, of weight
+$8$.  Feeding this partition into the same template, with four of Ma et al.'s
+$496$-element subsets of the Leech minimal vectors and their twelve extra
+spheres, gives
+\[
+  K(27) \;\ge\; 12 + 196560 + 8\cdot 496 \;=\; 200540,
+\]
+improving the previous record $200044$.  The resulting configuration of $200540$
+unit spheres is exhibited explicitly and verified in exact arithmetic.  We also
+show that the partitions used in dimensions $25$, $26$ and $28$ through $31$ are
+optimal, so within this template no analogous improvement is available there.
+\end{abstract}
+
+\maketitle
+
+%---------------------------------------------------------------------------
+\section{Introduction}
+%---------------------------------------------------------------------------
+
+The kissing number $K(n)$ is the largest number of pairwise non-overlapping unit
+balls in $\R^{n}$ touching a fixed central unit ball; equivalently, the largest
+size of a set of unit vectors in $\R^{n}$ with pairwise inner products at most
+$1/2$.  Exact values are known only for $n \in \{1,2,3,4,8,24\}$~\cite{SvdW1953,
+Musin2008}.
+
+In dimensions $25$ through $31$ every record lower bound to date comes from one
+construction, Theorem~7.5 of Cohn, Jiao, Kumar and Torquato~\cite{CJKT2011}: take
+the $196\,560$ minimal vectors of the Leech lattice $\Lat$, select mutually
+disjoint subsets $S_{1},\dots,S_{k}$ in which no two vectors meet at exactly
+$60^{\circ}$, and lift each $S_{i}$ into the $d = n-24$ extra dimensions along a
+group $T_{i}$ of directions drawn from a kissing configuration in $\R^{d}$.
+Kallal, Kan and Wang~\cite{KKW2017} found subsets of size $488$ by simulated
+annealing; Ma et al.~\cite{Ma2025} reached $496$ with a reinforcement-learning
+system and also sharpened the template, by adding $K(d)$ further spheres lying
+entirely in the extra dimensions and by partitioning the $\R^{d}$ configuration
+into more equilateral triangles.  Their values are the ones currently listed in
+Cohn's table~\cite{CohnTable}.  (They are nowhere near the corresponding upper
+bounds --- $522\,212$ in dimension $27$~\cite{dLL2024} --- so the interest lies in
+the constructions.)
+
+The count is linear both in the sizes $|S_{i}|$ and in the \emph{weight}
+\begin{equation}\label{eq:weight}
+  \wt \;=\; \sum_{i} \bigl(|T_{i}| - 1\bigr)
+\end{equation}
+of the partition of the $\R^{d}$ configuration.  This note concerns the second
+factor, in one dimension only.  For $n = 27$ we have $d = 3$, and the $\R^{3}$
+configuration used is the cuboctahedron --- the $12$ vertices of the
+$A_{3} = D_{3}$ root system, of optimal size since $K(3) = 12$.  Both prior papers
+partition it into two equilateral triangles and three antipodal pairs, of weight
+$2+2+1+1+1 = 7$.  Our observation is purely about $\R^{3}$: \emph{the
+cuboctahedron is the disjoint union of four equilateral triangles}, of weight
+$8$.  This buys one further copy of $|S| = 496$.
+
+\begin{theorem}\label{thm:main}
+$K(27) \ge 200540$.
+\end{theorem}
+
+The previous record is $200044$~\cite{Ma2025,CohnTable}.  The configuration
+realising Theorem~\ref{thm:main} is written out in the accompanying data files
+and verified exactly; see Section~\ref{sec:verification}.
+
+\medskip
+\noindent\textbf{What is new, and what is reused.}  New here is only
+Lemma~\ref{lem:cubo}, a statement about twelve points in $\R^{3}$, together with
+the optimality analysis of Section~\ref{sec:optimality}.  Everything else is
+prior work: the lifting template and all its inequalities are Theorem~7.5
+of~\cite{CJKT2011}; the extra spheres and the emphasis on triangles are due
+to~\cite{Ma2025}; the four $496$-element subsets in our certificate are, verbatim,
+four of the five subsets that~\cite{Ma2025} themselves use in dimension~$27$
+(recovered from their published configurations and converted to our coordinate
+labelling), and the twelve extra spheres are theirs unchanged.  We claim no new
+independent set in the Leech conflict graph: $496$ remains the record there,
+and~\cite{Ma2025} conjecture it is optimal.  The improved partition in fact uses
+\emph{fewer} of the $496$-sets than the old one --- four instead of five.
+
+%---------------------------------------------------------------------------
+\section{The lifting template}\label{sec:template}
+%---------------------------------------------------------------------------
+
+We use the norm-$4$ normalisation of~\cite{CJKT2011,KKW2017}: a kissing
+configuration in $\R^{m}$ is a set of vectors of squared norm $4$ with all
+pairwise inner products at most $2$.  Let $C \subset \R^{24}$ be the $196\,560$
+minimal vectors of the Leech lattice~\cite{Leech1967,SPLAG}, scaled so that
+$|x|^{2} = 4$; for distinct $x,x' \in C$ one has
+$\ip{x}{x'} \in \{-4,-2,-1,0,1,2\}$.
+
+\begin{theorem}[{\cite[Thm.~7.5]{CJKT2011}}, with the extra spheres
+of~\cite{Ma2025}]\label{thm:template}
+Let $T \subset \R^{d}$ be unit vectors with $\ip{y}{y'} \le 1/2$ for distinct
+$y,y' \in T$, and let $T_{1},\dots,T_{k} \subseteq T$ be pairwise disjoint with
+$\ip{y}{y'} \le -1/2$ for distinct $y,y'$ in the same $T_{i}$.  Let
+$S_{1},\dots,S_{k} \subseteq C$ be pairwise disjoint with $\ip{x}{x'} \le 1$ for
+distinct $x,x' \in S_{i}$, and put $U = \bigcup_{i} S_{i}$.  Let
+$E \subset \R^{d}$ be unit vectors with $\ip{y'}{y''} \le 1/2$ for distinct
+$y',y'' \in E$ and $\ip{y'}{y} \le \sqrt3/2$ for all $y' \in E$, $y \in T$.  Then
+\[
+  X = \bigl\{(x,0) : x \in C \setminus U\bigr\}
+   \cup
+   \Bigl\{\bigl(\sqrt{\tfrac{2}{3}}\,x, \sqrt{\tfrac{4}{3}}\,y\bigr)
+          : x \in S_{i},\ y \in T_{i}\Bigr\}
+   \cup
+   \bigl\{(0,2y') : y' \in E\bigr\}
+\]
+is a kissing configuration in $\R^{24+d}$, so
+\begin{equation}\label{eq:count}
+  K(24+d) \;\ge\; |E| + 196560 + \sum_{i=1}^{k}\bigl(|T_{i}|-1\bigr)|S_{i}|.
+\end{equation}
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Every listed vector has squared norm $4$
+($\tfrac23\cdot4 + \tfrac43 = 4$ for a lifted vector).  Writing
+$p = \ip{x}{x'}$ and $c = \ip{y}{y'}$, the inner products fall into eight classes,
+each reducing to a hypothesis:
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+pair class & inner product & bounded by $2$ because \\
+\midrule
+equatorial--equatorial & $p$ & $|x-x'|^{2} \ge 4$, so $p \le 2$ \\
+equatorial--lifted & $\sqrt{2/3}\,p$ & $\sqrt{2/3}\cdot 2 < 2$ \\
+lifted--lifted, same $x$ & $\tfrac83 + \tfrac43 c$ & $c \le -\tfrac12$ \\
+lifted--lifted, same $S_{i}$, $y = y'$ & $\tfrac23 p + \tfrac43$ & $p \le 1$ \\
+lifted--lifted, same $S_{i}$, $y \ne y'$ & $\tfrac23 p + \tfrac43 c$
+   & $p \le 4$, $c \le -\tfrac12$ \\
+lifted--lifted, $S_{i} \ne S_{j}$ & $\tfrac23 p + \tfrac43 c$
+   & $p \le 2$, $c \le \tfrac12$ \\
+extra--equatorial & $0$ & \\
+extra--lifted & $\tfrac{4}{\sqrt3}c$ & $c \le \tfrac{\sqrt3}{2}$ \\
+extra--extra & $4c$ & $c \le \tfrac12$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+The sixth line is where disjointness of the $S_{i}$ is used: distinct sets force
+$x \ne x'$, hence $p \le 2$, and the two bounds meet exactly at $2$.  Finally
+$|X| = (196560 - |U|) + \sum_{i}|T_{i}||S_{i}| + |E|$, which is~\eqref{eq:count}.
+\end{proof}
+
+A group $T_{i}$ has $|T_{i}| \le 3$: for four unit vectors with pairwise inner
+products $\le -1/2$,
+$0 \le |v_{1}+\cdots+v_{4}|^{2} = 4 + 2\sum_{i<j}\ip{v_{i}}{v_{j}} \le 4-6 < 0$.
+So a group is an antipodal pair, a pair at $120^{\circ}$, or an equilateral
+triangle through the centre, of weight $1$, $1$, $2$ respectively.  Triangles are
+twice as good as pairs, which is why their number matters.  The forms
+of~\cite{Ma2025} are exactly~\eqref{eq:count} with $|S_{i}| = 496$ and weights
+$\wt = 1,4,7,16,26,48,84$ for $n = 25,\dots,31$.
+
+%---------------------------------------------------------------------------
+\section{The cuboctahedron splits into four triangles}\label{sec:lemma}
+%---------------------------------------------------------------------------
+
+Realise the cuboctahedron as the $A_{3}$ root system
+\[
+  A_{3} = \{\,e_{i}-e_{j} : 1 \le i \ne j \le 4\,\}
+        \subset \Bigl\{v \in \R^{4} : \textstyle\sum_{m} v_{m} = 0\Bigr\},
+\]
+of common squared norm $2$; the unit vectors of $T$ are these divided by
+$\sqrt2$.  Distinct roots have inner product in $\{-2,-1,0,1\}$, so all pairwise
+cosines lie in $\{-1,-\tfrac12,0,\tfrac12\}$, as a kissing configuration
+requires.  Three roots form an equilateral triangle (a valid group of size $3$)
+if and only if their pairwise inner products are all $-1$, equivalently if and
+only if they sum to $0$.
+
+\begin{lemma}\label{lem:cubo}
+The cuboctahedron is the disjoint union of four equilateral triangles.
+Explicitly, writing $(i\,j\,k)$ for
+$\{\,e_{i}-e_{j},\ e_{j}-e_{k},\ e_{k}-e_{i}\,\}$, the four triples
+\[
+  (1\,2\,3), \qquad (1\,3\,4), \qquad (1\,4\,2), \qquad (2\,4\,3)
+\]
+are pairwise disjoint equilateral triangles whose union is all of $A_{3}$.
+\end{lemma}
+
+\begin{proof}
+Each triple sums to zero and has pairwise inner products
+$\ip{e_{i}-e_{j}}{e_{j}-e_{k}} = -1$, so each is an equilateral triangle.
+Identify the root $e_{i}-e_{j}$ with the arc $i \to j$ of the complete directed
+graph on $\{1,2,3,4\}$, which has $12$ arcs; then $(i\,j\,k)$ is the directed
+$3$-cycle $i \to j \to k \to i$.  The twelve arcs of the four cycles listed are
+\[
+  \begin{array}{llll}
+    1\!\to\!2, & 2\!\to\!3, & 3\!\to\!1;\quad &
+    1\!\to\!3, \ \ 3\!\to\!4, \ \ 4\!\to\!1; \\
+    1\!\to\!4, & 4\!\to\!2, & 2\!\to\!1;\quad &
+    2\!\to\!4, \ \ 4\!\to\!3, \ \ 3\!\to\!2,
+  \end{array}
+\]
+pairwise distinct and hence exhausting all twelve arcs.
+\end{proof}
+
+\begin{remark}
+A decomposition of the complete symmetric digraph on $v$ points into directed
+triangles is a Mendelsohn triple system of order $v$~\cite{Mendelsohn1971}; these
+exist exactly for $v \equiv 0,1 \pmod 3$, $v \ne 6$.  Lemma~\ref{lem:cubo} is the
+case $v = 4$.  In the $D_{3}$ model $\{(\pm1,\pm1,0)\}$ used in the data files,
+the four triangles are
+\[
+  \begin{aligned}
+    T_{1} &= \{(-1,-1,0),(0,1,-1),(1,0,1)\}, &
+    T_{2} &= \{(-1,0,-1),(0,1,1),(1,-1,0)\}, \\
+    T_{3} &= \{(-1,0,1),(0,-1,-1),(1,1,0)\}, &
+    T_{4} &= \{(-1,1,0),(0,-1,1),(1,0,-1)\},
+  \end{aligned}
+\]
+each summing to $0$; the isometry $A_{3} \to D_{3}$ carrying one description to
+the other is determined by $e_{1}-e_{2} \mapsto (-1,-1,0)$,
+$e_{2}-e_{3} \mapsto (0,1,-1)$, $e_{3}-e_{4} \mapsto (1,-1,0)$.
+\end{remark}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Apply Theorem~\ref{thm:template} with $d = 3$, $k = 4$, $T$ the cuboctahedron and
+$T_{1},\dots,T_{4}$ the four triangles of Lemma~\ref{lem:cubo}.  For
+$S_{1},\dots,S_{4}$ take four pairwise disjoint $496$-element subsets of $C$ with
+no two vectors at $60^{\circ}$: the dimension-$31$ configuration published
+by~\cite{Ma2025} decomposes exactly into forty-two such sets, of which the first
+five are the ones they use in dimension~$27$; we take four of those five.  For
+$E$ take~\cite{Ma2025}'s twelve dimension-$27$ extra spheres, namely
+\[
+  E = \bigl\{(0,\pm1,0),\ (0,0,\pm1)\bigr\} \cup
+      \bigl\{(\pm\tfrac{1}{\sqrt2},\pm\tfrac12,\pm\tfrac12)\bigr\},
+\]
+the cuboctahedron rotated by $45^{\circ}$ in the plane of $(1,1,0)$ and
+$(1,-1,0)$; its pairwise cosines are at most $1/2$, and its cosines against $T$
+are at most $(2+\sqrt2)/4 = 0.85355\ldots < \sqrt3/2$.  Then~\eqref{eq:count}
+gives $K(27) \ge 12 + 196560 + 4\cdot 2\cdot 496 = 200540$.
+\end{proof}
+
+%---------------------------------------------------------------------------
+\section{The other dimensions}\label{sec:optimality}
+%---------------------------------------------------------------------------
+
+The same slack does not exist elsewhere.  The weight is bounded by a counting
+argument using nothing but $|T_{i}| \le 3$.
+
+\begin{proposition}\label{prop:weight}
+Let $T$ be any set of $K$ unit vectors in $\R^{d}$ and let
+$T_{1},\dots,T_{k} \subseteq T$ be pairwise disjoint with $\ip{y}{y'} \le -1/2$
+for distinct $y,y'$ in the same subset.  Then
+\[
+  \wt = \sum_{i}\bigl(|T_{i}|-1\bigr)
+      \le \Bigl\lfloor \tfrac{2K}{3}\Bigr\rfloor
+      = 2\Bigl\lfloor \tfrac{K}{3}\Bigr\rfloor + \bigl[K \equiv 2 \!\!\pmod 3\bigr].
+\]
+\end{proposition}
+
+\begin{proof}
+Groups of size $\le 1$ contribute nothing; discard them.  Say $a$ groups have
+size $3$ and $b$ have size $2$ (no larger, as shown above).  Disjointness gives
+$3a+2b \le K$, and $\wt = 2a+b$, so $3\wt = 6a+3b \le 2(3a+2b) \le 2K$.  For the
+second form write $K = 3m+r$, $r \in \{0,1,2\}$; then
+$\lfloor 2K/3\rfloor = 2m + [\,r=2\,]$.
+\end{proof}
+
+Proposition~\ref{prop:weight} uses no geometry beyond the group condition: it
+applies to \emph{any} $K$-point configuration, lattice or not.  Since $E$ is
+itself a kissing configuration in $\R^{d}$ we also have $|E| \le K(d)$, so the
+whole $\R^{d}$ side is bounded by data depending only on $K(d)$:
+\begin{equation}\label{eq:ceiling}
+  |E| + 196560 + \wt\cdot|S|
+  \;\le\; K(d) + 196560 + \Bigl\lfloor\tfrac{2K(d)}{3}\Bigr\rfloor|S|
+\end{equation}
+when the sets share a common size $|S|$.  This ceiling is attained for
+$2 \le d \le 7$, though not for $d = 1$, where $E$ must be empty: every unit
+vector of $\R^{1}$ is $\pm1$ and has cosine $1$ with some element of
+$T = \{\pm1\}$, exceeding $\sqrt3/2$.  Thus $K(25) \ge 196560 + |S|$, and $|S|$ is
+the entire game in dimension $25$.
+
+\begin{table}[t]
+\caption{Bounds from~\eqref{eq:count} with $|S_{i}| = 496$.  ``used'' is the
+weight of the partition of~\cite{Ma2025}; ``max'' is the ceiling of
+Proposition~\ref{prop:weight}.  Only $n = 27$ changes.}
+\label{tab:bounds}
+\centering
+\begin{tabular}{@{}cclccccrr@{}}
+\toprule
+$n$ & $d$ & $T$ & $K(d)$ & $|E|$ & used & max & previous & this note \\
+\midrule
+25 & 1 & $A_{1}$       & 2   & 0   & 1  & 1  & $197\,056$ & $197\,056$ \\
+26 & 2 & $A_{2}$       & 6   & 6   & 4  & 4  & $198\,550$ & $198\,550$ \\
+27 & 3 & $A_{3}=D_{3}$ & 12  & 12  & 7  & \textbf{8} & $200\,044$ & $\mathbf{200\,540}$ \\
+28 & 4 & $D_{4}$       & 24  & 24  & 16 & 16 & $204\,520$ & $204\,520$ \\
+29 & 5 & $D_{5}$       & 40  & 40  & 26 & 26 & $209\,496$ & $209\,496$ \\
+30 & 6 & $E_{6}$       & 72  & 72  & 48 & 48 & $220\,440$ & $220\,440$ \\
+31 & 7 & $E_{7}$       & 126 & 126 & 84 & 84 & $238\,350$ & $238\,350$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:bounds} compares, in each dimension, the weight used
+by~\cite{Ma2025} with the ceiling of Proposition~\ref{prop:weight}; the ceiling is
+attained by an explicit partition of the standard root-system model in every case,
+and only $d = 3$ was previously short of it.  Two comments.
+
+\smallskip\noindent
+\emph{(a) Dimensions $25$--$28$ are now closed within the template.}  For
+$d \le 4$ the kissing number is known exactly ($2, 6, 12, 24$), so
+Proposition~\ref{prop:weight} bounds the weight absolutely: no configuration in
+$\R^{d}$ whatsoever, lattice or not, beats weight $1, 4, 8, 16$; and
+$|E| \le K(d)$ is attained for $d = 2,3,4$.  Given $|S| = 496$, the values
+$197\,056$, $198\,550$, $200\,540$, $204\,520$ are exactly what this template
+yields, and improving them requires a larger $S$.  For $d = 5,6,7$ the kissing
+numbers are unknown ($K(5) \ge 40$, $K(6) \ge 72$, $K(7) \ge 126$), so
+$n = 29,30,31$ could still move --- but only if one of those small-dimensional
+records moves.  The partitions of $D_{5}$, $E_{6}$, $E_{7}$ themselves are optimal.
+
+\smallskip\noindent
+\emph{(b) The case $d = 5$.}  Here $K = 40 \equiv 1 \pmod 3$, so the weight is at
+most $26$, which~\cite{Ma2025} attain with twelve triangles and two pairs; the
+counting argument alone settles optimality.  A sharper fact explains why one
+cannot instead ``round up'' to thirteen triangles.
+
+\begin{proposition}\label{prop:zerosum}
+Let $T$ be a finite set of vectors of common squared norm $N > 0$ with
+$\sum_{y \in T} y = 0$ (for instance a root system).  Then every equilateral
+triangle $\{x,y,z\} \subseteq T$ satisfies $x+y+z = 0$; and if
+$|T| \equiv 1 \pmod 3$, then $T$ contains no family of $(|T|-1)/3$ pairwise
+disjoint equilateral triangles.
+\end{proposition}
+
+\begin{proof}
+The pairwise inner products in a triangle are $-N/2$, so
+$|x+y+z|^{2} = 3N + 6(-N/2) = 0$.  Such a family would cover all but one point
+$p$; summing, $p = \sum_{y \in T} y - \sum_{\text{triangles}}(x+y+z) = 0$,
+contradicting $|p|^{2} = N > 0$.
+\end{proof}
+
+For $D_{5}$, $|T| = 40 = 3\cdot13+1$, so at most $12$ disjoint triangles fit ---
+the twelve that~\cite{Ma2025} use.  (Thirteen triangles would have weight
+$26$ anyway, so Proposition~\ref{prop:zerosum} refines the optimality claim rather
+than being needed for it.)  The argument applies verbatim to any antipodal
+configuration of size $\equiv 1 \pmod 3$.
+
+%---------------------------------------------------------------------------
+\section{The configuration and its verification}\label{sec:verification}
+%---------------------------------------------------------------------------
+
+Since the claim is a record, we state exactly what is checked.  The accompanying
+data are: \texttt{S\_01.txt}--\texttt{S\_04.txt}, the four sets $S_{i}$, one vector
+per line as $24$ integers of squared norm $32$ (integer coordinates scaled by
+$\sqrt8$ relative to Section~\ref{sec:template}, so that the ``no $60^{\circ}$''
+condition reads $\ip{x}{x'} \le 8$ and the Leech minimum is $32$);
+\texttt{T.txt}, the twelve cuboctahedron vectors in the $D_{3}$ model with the
+four triangles; \texttt{extra.txt}, the twelve extra spheres in exact form
+$y' = (a + b\sqrt2)/2$, $a,b \in \Z^{3}$; \texttt{family.json}, the same data
+machine-readably with SHA-256 digests; and \texttt{verify.py}, a self-contained
+checker requiring only Python~3 and NumPy.
+
+The checker rebuilds the extended binary Golay code from
+$g(x) = x^{11}+x^{10}+x^{6}+x^{5}+x^{4}+x^{2}+1$ and confirms its weight
+distribution $(1,759,2576,759,1)$; regenerates all $196\,560$ minimal vectors from
+the shapes $(\pm2^{8},0^{16})$, $(\mp3,\pm1^{23})$, $(\pm4,\pm4,0^{22})$ and checks
+each against the arithmetic membership test for $\Lat$ and the inner-product
+histogram $(1,4600,47104,93150,47104,4600,1)$; and then verifies, in exact integer
+arithmetic, that each $S_{i}$ lies in $C$ with $496$ distinct elements and
+off-diagonal Gram entries $\le 8$, that the four sets are pairwise disjoint, that
+the twelve $T$-vectors have pairwise cosine $\le 1/2$ with the four groups
+disjoint and internally at cosine exactly $-1/2$, that the twelve extra spheres
+(whose coordinates lie in $\tfrac12\Z[\sqrt2]$) satisfy the two angle conditions
+--- decided by sign tests on integers $A + B\sqrt2$, never in floating point ---
+and that the count is $12 + 196560 + 8\cdot496 = 200540$.
+
+Every one of the eight pair classes of Theorem~\ref{thm:template} is then checked,
+with the class sizes summing to
+\[
+  \binom{200540}{2} = 20\,108\,045\,530,
+\]
+so that no pair is left unexamined.  The equatorial--equatorial class is covered
+by the Leech minimum ($x \ne x'$ in $C$ gives $x-x' \in \Lat\setminus\{0\}$, hence
+$|x-x'|^{2} \ge 32$ and $\ip{x}{x'} \le 16$ in integer coordinates); the flag
+\texttt{-{}-full} replaces this by a brute-force pass over all
+$19\,317\,818\,520$ pairs of $C$, confirming the maximum $16$.  The flag
+\texttt{-{}-float} additionally assembles the $200540$ explicit rows in $\R^{27}$
+and computes the maximum off-diagonal inner product by a tiled matrix product,
+obtaining exactly $2.000000000000$ --- attained on lifted--lifted pairs sharing
+the same $x$, where the bound is tight ($\tfrac83 - \tfrac23 = 2$), and also on
+lifted--lifted pairs across sets with $\ip{x}{x'} = 2$ and $\ip{y}{y'} = 1/2$.  On
+an eight-core laptop the three passes take about two seconds, ninety seconds and a
+few minutes respectively; all were run and all pass.
+
+The configuration was also verified by two independently written programs: a
+Python verifier for the general template of Theorem~\ref{thm:template} and a
+C\texttt{++} checker of the set-level conditions.  Both report $200540$ and
+maximum inner product $2$.  Finally, the certificate is not tied
+to~\cite{Ma2025}'s particular sets: four pairwise disjoint $496$-element sets
+follow from any single one by taking $g \in \mathrm{Co}_{0} = \mathrm{Aut}(\Lat)$
+with $g^{i}S \cap S = \emptyset$ for $i = 1,2,3$ and setting $S_{i} = g^{i-1}S$.
+Empirically a random $g$ satisfies $gS \cap S = \emptyset$ about $54\%$ of the
+time, so a few trials suffice; a family obtained this way was checked to give
+$200540$ as well.
+
+\subsection*{Data availability}
+The certificate files and the checker accompany this note.  The four
+$496$-element sets derive from the data of~\cite{Ma2025}
+(\url{https://github.com/CDM1619/PackingStar}); their provenance --- source file,
+SHA-256 digest, and the coordinate map used --- is recorded in the headers of the
+set files.
+
+\subsection*{Acknowledgements}
+This note rests entirely on the construction of~\cite{CJKT2011} and on the data
+and template refinements of~\cite{Ma2025}; the author thanks them for making
+their configurations public.
+
+\begin{thebibliography}{99}
+
+\bibitem{CJKT2011}
+H.~Cohn, Y.~Jiao, A.~Kumar and S.~Torquato,
+\emph{Rigidity of spherical codes},
+Geom. Topol. \textbf{15} (2011), 2235--2273; arXiv:1102.5060v2.
+
+\bibitem{CohnTable}
+H.~Cohn,
+\emph{Table of the highest kissing numbers presently known},
+\url{https://cohn.mit.edu/kissing-numbers/}, accessed 27 August 2026.
+
+\bibitem{SPLAG}
+J.~H.~Conway and N.~J.~A.~Sloane,
+\emph{Sphere Packings, Lattices and Groups}, 3rd ed.,
+Grundlehren der math. Wissenschaften \textbf{290}, Springer, 1999.
+
+\bibitem{dLL2024}
+D.~de~Laat and N.~Leijenhorst,
+\emph{Solving clustered low-rank semidefinite programs arising from polynomial
+optimization},
+Math. Program. Comput. \textbf{16} (2024), no.~3, 503--534.
+
+\bibitem{KKW2017}
+K.~Kallal, T.~Kan and E.~Wang,
+\emph{Improved lower bounds for kissing numbers in dimensions 25 through 31},
+SIAM J. Discrete Math. \textbf{31} (2017), no.~3, 1895--1908; arXiv:1608.07270.
+
+\bibitem{Leech1967}
+J.~Leech,
+\emph{Notes on sphere packings},
+Canad. J. Math. \textbf{19} (1967), 251--267.
+
+\bibitem{Ma2025}
+C.~Ma, T.~T.~Zhaowei, P.~Li, M.~Liu, H.~Chen, Z.~Mao, B.~Li, Y.~Cheng, Y.~Qi and
+Y.~Yang,
+\emph{Finding kissing numbers with game-theoretic reinforcement learning},
+arXiv:2511.13391 (2025), version v4, 2 June 2026.
+
+\bibitem{Mendelsohn1971}
+N.~S.~Mendelsohn,
+\emph{A natural generalization of Steiner triple systems},
+in: Computers in Number Theory, Academic Press, 1971, pp.~323--338.
+
+\bibitem{Musin2008}
+O.~R.~Musin,
+\emph{The kissing number in four dimensions},
+Ann. of Math. \textbf{168} (2008), 1--32.
+
+\bibitem{SvdW1953}
+K.~Sch\"utte and B.~L.~van der Waerden,
+\emph{Das Problem der dreizehn Kugeln},
+Math. Ann. \textbf{125} (1953), 325--334.
+
+\end{thebibliography}
+
+\end{document}

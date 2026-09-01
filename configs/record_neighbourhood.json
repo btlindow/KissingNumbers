@@ -1,0 +1,48 @@
+// T3.2c — the record neighbourhood: 2048 chains, mostly antipodal, seeded from
+// the 496, its 64 plateau images and Co_0 images of those (T3.2b: antipodal mode
+// is the only one that left the (12,12)-plateau of the 496).
+{
+  "out_dir": "runs/gpu_mis",
+  "data_dir": "data",
+  "plateau_atoms": "runs/ls_search/plateau_atoms_496.json",
+
+  "seed": 496,
+  "B": 2048,
+  "K": 50,
+  "antipodal_fraction": 0.75,
+  "target": 497,
+  "wall_clock_minutes": 30,
+  "checkpoint_minutes": 5,
+  "watchdog_seconds": 60,
+  "selfcheck_every": 200,
+  "log_every": 1,
+
+  "seed_mix": {
+    "s496": 0.25,
+    "s488": 0.05,
+    "plateau496": 0.35,
+    "co0_496": 0.25,
+    "co0_488": 0.00,
+    "elite": 0.07,
+    "greedy": 0.03
+  },
+  "delete_frac_min": 0.05,
+  "delete_frac_max": 0.15,
+  "co0_count": 64,
+  "elite_cap": 256,
+  "elite_min_size": 460,
+  "reseed_elite_prob": 0.6,
+  "log_min_size": 490,
+  "hist_per_launch": 32,
+  "max_set_files": 512,
+  "verify_per_launch": 4,
+
+  "engine": {
+    "stall_limit": 2000,
+    "restart_del": 8,
+    "max_drop": 24,
+    "tmin": 1,
+    "tmax": 8,
+    "warps_per_block": 8
+  }
+}

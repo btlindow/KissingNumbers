@@ -1,0 +1,265 @@
+{
+ "schema_version": 1,
+ "dim": 27,
+ "d": 3,
+ "coordinates": "leech-sqrt8-integer",
+ "sets": [
+  {
+   "file": "S_01.txt",
+   "size": 496,
+   "sha256": "2c6e7fa4732d76c498f8279d974d0b3e2087c30f258090b17f97834a488f09ec",
+   "from": "../dim31/S_01.txt"
+  },
+  {
+   "file": "S_02.txt",
+   "size": 496,
+   "sha256": "110526b05fcc32d1711838fd8f4bd7ed10d43978c797f86047cc5e4362545f0a",
+   "from": "../dim31/S_02.txt"
+  },
+  {
+   "file": "S_03.txt",
+   "size": 496,
+   "sha256": "f704f01eb08942ae4c578344076a83332dc7b35dc94130a7a16b7e33bbbacb71",
+   "from": "../dim31/S_03.txt"
+  },
+  {
+   "file": "S_04.txt",
+   "size": 496,
+   "sha256": "4406454c67f35544c11d4bd03ad9f372eb2c02f861cca9175e9eed4a8a73d69d",
+   "from": "../dim31/S_04.txt"
+  }
+ ],
+ "T": {
+  "config": "A3=D3",
+  "K": 12,
+  "ambient": 3,
+  "norm2": 2,
+  "vectors": [
+   [
+    -1,
+    -1,
+    0
+   ],
+   [
+    -1,
+    0,
+    -1
+   ],
+   [
+    -1,
+    0,
+    1
+   ],
+   [
+    -1,
+    1,
+    0
+   ],
+   [
+    0,
+    -1,
+    -1
+   ],
+   [
+    0,
+    -1,
+    1
+   ],
+   [
+    0,
+    1,
+    -1
+   ],
+   [
+    0,
+    1,
+    1
+   ],
+   [
+    1,
+    -1,
+    0
+   ],
+   [
+    1,
+    0,
+    -1
+   ],
+   [
+    1,
+    0,
+    1
+   ],
+   [
+    1,
+    1,
+    0
+   ]
+  ],
+  "groups": [
+   [
+    0,
+    6,
+    10
+   ],
+   [
+    1,
+    7,
+    8
+   ],
+   [
+    2,
+    4,
+    11
+   ],
+   [
+    3,
+    5,
+    9
+   ]
+  ]
+ },
+ "extra": {
+  "count": 12,
+  "sqrt": 2,
+  "den": 2,
+  "a": [
+   [
+    -2,
+    0,
+    0
+   ],
+   [
+    2,
+    0,
+    0
+   ],
+   [
+    -2,
+    0,
+    0
+   ],
+   [
+    2,
+    0,
+    0
+   ],
+   [
+    -2,
+    0,
+    0
+   ],
+   [
+    2,
+    0,
+    0
+   ],
+   [
+    -2,
+    0,
+    0
+   ],
+   [
+    2,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0
+   ]
+  ],
+  "b": [
+   [
+    0,
+    -1,
+    1
+   ],
+   [
+    0,
+    -1,
+    1
+   ],
+   [
+    0,
+    -1,
+    -1
+   ],
+   [
+    0,
+    -1,
+    -1
+   ],
+   [
+    0,
+    1,
+    1
+   ],
+   [
+    0,
+    1,
+    1
+   ],
+   [
+    0,
+    1,
+    -1
+   ],
+   [
+    0,
+    1,
+    -1
+   ],
+   [
+    0,
+    2,
+    0
+   ],
+   [
+    0,
+    0,
+    2
+   ],
+   [
+    0,
+    0,
+    -2
+   ],
+   [
+    0,
+    -2,
+    0
+   ]
+  ]
+ },
+ "count": 200540,
+ "count_terms": {
+  "extra": 12,
+  "leech": 196560,
+  "lifted": 3968
+ },
+ "count_formula": "12 + 196560 + sum_i (|T_i| - 1) * |S_i|  (weights [2, 2, 2, 2])",
+ "provenance": {
+  "tool": "python/template/assign.py (T5.1)",
+  "base": "../../../data/families/dim27",
+  "base_count": 200044,
+  "date": "2026-08-26",
+  "note": "sets copied from the base family (largest sets assigned to the triangles); T = config(d) with the max-weight partition of template/triangles.py; extras copied verbatim from the base (they depend on T as a set only) | T5.1 result: 4-triangle partition of the cuboctahedron (weight 8) instead of 2 triangles + 3 pairs (weight 7). NEW RECORD: K(27) >= 200540, previous 200044 (Ma et al. 2025)."
+ }
+}

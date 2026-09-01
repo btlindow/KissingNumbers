@@ -1,0 +1,11 @@
+numpy
+scipy
+sympy
+pytest
+cvxpy
+clarabel
+scs
+python-sat
+ortools
+pyscipopt
+pynauty

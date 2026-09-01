@@ -1,0 +1,921 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{microtype}
+
+\newenvironment{tightlist}%
+  {\begin{list}{$\bullet$}{%
+     \setlength{\leftmargin}{1.6em}\setlength{\labelwidth}{1em}%
+     \setlength{\labelsep}{0.6em}\setlength{\itemsep}{2pt}%
+     \setlength{\topsep}{3pt}\setlength{\parsep}{0pt}}}%
+  {\end{list}}
+\newcounter{tightenum}
+\newenvironment{tightenum}%
+  {\begin{list}{\arabic{tightenum}.}{\usecounter{tightenum}%
+     \setlength{\leftmargin}{1.8em}\setlength{\labelwidth}{1.2em}%
+     \setlength{\labelsep}{0.6em}\setlength{\itemsep}{4pt}%
+     \setlength{\topsep}{4pt}\setlength{\parsep}{0pt}}}%
+  {\end{list}}
+
+\emergencystretch=3em
+\hbadness=10000
+\vbadness=10000
+
+\newcommand{\CA}{\textsf{[CERTIFIED-ATTACHED]}}
+\newcommand{\CH}{\textsf{[CERTIFIED-HELD]}}
+\newcommand{\EV}{\textsf{[EVIDENCE]}}
+\newcommand{\Lam}{\Lambda}
+\newcommand{\Co}{\mathrm{Co}_0}
+\newcommand{\ip}[2]{\langle #1,#2\rangle}
+
+\title{Notes on 60-degree-free subsets of the Leech minimal vectors}
+\author{Ben Lindow}
+\date{31 August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+Let $C$ be the $196560$ minimal vectors of the Leech lattice $\Lam$, and call
+$S \subseteq C$ \emph{$60^\circ$-free} if no two of its members subtend an angle of
+$60^\circ$. Such sets are the raw material of the recent lifting constructions that
+improved the kissing numbers in dimensions $25$--$31$: each unit of $|S|$ is worth one or
+more spheres in the lifted configuration. This note reports what a sustained computational
+attack established about $\max|S|$ and about the structure of the largest known examples.
+The headline is a certified ladder $496 \le \max|S| \le 837$; the interesting part is
+\emph{why} the ladder is stuck where it is, and a fairly complete structural picture of the
+$496$-element sets, which turn out to live inside a Turyn decomposition
+$\mathbb{R}^{24} = B_1 \perp B_2 \perp B_3$ with $\Lam \cap B_i \cong \sqrt{2}E_8$, and to be
+governed by a $\mathrm{PG}(3,2)$ of ``channels'' carrying $8\times 8$ rook grids.
+Every claim below carries a verification label; the accompanying archive lets you
+re-check the ones marked as attached.
+\end{abstract}
+
+\section{Scope and verification status}
+
+\subsection{The object}
+
+Scale $\Lam$ so that minimal vectors have norm $32$. Then $\ip{v}{w} \in \{0,\pm 8,\pm 16,\pm 32\}$
+for $v,w \in C$, $|C| = 196560$, and $\ip{v}{w} = 16$ is exactly the $60^\circ$ condition.
+Let $G$ be the \emph{conflict graph} on $C$ with edges at inner product $+16$. Then $G$ is
+$4600$-regular, and $\Co = \mathrm{Aut}(\Lam)$ acts arc-transitively on it. A $60^\circ$-free
+set is precisely an independent set of $G$, and we write $\alpha = \alpha(G) = \max |S|$.
+
+Throughout, $\Co$ acts on $C$ with rank $7$: the orbitals on ordered pairs are the seven
+inner-product classes, with valencies
+\[
+  (v_{32},v_{16},v_8,v_0,v_{-8},v_{-16},v_{-32}) \;=\; (1,\,4600,\,47104,\,93150,\,47104,\,4600,\,1),
+\]
+so $C$ carries a commutative $6$-class association scheme. This scheme is the substrate of
+everything in Section~2.
+
+\subsection{The three labels}
+
+Every claim in this note carries exactly one of the following.
+
+\noindent\CA{}\quad An exact certificate for the claim is in the accompanying archive, together
+with a self-contained checker, or else the certificate is small enough that it is printed in full
+in this note and you can verify it by hand. Nothing is taken on trust from a solver.
+
+\smallskip
+\noindent\CH{}\quad An exact certificate exists and has been re-verified, but is \emph{not} in the
+archive --- either because of bulk, or because reproducing it requires infrastructure (a GPU pass,
+a multi-hour exhaustive enumeration) that would not survive the trip. In every such case the method
+is described here in enough detail that a specialist can reconstruct the certificate independently.
+These are not attached; please do not read them as though they were.
+
+\smallskip
+\noindent\EV{}\quad Search evidence, a solver verdict taken on trust, or a floating-point analysis.
+No proof is claimed. Negative results of budgeted searches live here, as do estimates.
+
+Two remarks on the boundary. First, a solver's \texttt{OPTIMAL} verdict, however trustworthy in
+practice, is \EV{} here unless an independent exact certificate was extracted and re-checked;
+this demotes several statements below that a reader might expect to be certified. Second, an
+exhaustive deterministic enumeration in exact arithmetic counts as certified even though its
+``certificate'' is the enumeration itself; such claims are marked \CH{} and the completeness
+argument is stated.
+
+\subsection{Status of the headline claims}
+
+\begin{center}
+\small
+\begin{tabular}{@{}p{0.62\textwidth}l@{}}
+\toprule
+Claim & Label \\
+\midrule
+$\alpha \ge 496$; an explicit set and 64 distinct maximal ones & \CA \\
+The 64 are pairwise inequivalent under $\Co$ & \CH \\
+Every two-point method gives exactly $9360/11 = 850.\overline{90}$ & \CA \\
+$\alpha \le 837$ (three-point Terwilliger SDP, exact rational dual) & \CA \\
+$\omega(G) \le 24$, by a two-line proof reproduced in full below & \CA \\
+$\omega(G) = 24$ exactly (explicit maximum clique; complete census) & \CH \\
+Lifted clique cuts do not move the three-point bound & \CH \\
+Four-point block dimensions; largest block $4107$ & \CH \\
+Four-point bound would land near $820$--$830$ & \EV \\
+Structure of the $496$: Turyn blocks, duads, channels, rook grids & \CH \\
+The five refuted structural hypotheses of Section~3.7 & \CH \\
+Turyn-symmetric optimum lies in $[496,720]$; upper end & \EV \\
+No $60^\circ$-free set of size $497$ found by any search & \EV \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Clean-machine verification}
+
+The archive holds six kinds of thing: the record $496$-element set; the $64$ sets of its plateau;
+the exact rational dual certificate for $\alpha \le 837$; the orbital numbering that certificate is
+written in; a README; and one verifier script. The verifier needs nothing but Python~3 and NumPy ---
+no network, no other data, no compiled code, no other package. It regenerates the extended binary
+Golay code from the generator polynomial of the cyclic $(23,12,7)$ code, checks its weight
+distribution, builds all $196560$ minimal vectors from the three shapes, and recomputes the entire
+association scheme, the $148$ orbitals and the structure constants of the $148$-dimensional algebra
+from those vectors. Nothing in the archive depends on a stored copy of the lattice, and nothing is
+taken from the solver that produced the certificate.
+
+It was run on a fresh empty directory outside every source tree, with the archive as the only
+input, using the distribution interpreter under an emptied environment. Excerpts, lightly elided:
+
+\newpage
+{\footnotesize
+\begin{verbatim}
+$ /usr/bin/python3 -V                     ->  Python 3.10.12
+$ python3 -c 'import numpy; print(numpy.__version__, numpy.__file__)'
+     1.21.5 /usr/lib/python3/dist-packages/numpy/__init__.py
+$ env -i PATH=/usr/bin:/bin /usr/bin/python3 verify.py --all
+
+[1] regenerating the extended binary Golay code and the Leech minimal vectors
+  Golay code G24: 4096 codewords, weight distribution 0:1, 8:759, 12:2576,
+    16:759, 24:1; minimum distance 8; linear: OK
+  Leech minimal vectors: 196560 rows, all of squared norm 32, all distinct;
+    inner products lie in {-32,-16,-8,0,8,16,32}; valencies from a base
+    vector: -32:1, -16:4600, -8:47104, +0:93150, +8:47104, +16:4600, +32:1
+
+[2] set file: S496.txt
+  S496.txt: |S| = 496, all rows are Leech minimal vectors, all distinct
+    Gram off-diagonal histogram over the 245520 ordered pairs:
+      {-32: 496, -8: 75008, 0: 95008, 8: 75008}
+    pairs at inner product 16 (60 degrees): 0  ->  the set is 60-degree-free
+    antipodal (S = -S): yes
+  S496.txt: maximality sweep over all 196560 minimal vectors
+    free vertices (outside S, tightness 0): 0  ->  S is MAXIMAL
+    minimum tightness outside S: 4, attained by 80 vectors
+                                    ... 64 further set files, same verdicts ...
+
+[3] dual certificate: sdp3_certificate.json
+  scheme: 7 classes with valencies (1, 4600, 47104, 93150, 47104, 4600, 1)
+    147 non-empty cells (i,j,k); the cell (3,3,3) of mutually orthogonal
+      triples splits into two orbitals of sizes 42240 and 924 per fixed y
+    -> D = 148 orbitals
+    structure constants c[u,s,t] of the 148-dimensional algebra recomputed
+      from the lattice (one base pair per orbital, 148 sweeps of 196560)
+    exact checks on c: support, row and column sums, |u|c^u_st =
+      |s|c^s_{ut^T}, unit, associativity: OK
+    the two PSD multipliers are given as sums of 138 and 132 rank-one terms
+      m_i * p_i p_i^T / 2^e with m_i >= 0 and p_i integral, so they are
+      positive semidefinite by construction -- no numerical PSD test is used
+    exact rational recomputation of h_q for all 43 variables: matches
+    bound = 100274998453663516018422097313608417887315219990267781\
+            39 / 1197262141301475670592458614961179049702139939205\
+            9392 = 837.5358661609
+    floor of the bound = 837   ->   every 60-degree-free set of Leech
+      minimal vectors has at most 837 elements
+
+RESULT ok=1 golay_words=4096 leech_vectors=196560 sets_checked=65
+  all_size_496=1 all_60deg_free=1 all_antipodal=1 distinct_sets=64
+  distinct_gram_histograms=1 free_vertices_total=0 all_maximal=1
+  min_tightness=4 distinct_tightness_spectra=5
+  certificate_bound_floor=837 elapsed_s=103.4
+\end{verbatim}
+}
+\noindent
+(The bound and the \texttt{RESULT} line are wrapped here for width; they are single lines in the
+transcript.) Total: $103.4$ seconds, exit status $0$; peak resident memory on an equivalent
+run, $352$\,MB.
+
+Everything else in this note is \CH{} or \EV{}, and in particular the following are \emph{not} in
+the archive: the maximum-clique data, the clique-cut certificate, the four-point orbit tables, and
+the structural computations of Section~3. Sections~2.4--2.6 and~3 say so at each point.
+
+\section{The bounds ladder, $496 \le \alpha \le 837$}
+
+\subsection{The lower end: $\alpha \ge 496$}\label{sec:lower}
+
+A $496$-element $60^\circ$-free set is attached as an explicit integer matrix, together with a
+verifier. \CA{} The set itself is not new: it is one of those found by Ma et al.
+(arXiv:2511.13391), and only the coordinate realisation differs here, by a permutation of the
+$24$ coordinates.
+
+Its Gram matrix has off-diagonal entries only in $\{-32,-8,0,8\}$, with multiplicities
+$496 : 75008 : 95008 : 75008$ over the $496\cdot 495$ ordered off-diagonal pairs. In particular
+it contains no pair at $+16$ (independence) and, as a bonus that was not asked for, no pair at
+$-16$ either; the $496$ antipodal pairs say $S = -S$. By shape, $S$ consists of $258$ vectors of
+type $(\pm 2^8, 0^{16})$, $232$ of type $(\mp 3, \pm 1^{23})$ and $6$ of type
+$(\pm 4, \pm 4, 0^{22})$. The second moment $\sum_{v \in S} vv^{\mathsf T}$ has spectrum
+$\{576^8, 640^4, 704^8, 768^4\}$, i.e.\ $32\cdot\{18^8,20^4,22^8,24^4\}$: $S$ spans
+$\mathbb{R}^{24}$ but is not a tight frame.
+
+There are at least $64$ such sets, each maximal; all $64$ are attached and the verifier
+confirms they are distinct. \CA{} That they are moreover pairwise inequivalent under $\Co$
+is established in Section~3.6 by a computation whose certificate is not attached: the
+verifier separates them only into five tightness-fingerprint classes. \CH{}
+\emph{Falsified by:} a $497$-element independent set. Nothing found one; see Section~2.7.
+
+\subsection{Every two-point method gives exactly $9360/11$}\label{sec:twopoint}
+
+This is the sharpest negative result in the note, and it is completely explicit, so we give the
+data in full. \CA
+
+The scheme's first eigenmatrix $P$ --- rows indexed by the seven common eigenspaces
+$E_0,\dots,E_6$, columns by the classes $32,16,8,0,-8,-16,-32$ --- is
+\[
+P \;=\;
+\begin{pmatrix}
+1 & 4600 & 47104 & 93150 & 47104 & 4600 & 1\\
+1 & 2300 & 11776 & 0 & -11776 & -2300 & -1\\
+1 & 1000 & 1024 & -4050 & 1024 & 1000 & 1\\
+1 & 350 & -704 & 0 & 704 & -350 & -1\\
+1 & 76 & -320 & 486 & -320 & 76 & 1\\
+1 & -10 & 16 & 0 & -16 & 10 & -1\\
+1 & -20 & 64 & -90 & 64 & -20 & 1
+\end{pmatrix},
+\qquad
+m \;=\;
+\begin{pmatrix}
+1\\ 24\\ 299\\ 2576\\ 17250\\ 95680\\ 80730
+\end{pmatrix},
+\]
+where $m_r = \dim E_r$; note $\sum_r m_r = 196560$. Column $2$ of $P$ is the spectrum of the
+conflict graph: eigenvalues $4600, 2300, 1000, 350, 76, -10, -20$ with those multiplicities.
+
+\paragraph{Ratio (Hoffman) bound.} With $k = 4600$ and $\lambda_{\min} = -20$,
+\[
+  \alpha \;\le\; \frac{N(-\lambda_{\min})}{k - \lambda_{\min}}
+  \;=\; \frac{196560 \cdot 20}{4620} \;=\; \frac{9360}{11} \;=\; 850.\overline{90}\,,
+  \qquad \alpha \le 850 .
+\]
+
+\paragraph{Association-scheme (Delsarte) LP.} Maximise $\sum_i a_i$ over inner distributions with
+$a_{32} = 1$, $a_{16} = 0$, $a \ge 0$, $aQ \ge 0$ (where $Q = N P^{-1}$). Exact vertex enumeration
+over rationals gives optimum $9360/11$, attained at the unique vertex
+\[
+  a^{*} = \Bigl(1,\;0,\;\tfrac{2944}{11},\;\tfrac{3450}{11},\;\tfrac{2944}{11},\;0,\;1\Bigr)
+  \quad\text{(classes $32,16,8,0,-8,-16,-32$).}
+\]
+The optimal dual is
+\[
+  \beta \;=\; \Bigl(0,\;\tfrac{116}{231},\;\tfrac{17}{77},\;\tfrac{37}{462},\;
+                    \tfrac{8}{385},\;\tfrac{1}{462},\;0\Bigr),
+\]
+and one checks by hand that $F(i) := \sum_r \beta_r Q_{ir} = -1$ on \emph{every} allowed class
+$i \in \{-32,-16,-8,0,8\}$, whence $\sum_i a_i \le 1 + \sum_r \beta_r m_r = 9360/11$. This $\beta$
+is not an accident: it is exactly $\beta_r = (\lambda_r - \lambda_{\min})/(k - \lambda_{\min})$,
+i.e.\ Hoffman's multiplier vector. The LP cannot beat the ratio bound because its optimal dual
+\emph{is} the ratio bound's certificate, and the sign constraints $a \ge 0$ are never active.
+
+\paragraph{Lattice-free Delsarte LP.} Take the allowed cosine set
+$T = \{-1,-\tfrac12,-\tfrac14,0,\tfrac14\}$ (i.e.\ forbid $\cos 60^\circ = \tfrac12$) and run the
+classical spherical-code LP in $\mathbb{R}^{24}$ with Gegenbauer polynomials normalised by
+$G_k(1) = 1$. The exact optimum is $9360/11$ at every truncation degree $\ge 4$; the optimum is
+already attained by the degree-$4$ polynomial
+\[
+  f(t) \;=\; \tfrac{4992}{11}\,(t+1)\,t\,\bigl(t+\tfrac14\bigr)\bigl(t-\tfrac14\bigr),
+  \qquad f(-\tfrac12) = -\tfrac{234}{11} < 0,\quad f \equiv 0 \text{ on } T\setminus\{-\tfrac12\},
+\]
+with Gegenbauer coefficients $f_0 = 1$, $f_1 = 24$, $f_2 = 5083/77$, $f_3 = 4416/11$,
+$f_4 = 27600/77$ and $f(1)/f_0 = 9360/11$.
+
+\paragraph{Theta functions and the $\pm 16$ variant.} Symmetry-reduced Lov\'asz $\vartheta$
+(drop $a \ge 0$) and Schrijver $\vartheta'$ (keep it) both equal $9360/11$; so the sign
+constraints buy nothing. Forbidding \emph{both} $+16$ and $-16$ --- a strictly stronger
+combinatorial condition, which the record set happens to satisfy --- also gives exactly
+$9360/11$, both with and without the antipodality constraint $a_{-32} = 1$. Entrywise
+nonnegativity is likewise inert.
+
+\paragraph{Why they all coincide, and what would change it.} The multiplicities of
+$E_0,\dots,E_5$ are $1, 24, 299, 2576, 17250, 95680$, which are exactly
+$\dim \mathrm{Harm}_k(S^{23})$ for $k = 0,\dots,5$. That is the $11$-design property of $C$
+showing up: those six idempotents are literally the Gegenbauer constraints of degree $\le 5$,
+so the scheme LP and the lattice-free LP see the same inequalities there. The seventh idempotent
+$E_6$ has dimension $80730$, which is \emph{not} a harmonic space --- $\dim \mathrm{Harm}_6(S^{23})
+= 457470$, and $E_6$ is a proper $\Co$-constituent of it. It is the only constraint in the scheme
+LP that knows anything about the Leech lattice beyond its $11$-design property, and
+\emph{it is slack at the optimum}:
+\[
+  (a^{*}Q)_r = \Bigl(\tfrac{9360}{11},\,0,\,0,\,0,\,0,\,0,\,\tfrac{2152800}{11}\Bigr),
+  \qquad \beta_6 = 0 .
+\]
+So no two-point method can do better than $850$ here, and improving the two-point rung is not a
+matter of finding a cleverer polynomial. A three-point relaxation is the first one that sees the
+lattice at all.
+
+\emph{Falsified by:} an error in the intersection numbers of the scheme (they are re-derived from
+the vector list, and the scheme axioms plus six standard identities are re-checked on load), or
+an arithmetic error in the dual above, which is short enough to check by hand.
+
+\subsection{The three-point bound: $\alpha \le 837$}\label{sec:sdp3}
+
+\CA{} --- the exact rational dual certificate is in the archive, and the checker there re-derives
+every coefficient matrix it needs from the regenerated lattice, taking nothing from the solver that
+produced it.
+
+\paragraph{The relaxation.} Fix $x \in C$. Let $\mathcal{O}$ be the set of orbits of
+$\mathrm{Stab}_{\Co}(x)$ on $C \times C$; equivalently, the $\Co$-orbits of ordered triples with a
+marked first point. There are exactly $D = 148$ of them, distributed over the pair classes as
+$7, 25, 27, 30, 27, 25, 7$. For an independent set $S$ define
+\[
+  \lambda_u = \#\{(a,b,c) \in S^3 : (a,b,c) \in O_u\},
+  \qquad x_u = \frac{\lambda_u}{|S| \cdot \mathrm{size}_u},
+\]
+where $\mathrm{size}_u = \#\{(y,z) : (x,y,z) \in O_u\}$. Imposing $S_3$-symmetry
+($x_u = x_{u^{\mathsf T}} = x_{\mathrm{swap}(u)}$) leaves $43$ free variables. The constraints are:
+$M_1 = \sum_u x_u B_u \succeq 0$; $M_2 = \sum_u (x_{\mathrm{diag}(k(u))} - x_u) B_u \succeq 0$;
+$0 \le x \le 1$; $x_e = 1$; $\sum_k v_k x_{\mathrm{diag}(k)} = |S|$; and $x_u = 0$ whenever a
+pairwise class of $u$ is forbidden. The objective is $\sum_k v_k x_{\mathrm{diag}(k)}$. Since
+$M_1 + M_2 = \sum_k x_{\mathrm{diag}(k)} A_k$, the two-point constraint of Section~\ref{sec:twopoint}
+is implied and the bound can only improve on $850$.
+
+\paragraph{Symmetry reduction.} The span of $\{B_u\}$, closed under left and right multiplication
+by the dual idempotents $E_i^{*}$ and the class matrices $A_k$, has dimension exactly $148 = D$:
+the Terwilliger algebra $T(x)$ \emph{is} the full centraliser algebra of the point stabiliser.
+This is worth stating carefully, because the span of the $147$ nonempty triple-class matrices
+$E_i^{*}A_kE_j^{*}$ is one dimension smaller and is \emph{not} closed under multiplication --- the
+Terwilliger algebra is not spanned by the triple-class matrices, and the SDP must live in the full
+$148$-dimensional algebra. The dimension count was done by row-reduction over a large prime field,
+which gives $\mathrm{rank}_{\mathbb{F}_p} \le \mathrm{rank}_{\mathbb{Q}} \le D$ and hence pins the
+value exactly.
+
+The reason $148$ exceeds $147$ is a genuine piece of lattice structure: exactly one triple-class
+cell splits into two $\Co$-orbits, namely the most symmetric one, three mutually orthogonal minimal
+vectors, with $p^0_{00} = 43164 = 42240 + 924$. So $\Co$ is \emph{not} transitive on ordered
+triples with prescribed pairwise classes, and the two orthogonal-triple flavours are exactly the
+information a two-point method cannot express.
+
+\paragraph{The left-regular-representation trick.} The $B_u$ span a semisimple matrix
+$*$-algebra $\mathcal{A}$ (the orbitals are closed under transposition), and $\mathbb{C}^{C}$ is a
+faithful $\mathcal{A}$-module containing every irreducible $\mathcal{A}$-module. Hence for
+$M \in \mathcal{A}$,
+\[
+  M \succeq 0 \text{ as a } 196560 \times 196560 \text{ matrix}
+  \iff M \succeq 0 \text{ in the left regular representation of } \mathcal{A}.
+\]
+Writing $c[w,u,t]$ for the structure constants and $\Delta = \mathrm{diag}(\mathrm{size})$, the
+matrix $G(x)[w,t] = \mathrm{size}_w \sum_u x_u\, c[w,u,t]$ is symmetric with \emph{integer}
+coefficient matrices whenever $x$ is $S_3$-symmetric, and $M(x) \succeq 0 \iff G(x) \succeq 0$,
+a $148 \times 148$ test. No numerical block-diagonalisation of the algebra is ever performed and no
+irrational number enters the exact side --- which is precisely what makes exact rounding cheap.
+
+\paragraph{Exact rounding.} For rational $Y_1, Y_2 \succeq 0$ and rational multipliers
+$\mu, \rho \ge 0$, set $h_q = \mathrm{obj}_q + \langle Y_1, G_q\rangle + \langle Y_2, G^y_q\rangle
++ (\mu^{\mathsf T}Cy)_q - \rho_q$. Weak duality gives
+\[
+  |S| \;\le\; h_e \;+\; \sum_{q \text{ free}} \rho_q \;+\; \sum_{q \text{ free},\, q \ne e} \max(0, h_q),
+\]
+every term an exact rational. Validity does not depend on the numerics at all: an inaccurate dual
+makes the right-hand side larger, never wrong.
+
+The rounding of $Y_1, Y_2$ is the point worth copying. Rather than round a matrix and then test it
+for positive semidefiniteness, the solver's eigendecomposition $Y = \sum_i \lambda_i q_i q_i^{\mathsf T}$
+is mapped into the $G$ basis and each term is rounded \emph{separately}: the eigenvalue to a
+nonnegative integer $m_i$ and the vector to an integer vector $P_i$, both at a chosen power-of-two
+scale, so that $\widehat{Y} = 2^{-T}\sum_i m_i P_i P_i^{\mathsf T}$ with $m_i \ge 0$. This is a
+nonnegative combination of rank-one terms, hence positive semidefinite \emph{by construction}, and
+no PSD verification of a rounded matrix is ever required. The multipliers $\mu, \rho$ are rounded to
+dyadic rationals and clamped at $\ge 0$; both sign conventions are tried and the better bound kept.
+The final inequality is evaluated in exact rational arithmetic.
+
+\paragraph{The numbers.} The relaxation's numerical optimum is $837.533238$ (interior-point,
+status \texttt{optimal}); the exact rounded dual gives
+$837.5358661609\ldots$, a rational with denominator $2^{173}$. Hence
+\[
+  \boxed{\ \alpha \le 837.\ }
+\]
+The rounding cost is $1.369$, so the relaxation's own optimum is bracketed in
+$[837.5332,\ 837.5359]$; both ends floor to $837$. Note carefully: $837$ is a floor, not the
+three-point optimum. Sanity anchors from the identical code path: forbidding nothing returns
+$196565 \ge |C|$, and forbidding both $+16$ and $+8$ (i.e.\ $\cos \le 0$) returns exactly $48$,
+the orthoplex bound $2 \cdot 24$.
+
+\paragraph{The decisive validity check.} A three-point relaxation is easy to get subtly wrong ---
+a normalisation slip produces a beautiful, meaningless number. The check that pins it down is
+that the \emph{actual} $496$-element set, and an independent $488$-element set, are exactly feasible
+points of the same relaxation: their orbit densities satisfy $0 \le x \le 1$, $x_e = 1$, the
+forbidden coordinates vanish, $y \ge 0$, and both $148 \times 148$ blocks are positive semidefinite
+under an exact rational symmetric elimination --- and the objective evaluates to $496$ and $488$ on
+the nose. Feeding $S = C$ returns $196560$, again on the nose, with the second block identically
+zero as the derivation predicts. A wrong normalisation would show up immediately as an
+\emph{infeasible} known set. Deliberately perturbing one coordinate of the $496$'s density vector
+does make the exact PSD test fail.
+
+\emph{Falsified by:} an independent set of size $838$; or an error in the orbital structure
+constants, which are re-derived from the vector list and re-checked at load.
+
+\subsection{Clique cuts are provably inert}\label{sec:cliques}
+
+\paragraph{$\omega(G) = 24$, exactly.} The upper bound is \CA{} and needs no computation. If
+$v_1,\dots,v_k$ are minimal vectors with $\ip{v_i}{v_j} = 16$ for $i \ne j$, their Gram matrix is
+$16(I_k + J_k)$, whose eigenvalues are $16(k+1)$ once and $16$ with multiplicity $k-1$. This is
+positive definite, so the $v_i$ are linearly independent in $\mathbb{R}^{24}$ and $k \le 24$. That
+is the whole argument, and it uses no sphere-packing input whatever.
+
+Equality is \CH{}: an explicit $24$-clique is held, not attached. Its Gram matrix is $16(I+J)$
+(re-checked in integer arithmetic here), its sum $s$ satisfies $|s|^2 = 9600$ and $\ip{v}{s} = 400$
+for every member, the $24$ vectors are a basis of $\mathbb{R}^{24}$, and by shape they are three
+vectors of type $(\pm 4,\pm 4,0^{22})$ and $21$ of type $(\pm 2^8, 0^{16})$. Reconstructing one is
+a short branch-and-bound in the common neighbourhood of an edge.
+
+A warning for anyone re-deriving this: the natural family $\{4(e_1 + e_i)\}_{i=2}^{24}$ is a
+$23$-clique and is \emph{maximal}, because the only real vector at inner product $16$ with all of it
+is $(3,1^{23})$, whose coordinate sum $26 \not\equiv 4 \pmod 8$ puts it outside $\Lam$. Maximal is
+not maximum here. An exhaustive branch-and-bound in the common neighbourhood of an edge ($891$
+vertices, $336$-regular) confirms $\omega = 24$, and a complete enumeration gives the maximal-clique
+sizes as exactly $\{8, 12, 15, 17, 23, 24\}$, with $5{,}028{,}032{,}232$ maximal cliques through a
+single edge --- the two independent census routes (through an edge, through a triangle) agree
+exactly. \CH{} for the census.
+
+\paragraph{The cuts, and why they do nothing.} For a pair $(a,b)$ of non-conflicting vectors and a
+clique $K$, the valid pair-conditioned liftings are
+\[
+  \sum_{v \in K} x_{u(a,b,v)} \;\le\; x_{\mathrm{diag}(i)},
+  \qquad
+  \sum_{v \in K} \bigl(x_{\mathrm{diag}(\mathrm{class}(a,v))} - x_{u(a,b,v)}\bigr) \;\le\; 1 - x_{\mathrm{diag}(i)},
+\]
+with $i = \mathrm{class}(a,b)$. Adding $225$ such cuts built from maximum cliques leaves the exact
+bound at $837$; adding $437$ triangle cuts leaves it at $837$; adding all $662$ leaves it at $837$.
+The maximum violation at the uncut optimum, scanned over $1430$ generated cuts, is
+$-2.5\times 10^{-14}$: every cut is slack. Both the $496$ and the $488$ remain exactly feasible under
+all of them ($80$ of the $662$ tight, the rest strict), which is the validity gate --- a deliberately
+corrupted cut is caught by the $496$. \CH{}
+
+The structural reason is a one-line estimate, and it is the useful part of this subsection. The
+three-point optimum behaves like a near-product pseudo-density with one-point density
+$\sigma = 837.53/196560 \approx 1/234.7$. Conditioned on $(a,b) \in S$, the third-point density at
+any single vertex is $O(\sigma)$, so the left-hand side of the first cut is about
+$|K|\,\sigma\, x_{\mathrm{diag}(i)}$ and the cut binds only once $|K| \gtrsim 1/\sigma \approx 235$.
+But $\omega(G) = 24$ --- an order of magnitude short. Concretely, at the optimum the tightest
+instance uses $12\%$ of its right-hand side. Entrywise nonnegativity ($\vartheta^{+}$ strength) is
+already implied by the baseline, because the $B_u$ are $0/1$ matrices with disjoint supports.
+Clique structure alone could never push a vertex-transitive bound below $|C|/\omega = 8190$ anyway.
+
+Conclusion: at three points, the remaining lever is not combinatorial sparsification. It is either
+four-point terms or the split orthogonal-triple cell used directly.
+
+\subsection{Four-point scoping: priced, not run}\label{sec:fourpoint}
+
+The natural next rung is the level-3 Lasserre / four-point analogue. The orbit data one level down
+is complete. \CH{}
+
+For each pair class $i$, the four-point PSD blocks live in the centraliser algebra of
+$\mathrm{Stab}(x,y_i)$, whose dimensions are
+\[
+  \dim T(x,y_i) \;=\; 148,\ 1893,\ [2971,2972],\ [4097,4107],\ [2971,2972],\ 1893,\ 148
+\]
+for classes $-32,-16,-8,0,8,16,32$. The two anchors ($148$, for the classes where the stabiliser
+degenerates to $\mathrm{Stab}(x)$) and the $\pm 16$ classes are exact; the five bracketed cells have
+rigorous lower ends from GPU-computed five-point histogram invariants (a $\mathrm{Stab}$-invariant,
+hence a lower bound on the orbit count) and rigorous upper ends from explicit stabiliser labels
+carrying group-element witnesses (hence an upper bound). An independent re-run with three times as
+many stabiliser elements reproduced the label counts exactly, which suggests the upper ends are
+the truth and the histogram is simply too coarse there. There are $14133$ orbits of ordered
+$4$-tuples, of which $6183$ are admissible (no conflicting pair) and $5721$ have four distinct
+points; after $S_4$-symmetrisation the variable count is bracketed in $[258, 6183]$ and is
+realistically $240$--$300$. Variables are a non-issue.
+
+The blocks are the issue. A relaxation in the style of Section~\ref{sec:sdp3} has $17$ PSD blocks
+($3$ membership blocks $\times\ 5$ base-pair classes, plus $2$ diagonal), the largest
+$4107 \times 4107$, with $\sum d^2 = 1.1 \times 10^8$ and $\sum d^3 = 3.9 \times 10^{11}$. The cone
+scalar count $\sum d(d+1)/2 = 5.7 \times 10^7$ puts interior-point iterates and scaling work
+matrices at roughly $7$\,GB \emph{before} the SDP data and the KKT factors, which is why this needs a
+$64$--$128$\,GB workstation rather than a laptop. Against the three-point solve this is a factor
+$28$ in block dimension and about $2 \times 10^4$ in flops. The exact-certificate machinery survives
+--- the left-regular-representation trick still applies at dimension $4107$ --- but the dense
+rational contractions of the three-point path do not, and would have to be rewritten as sparse
+integer contractions; separately, the $496$'s quadruple distribution (the feasibility anchor that
+made the three-point bound trustworthy) is a $496^4 \approx 6\times 10^{10}$ label-lookup problem
+that needs its own engineering. Realistic budget: two to four weeks including that rewrite.
+
+Expected movement, and this is an estimate rather than a claim: the two-point to three-point step
+was $850.9 \to 837.5$, or $-1.6\%$; a comparable relative step lands near $820$--$830$. The
+Gijswijt--Mittelmann--Schrijver experience with quadruple distances in the binary-code setting
+suggests a few percent is the right order, occasionally more when the extremal structure is rigid.
+Nothing in the slack structure suggests a collapse toward $496$. \EV{}
+
+It was not run for exactly one reason: the largest block is $4107$, and the available machine has
+$16$\,GB. Nothing was attempted and abandoned.
+
+\subsection{What the $837$ optimum looks like}\label{sec:slack}
+
+This is a floating-point analysis of the relaxation's optimum, so \EV{} --- but it is the most
+suggestive number in the note.
+
+The optimum is massively degenerate: the two $148 \times 148$ PSD blocks have ranks $28$ and $68$;
+$65$ of the $148$ $y$-inequalities are tight; $11$ of the $27$ free non-identity orbit variables sit
+at zero. The optimal pseudo-set is antipodal ($x_{\mathrm{diag}}(-32) = 1$, achieved and not
+imposed). And --- without being told to --- it puts \emph{zero} mass on both $+16$ and $-16$. The
+relaxation discovers the $\pm 16$-avoidance of the record set on its own, even though
+Section~\ref{sec:twopoint} showed that no two-point method can see the $-16$ prohibition at all.
+
+Its pair densities against the record's, class by class:
+\begin{center}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+class & optimum & the $496$ & ratio \\
+\midrule
+$\pm 32$ & $1.000000$ & $1.000000$ & $1.000$ \\
+$\pm 16$ & $0$ & $0$ & --- \\
+$\pm 8$ & $0.005587$ & $0.003210$ & $1.740$ \\
+$0$ & $0.003319$ & $0.002056$ & $1.614$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+The ratios bracket $837/496 = 1.6875$: the optimum looks like the $496$ inflated by about $1.69$.
+That the bound is pinned by a large active set of genuinely three-point constraints, rather than by
+one slack inequality, is the same conclusion Section~\ref{sec:cliques} reached independently.
+
+\subsection{Search evidence against $497$}\label{sec:search}
+
+All \EV{}, and included because negative results save time.
+
+\begin{tightlist}
+\item The record set is swap-optimal for every removal size $k \le 12$, exhaustively: a complete
+  depth-first search over unions of conflict sets (complete because every improving swap is
+  witnessed by such a union) with exact bitset independent-set solving finds no improving move, and
+  the only equal-size moves of size $\le 12$ are four disjoint $(12,12)$ plateau moves. Any
+  improvement must remove at least $13$ vectors. This one is an exhaustive exact computation, so
+  \CH{} rather than \EV{}.
+\item Two $30$-minute production runs of a GPU iterated-local-search driver, $242$ million
+  iterations, best $= 496$ and flat. The census of distinct $496$-element sets \emph{saturates} at
+  $4160 = 65 \times 64$ within about six minutes: every chain that reaches a $496$ is trapped in its
+  plateau component, and diversity comes only from group images of the seed, not from more chains or
+  more time.
+\item A sweep over $95$ subgroups of $\Co$ --- cyclic groups of all element orders with and without
+  signs, Sylow subgroups, several Mathieu groups, $2^{12}$ and its overgroups,
+  $\mathrm{PSL}(2,23)$, dihedral groups, random conjugates --- maximising over unions of orbits.
+  Only the record's own stabilisers reach $496$. The best union under any other group is $402$.
+  $23$ of the rows finished branch-and-bound to optimality. Any group containing $2^{12}$ or a
+  Sylow $2$-subgroup caps at $48$, one frame.
+\end{tightlist}
+
+\section{Structure of the 496-element sets}
+
+This section is the part most likely to be reusable. Everything in it is an exact computation with
+in-run assertions --- integer and rational arithmetic throughout, including Hermite and Smith normal
+forms and exact short-vector enumeration --- and is therefore \CH{} unless stated otherwise; the
+vector lists it starts from are attached, so any individual claim can be re-derived from the archive
+by a reader willing to write the code.
+
+\subsection{The Turyn decomposition}
+
+The setwise stabiliser of the record set in $\Co$ has order $8$ and is elementary abelian $2^3$.
+Its eight elements have traces $\{+24, +8, +8, +8, -8, -8, -8, -24\}$; the three trace-$(+8)$
+involutions $t_1, t_2, t_3$ satisfy $t_i t_j = -t_k$ (so no two of them generate a Klein group
+containing the third). Define $B_i$ to be the $(-1)$-eigenspace of $t_i$. Then
+\[
+  \mathbb{R}^{24} = B_1 \perp B_2 \perp B_3, \qquad \dim B_i = 8 .
+\]
+For each $i$, the Gram matrix of $\Lam \cap B_i$, divided by $16$, is an $8$-dimensional even
+integral matrix of determinant $1$; by uniqueness of the even unimodular lattice in dimension $8$,
+\[
+  \Lam \cap B_i \;\cong\; \sqrt{2}\,E_8 ,
+\]
+confirmed independently by exact short-vector enumeration, which finds $240$ vectors of norm $32$
+and $2160$ of norm $64$ in each block. The glue index is
+\[
+  [\,\Lam : \sqrt2 E_8 \oplus \sqrt2 E_8 \oplus \sqrt2 E_8\,] \;=\; 4096 = 2^{12},
+\]
+with elementary abelian quotient (Smith form $[2^{12}]$). This is the Turyn construction of $\Lam$
+from three copies of $E_8$. Pairwise, $\Lam \cap (B_j \oplus B_k) = \mathrm{Fix}(t_i)$ is a
+$16$-dimensional even lattice of determinant $2^8$ with kissing number
+$4320 = 3840 + 2\cdot 240$, i.e.\ the Barnes--Wall lattice $BW_{16}$, and
+$[\mathrm{Fix}(t_i) : \sqrt2E_8 \oplus \sqrt2E_8] = 16$ with Smith form $[2,2,2,2]$.
+
+The stabiliser is thus concretely the \emph{blockwise sign group}: writing $v = v_1 + v_2 + v_3$ with
+$v_i \in B_i$, the eight maps $v \mapsto \varepsilon_1v_1 + \varepsilon_2v_2 + \varepsilon_3v_3$,
+$\varepsilon \in \{\pm 1\}^3$. Its elements are not monomial in the standard Leech coordinates.
+
+\subsection{Monads, duads, triads}
+
+Classify $s \in C$ by the multiset of block norms $(|s_1|^2, |s_2|^2, |s_3|^2)$. Only three patterns
+occur, because $8$ and $24$ are not norms of $\sqrt2E_8$:
+
+\begin{center}
+\small
+\begin{tabular}{@{}llrr@{}}
+\toprule
+name & pattern & count & in the record set \\
+\midrule
+monad & $(32,0,0)$ --- a $\sqrt2E_8$ minimal vector & $3 \times 240 = 720$ & $0$ \\
+duad & $(16,16,0)$ --- norm split $16+16$ across two blocks & $3 \times 3840 = 11520$ & $496$ \\
+triad & $(16,8,8)$ --- split across all three blocks & $3 \times 61440 = 184320$ & $0$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+$720 + 11520 + 184320 = 196560$. (This census was re-derived here from a Turyn triple recovered
+independently of the record's stabiliser, and agrees.)
+
+\paragraph{The record lives entirely in the duads.} All $496$ vectors are duads, split
+$208 / 144 / 144$ over the three block pairs --- which are exactly the fixed-vector counts of
+$t_1, t_2, t_3$ on $S$, since a duad supported on $\{B_j, B_k\}$ is fixed by $t_i$. So the record
+uses $496$ of $11520$ duads, about $4.3\%$. All $64$ sets of the plateau family are duad sets on the
+\emph{same} three blocks with the \emph{same} $(208,144,144)$ split, as are the $80$ near-miss
+vertices of Section~\ref{sec:plateau} (split $48/16/16$).
+
+There is a pleasing counterpoint. The maximum clique of $G$ from Section~\ref{sec:cliques} consists
+of $24$ \emph{triads} --- zero monads, zero duads. Duads carry the big independent sets; triads
+carry the big cliques; the two extremal structures of $G$ occupy disjoint strata of the Turyn
+decomposition.
+
+Under the blockwise sign group the $196560$ minimal vectors fall into $360$ orbits of size $2$ (the
+monads), $2880$ orbits of size $4$ (the duads, each of the form $\{\pm x, \pm y\}$ with $x \perp y$),
+and $23040$ orbits of size $8$ (the triads). \emph{Every} triad orbit contains an internal conflict,
+so no triad orbit can appear in \emph{any} set invariant under the blockwise $2^3$. That leaves
+$3240$ usable orbits of total weight $12240$ --- and the record is $124$ of them.
+
+\subsection{Channels: a $\mathrm{PG}(3,2)$}
+
+Take a duad orbit $O = \{\pm x, \pm y\}$ supported on blocks $\{B_j, B_k\}$. Then $x+y$ and $x-y$
+are two vectors of norm $64$, one in each block, and they are congruent mod $2\Lam$. Their common
+class in $\Lam / 2\Lam$ is the \emph{channel} of the orbit.
+
+Per block, the $2160$ norm-$64$ vectors fall into $135$ classes of $8$ antipodal pairs each, and
+each class is an orthogonal frame of that $8$-dimensional block --- the $135$ frames of $E_8$. Of
+these, each pair of blocks shares exactly $15$ channels, and --- this is the fact that organises
+everything --- \emph{the same $15$ for all three pairs}. Together with $0$ they are closed under
+addition in $\Lam/2\Lam$ and span a $4$-dimensional $\mathbb{F}_2$-space. So:
+
+\begin{quote}
+The $15$ channels are the $15$ points of a $\mathrm{PG}(3,2)$: $15$ points, $35$ lines
+$\{c, c', c \oplus c'\}$, $15$ planes, and maximum caps of size $8$ (the affine complements of the
+planes).
+\end{quote}
+
+\paragraph{The rook grid.} A \emph{cell} is a (block-pair, channel) combination; there are
+$3 \times 15 = 45$ of them. Within the cell $(\{B_j,B_k\}, c)$, take as rows the $8$ antipodal line
+pairs of channel $c$'s frame in $B_j$ and as columns the $8$ in $B_k$; each of the $64$ positions is
+one duad orbit. Check: $45 \times 64 = 2880$ orbits, $\times 4 = 11520$ duads.
+
+Two orbits in the same channel conflict if and only if they share a line: sharing a row or column
+gives inner product $(\pm 64 + 0)/4 = \pm 16$, which hits $+16$ for one of the sign choices, while
+distinct rows and distinct columns give $0$. So within a cell, an independent set is a
+\emph{non-attacking rook placement} --- a partial permutation matrix, at most $8$ orbits.
+
+\paragraph{Per-channel independence is a matching condition.} Now stop fixing the pair. A single
+channel $c$ has $8$ lines in each of the three blocks; a duad orbit in channel $c$ is exactly an edge
+joining a line in one block to a line in another. The $3 \times 64 = 192$ orbits of channel $c$ are
+precisely the $192$ edges of the complete tripartite graph $K_{8,8,8}$, and independence within the
+channel is exactly the condition that the chosen edges form a \emph{matching}. Since $K_{8,8,8}$ has
+$24$ vertices, a channel carries at most $12$ orbits, with equality exactly for a perfect matching.
+
+The two caps together give $15 \times 12 = 180$ orbits, i.e.\ weight $720$ --- which is the ceiling
+of Section~\ref{sec:open-slice}, and the reason it is hard to beat. The residual, and the genuinely
+hard part, is cross-channel conflict: two orbits in the same pair but different channels conflict
+iff \emph{both} their row lines and their column lines are at $60^\circ$ in their respective blocks;
+two orbits in different pairs and different channels \emph{never} conflict; and monad-duad conflicts
+factor entirely through the plane geometry (a monad's $14$ conflicting lines lie in its own block,
+two in each of exactly $7$ channels, and those $7$ always form a plane of $\mathrm{PG}(3,2)$). Per
+block, both the $120$ channel lines and the $120$ monad lines under $60^\circ$-adjacency form the
+strongly regular graph $\mathrm{srg}(120,56,28,24)$ with spectrum $\{56^1, 8^{35}, (-4)^{84}\}$ ---
+the $E_8$ root-line graph, whose ratio bound $120 \cdot 4/60 = 8$ is exactly why ``at most $8$ per
+block'' keeps recurring.
+
+\subsection{The usage pattern $496 = 4\cdot(3\cdot 12 + 9\cdot 8 + 2\cdot 8)$}
+
+The record is a union of $124$ orbits of the blockwise sign group, each of size $4$. Its $45$-cell
+usage profile is:
+
+\begin{center}
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+channel group & \# channels & orbits each & profile over the pairs & total \\
+\midrule
+frame (perfect $K_{8,8,8}$ matching) & $3$ & $12$ & $4+4+4$ & $36$ \\
+one-pair (full $8$-permutation) & $9$ & $8$ & $8+0+0$ & $72$ \\
+half & $2$ & $8$ & $0+4+4$ & $16$ \\
+empty & $1$ & $0$ & $0+0+0$ & $0$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+so $124 = 3\cdot 12 + 9 \cdot 8 + 2 \cdot 8$ and $|S| = 4 \cdot 124 = 496$. Cell-wise: of the $45$
+cells, $9$ carry a full $8$-permutation, $13$ carry $4$, and $23$ are empty;
+$9 \cdot 8 + 13 \cdot 4 = 124$. Per pair the totals are $52, 36, 36$ orbits, i.e.\ $208, 144, 144$
+vectors, matching the block-support split.
+
+Two geometric facts about this profile. The seven channels \emph{unused} by the $208$-pair, together
+with $0$, form a hyperplane of the channel space --- so that pair is supported on exactly a maximum
+cap of $\mathrm{PG}(3,2)$; the corresponding sets for the other two pairs are not subspaces. And the
+three frame channels span a plane, which contains all seven ``special'' channels (the three frames,
+the two half channels, the empty one, and one of the eight-permutation channels); the remaining
+eight channels form the complementary maximum cap and are all plain one-pair channels. The three
+frame channels are not collinear.
+
+For scale: the record's line budget per block is $72, 88, 88$ of $1080$ available antipodal pairs.
+It is not remotely space-constrained; it is constrained by the cross-channel interactions.
+
+\subsection{The three perfect channels are the three frames}
+
+The orthogonality graph on the $248$ antipodal classes of the record --- adjacency at inner
+product $0$ --- has $2718$ maximal cliques, with size histogram
+$\{8{:}1280,\ 10{:}800,\ 12{:}448,\ 16{:}171,\ 18{:}4,\ 20{:}8,\ 22{:}4,\ 24{:}3\}$.
+The three $24$-cliques are pairwise disjoint frames, covering $72$ of the $248$ classes, and they are exactly
+the three perfect-matching channels: a perfect matching of $K_{8,8,8}$ in channel $c$ uses all $24$
+lines of $c$, its $12$ orbits carry $48$ vectors $=24$ antipodal classes, and those classes are
+pairwise orthogonal because distinct matching edges share no line and cross-channel dots vanish. So
+\emph{perfect channel $\iff$ $24$-clique in the orthogonality graph $\iff$ frame}.
+
+The three frames are not interchangeable as lattice objects: each generates a rank-$24$ sublattice
+of index $2^{24}$, but two of them have Smith form $[2^4, 4^{10}]$ and the third has $[4^{12}]$.
+
+\subsection{The plateau: $64$ maximal sets, and the moves between them}\label{sec:plateau}
+
+Call $v \notin S$ \emph{free} if $S \cup \{v\}$ is still $60^\circ$-free, and define the
+\emph{tightness} of $v$ to be $\#\{s \in S : \ip{v}{s} = 16\}$. A set is maximal iff it has no free
+vertex; and since a $(k,k+1)$-swap needs a vertex of tightness $\le k$, a minimum tightness of $4$
+rules out all swaps with $k \le 3$ at a stroke.
+
+Six pairwise commuting plateau moves exist --- four of size $(12,12)$ and two of size $(80,80)$ ---
+all simultaneously applicable, generating a $6$-cube of $2^6 = 64$ independent $496$-element sets.
+Every one of the $64$ has: zero free vertices, no vertex of tightness $1$, $2$ or $3$, minimum
+tightness exactly $4$ with exactly $80$ tightness-$4$ vertices, and the identical Gram histogram.
+They fall into exactly $5$ tightness-fingerprint classes of sizes $16/16/16/8/8$. Each is
+independently a certificate for $\alpha \ge 496$. \CA{} --- the $64$ vector lists are attached.
+
+The $64$ are pairwise inequivalent under $\Co$, and fall into $8$ isometry classes of size $8$: no
+plateau move is realised by a Leech automorphism, and seven of the $63$ non-trivial sets are
+congruent copies of the record in $\mathbb{R}^{24}$ that no element of $\Co$ reaches. The proof is an
+exhaustive individualisation-refinement enumeration of all Gram-graph isomorphisms (no pruning can
+miss one, because the colours are shared across the disjoint union), each extended to its unique
+orthogonal map of $\mathbb{R}^{24}$ and tested for preservation of $\Lam$ on all $196560$ minimal
+vectors; five positive controls, including images overlapping the record in as few as four vectors,
+are correctly recognised. \CH{}
+
+\paragraph{The moves are channel rewirings.} This is the structurally decisive statement. The $80$
+tightness-$4$ vertices of every plateau set are $20$ duad orbits confined to the three frame
+channels: the full \emph{complementary} perfect matching of one frame channel ($12$ orbits) plus
+four one-pair orbits in each of the other two. Every conflict with $S$ is a rook-row collision --- a
+tightness-$4$ orbit conflicts with exactly the two $S$-orbits sharing one of its two rows, which is
+exactly why the minimum tightness is $4 = 2$ orbits $\times\ 2$ vectors. There are no cross-channel
+conflicts anywhere in $S$ together with its tightness-$4$ vertices.
+
+Each $(12,12)$ move is an alternating $6$-cycle row-rotation inside one frame channel, and the four
+of them compose to a frame-for-frame swap. Each $(80,80)$ move removes \emph{all} $20$ orbits of a
+\emph{pair} of channels $\{c, c \oplus c_{F}\}$ and installs a fresh $20$-orbit wiring. In every
+case the $45$-cell usage profile is \emph{exactly preserved}. The moving parts of the whole
+$64$-set plateau are precisely the three pairs of channels swapped by the translation
+$c \mapsto c \oplus c_{F}$ in $\mathrm{PG}(3,2)$; the nine one-pair channels and the empty channel
+never move.
+
+The consequence is worth stating in isolation: \emph{the cell profile is an invariant of the entire
+plateau, not merely of the record.} Local search never changes how much each cell carries, only
+which matching realises it. Any $497$-element duad set must therefore break the profile itself.
+
+\subsection{Refuted hypotheses}
+
+These are the tempting guesses that turned out to be false. All \CH{}, all verified negatives.
+
+\begin{tightenum}
+\item \textbf{The set is not all duads.} It is $496$ of $11520$; per block pair it holds $208$ or
+  $144$ of $3840$. The duads are very far from independent --- the duads on a single line form a
+  $16$-clique, and there are $20160$ rook conflicts, $322560$ same-pair cross-channel conflicts and
+  $23040$ cross-pair same-channel conflicts among duad orbits. (Cross-pair cross-channel conflicts
+  number exactly $0$.)
+\item \textbf{The set is not the set of minimal vectors of the lattice it generates.} The lattice
+  $\langle S\rangle_{\mathbb{Z}}$ has rank $24$ and index $16$ in $\Lam$ with quotient
+  $(\mathbb{Z}/2)^4$, and it equals $\mathrm{Fix}(t_1) + \mathrm{Fix}(t_2) + \mathrm{Fix}(t_3)$, the
+  sum of the three $BW_{16}$ pair lattices. Its minimal vectors number $12240$ --- all $720$ monads
+  and all $11520$ duads. So $11744$ minimal vectors of $\langle S \rangle$ lie outside $S$,
+  including all $80$ tightness-$4$ vertices. The quotient has exponent $2$, so $2\Lam \subset
+  \langle S\rangle$ and membership is a mod-$2\Lam$ condition.
+\item \textbf{The class set is not a union of cosets.} The $248$ antipodal classes of $S$ occupy
+  $248$ \emph{distinct} classes of $\Lam/2\Lam$ (forced: $x \pm y \in 2\Lam$ would need
+  $|x\pm y|^2/4 \ge 32$), spanning a $20$-dimensional $\mathbb{F}_2$-subspace. A complete test over
+  all $247$ candidate translations shows the stabiliser $\{t : \text{class set} + t = \text{class
+  set}\}$ is trivial. (By contrast the \emph{channel} set does have stabiliser of order $2$,
+  generated by the empty channel, and no channel class is itself a class of an $S$-vector.)
+\item \textbf{The octad incidence of the frames is not the Golay code.} Fix a frame; each of the
+  $224$ classes of $S$ outside it is orthogonal to exactly $8$ of the frame's $24$ classes, giving a
+  $24$-bit mask. Spanning these masks over $\mathbb{F}_2$ gives, for two of the three frames, a
+  self-complementary $[24,7]$ code --- $128$ words, weight distribution
+  $\{0{:}1, 8{:}39, 12{:}48, 16{:}39, 24{:}1\}$ --- and for the third a self-complementary
+  $[24,9]$ code with $512$ words and weights $\{0{:}1,4{:}12,8{:}135,12{:}216,16{:}135,20{:}12,24{:}1\}$.
+  The Golay code is $[24,12,8]$ with $4096$ words and $759$ octads; neither of these is it, and the
+  third even has weight-$4$ words, which a minimum-distance-$8$ code cannot. (This is the same
+  asymmetry as the Smith-form split above: two frames behave alike, the third does not.)
+\item \textbf{The $248 = \dim E_8$ numerology is dead.} $496 = 2^4 \cdot 31$ is a perfect number and
+  $248 = \dim E_8$, which invites a $31$-fold or $E_8$-Lie symmetry. But
+  $|\Co| = 8315553613086720000 = 2^{22}\cdot 3^9 \cdot 5^4 \cdot 7^2 \cdot 11 \cdot 13 \cdot 23$,
+  and $31 \nmid |\Co|$. By Lagrange no element of order $31$, and no subgroup of order divisible by
+  $31$, exists in $\Co$; no such symmetry of a $\Co$-stable object can exist. The natural
+  factorisation is $496 = 4 \cdot 124$ with $124 = 3\cdot12 + 9\cdot8 + 2\cdot8$, and $248$ is just
+  $496/2$. The genuine $E_8$ content of the structure is real but elsewhere:
+  $\Lam \cap B_i \cong \sqrt2 E_8$, the $135$ $E_8$ frames per block, and the $E_8$ root-line
+  strongly regular graph above.
+\end{tightenum}
+
+Two more negatives worth recording. The $\pm 16$-free two-point LP is \emph{not} below $850.9$ ---
+it is exactly $9360/11$, as Section~\ref{sec:twopoint} showed. And the $208$ on the largest pair is
+not even maximal within its own pair: the single-pair duad graph is $252$-regular, its ratio bound
+is about $282$, there exist pair duads with zero conflicts against the $208$, and the true
+single-pair optimum is $64$ orbits $= 256$ vectors against the record's $52$ orbits $= 208$. It is
+the cross-pair constraints that pin the record down, not the within-pair ones.
+
+\section{Open questions, ranked}
+
+\subsection{Is $496$ maximum in the duad model?}
+
+The finite model is small and completely explicit: $2880$ duad orbits plus $360$ monad orbits, with
+the rook condition per cell, the $K_{8,8,8}$ matching condition per channel, the cross-channel rule
+of Section~3.3, and the plane-local monad rule. Maximise total weight. The record is $124$ orbits;
+the question is whether $125$ exists.
+
+Tractability: the local structure is all proved. Within a single pair, the maximum on a channel
+subset $\mathcal{C}$ is exactly $8 \cdot (\text{largest }\mathrm{PG}(3,2)\text{-cap inside }
+\mathcal{C})$ --- every single channel gives $8$, every pair of channels $16$, every \emph{line}
+$\{c,c',c\oplus c'\}$ gives $16$ (not $24$), every non-collinear triple $24$, every plane $32$, the
+whole pair $64$. Monads are provably scarce: the exact ``kill function'' $u(k) = 14, 26, 36, 44, 50,
+54, 56, 56$ (the number of block lines destroyed by an independent $k$-set of one block's monads,
+achieved inside a single plane) forces full-monad solutions down to weight $432 < 496$. The
+symmetry group of the reduced model acts on (channels, pairs) as the full
+$\mathrm{GL}(4,2) \times S_3$, order $120960$, so any cap proved for one shape holds for all its
+images.
+
+What blocks it is described in \S\ref{sec:open-slice}. My estimate: this is the most likely of the
+four to fall, and the right tool is a combinatorial argument on the rook/$\mathrm{PG}(3,2)$ model
+rather than a solver --- the object is now genuinely small.
+
+\subsection{Must a maximum set sit on a Turyn frame at all?}
+
+Every $496$-element set anyone here has produced or been given --- the record, the $64$-set plateau,
+a thousand further sets from GPU search --- is a duad set on \emph{some} Turyn frame. Nothing proves
+that a maximum set must be. If the duad question above were settled at $496$, this would reduce
+``$496$ is optimal'' to ``a maximum set admits a blockwise $2^3$''. The only evidence is the
+subgroup sweep of Section~\ref{sec:search}: the best set invariant under any group other than the
+record's own stabilisers is $402$. That is weak evidence and should be treated as such. I have no
+tractability estimate for this one; it is the question I would most like an idea about.
+
+\subsection{The four-point bound}
+
+Shovel-ready and fully scoped (Section~\ref{sec:fourpoint}): orbit data complete, largest block
+$4107$, $64$--$128$\,GB, two to four weeks including a sparse-integer rewrite of the certificate
+path, expected landing $820$--$830$. This narrows the gap but almost certainly does not close it. If
+either of you has access to stronger SDP infrastructure, this is the item that is simply waiting for
+a machine.
+
+\subsection{The Turyn-symmetric slice: $496 \le \mathrm{opt} \le 720$}\label{sec:open-slice}
+
+Restrict to sets invariant under the blockwise sign group. The lower end is the record (an
+independent union of $124$ orbits). The upper end is $4 \times 15 \times 12 = 720$, from the
+per-channel matching cap alone, reproduced independently by a clique-cover LP and by a constraint
+solver. \EV{} for the upper end: it rests on solver verdicts, not on an extracted exact certificate.
+
+The obstruction is sharp and worth stating precisely, because it explains why nothing moves.
+
+\begin{quote}
+\textbf{The flat profile.} Put exactly $4$ orbits in \emph{each} of the $45$ cells and use no
+monads. This profile satisfies every quickly-provable local cap: the rook cap ($4 \le 8$), the
+$K_{8,8,8}$ matching cap ($4+4+4 = 12$, exactly saturating), every proved per-pair line cap
+($\le 16$), plane cap ($\le 32$) and pair total ($\le 64$; a flat pair carries $60$), and the monad
+kill cut vacuously. It pays $15 \cdot 12 \cdot 4 = 720$.
+\end{quote}
+
+So every linear or Lagrangian relaxation stalls at exactly $720$ --- not approximately, exactly ---
+while more than ten hours of exact anytime search never found a $497$. The record's own profile is
+nothing like flat: it is the highly uneven $4/4/4$, $8/0/0$, $0/4/4$, $0/0/0$ table of Section~3.4,
+$56$ orbits short of the flat $180$. The gap between what a pair can actually do and what a
+relaxation can prove is enormous where it matters: with every channel capped at $k$, the best
+witness in one pair for $k = 2,3,4$ is $22, 27, 36$ duads while the best proved bound is $30, 45,
+60$. A pair genuinely cannot spread thin, and no relaxation tried can see it. Spectral methods do
+not help either: the duad-only conflict graph is $254$-regular with $\lambda_{\min} = -18$ exactly,
+giving a ratio bound of $190.6$ orbits $=762.4$ weight, and a symmetry-reduced weighted
+$\vartheta$ comes out around $1031$, worse than the clique LP.
+
+Moving below $720$ therefore requires refuting a subproblem combinatorially. The natural targets,
+with the bound each would certify: pinning the $k=2$ per-pair cap at its witness value gives
+$\le 630$; adding $k = 3$ gives $\le 588$; a plane subproblem across all three pairs gives
+$\le 560$. A refutation of the full $\ge 497$ instance would be the theorem itself.
+
+One correction to record here, because it is the kind of thing that propagates: an earlier claim
+that nine simultaneously perfect channels are infeasible was a mislabelled timeout. Eight
+simultaneously perfect channels provably exist (on an affine complement of a plane); ``exactly
+eight'' is open. The record has three perfect channels not because four is impossible --- four,
+five, six, seven and eight are all feasible --- but as an optimisation trade-off.
+
+\section{Method}
+
+The work was carried out by AI agents operating under my direction, with a two-verifier rule for
+every headline claim: no set, family or bound was recorded until two independent implementations,
+sharing no code path and regenerating their inputs separately, agreed on it. All certified
+statements are computed in exact integer or rational arithmetic --- no floating-point verdict is
+ever the last word --- and the headline claims were reimplemented independently in a second
+language. That rule earned its keep at least once: a driver bug produced a run of spurious
+$497$--$568$ candidates, both verifiers rejected every one of them, and no false record was
+logged.
+
+\end{document}
