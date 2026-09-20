@@ -43,6 +43,7 @@
 #include "kiss/swaps.h"
 #include "kiss/types.h"
 #include "kiss/verify.h"
+#include "kiss/platform.h"
 
 namespace {
 
@@ -55,8 +56,7 @@ void usage() {
 
 std::string utc_stamp() {
   const std::time_t t = std::time(nullptr);
-  std::tm tm {};
-  gmtime_r(&t, &tm);
+  const std::tm tm = kiss::gmtime_utc(t);
   char buf[32];
   std::strftime(buf, sizeof buf, "%Y%m%dT%H%M%SZ", &tm);
   return buf;
@@ -163,7 +163,7 @@ int main(int argc, char** argv) {
     }
     const std::filesystem::path adj_file = std::filesystem::path(data_dir) / "adj.u32";
     const kiss::Adjacency adj(adj_file);
-    std::printf("adjacency        : %s (mmap, %zu bytes)\n", adj_file.c_str(), adj.bytes());
+    std::printf("adjacency        : %s (mmap, %zu bytes)\n", adj_file.string().c_str(), adj.bytes());
     const kiss::LeechSwapGraph g(L, adj);
 
     const std::vector<kiss::Vec> SV = kiss::read_set(file);
@@ -186,7 +186,7 @@ int main(int argc, char** argv) {
     }
     FILE* tsv = nullptr;
     if (!out_dir.empty()) {
-      tsv = std::fopen((std::filesystem::path(out_dir) / "nodes.tsv").c_str(), "w");
+      tsv = kiss::fopen_path(std::filesystem::path(out_dir) / "nodes.tsv", "w");
       if (tsv)
         std::fprintf(tsv, "id\tparent\tdepth\tvia\tsize\tmin_tight\tfree\tt1\tt2\tt3\tmoves\tneighbours\tneighbours_new\timproving\tkmax_exh\tunions\tseconds\tfp0_new\tfp_new\tshapes\tplateau\tconnected\thist\thash\n");
     }
@@ -283,7 +283,7 @@ int main(int argc, char** argv) {
     // ---- summary of the fingerprint classes -------------------------------------
     std::printf("classes          : %zu distinct fingerprints (Co_0-invariant) over %zu expanded nodes; %zu with shapes; %zu distinct fp0 among all %zu discovered\n",
                 W.fingerprints, W.expanded, fp_shapes.size(), W.fingerprints0_all, W.nodes.size());
-    FILE* sum = out_dir.empty() ? nullptr : std::fopen((std::filesystem::path(out_dir) / "summary.txt").c_str(), "w");
+    FILE* sum = out_dir.empty() ? nullptr : kiss::fopen_path(std::filesystem::path(out_dir) / "summary.txt", "w");
     std::size_t ci = 0;
     for (const auto& kv : fp_nodes) {
       const kiss::PlateauNode& nd = W.nodes[kv.second.front()];

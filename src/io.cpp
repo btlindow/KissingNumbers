@@ -147,7 +147,7 @@ std::vector<Vec> read_set(const std::filesystem::path& path) {
 
 void write_set(const std::filesystem::path& path, const std::vector<Vec>& S,
                const std::string& header_comment) {
-  std::FILE* f = std::fopen(path.c_str(), "wb");
+  std::FILE* f = fopen_path(path, "wb");
   if (!f) throw std::runtime_error("write_set: cannot open " + path.string());
   std::string buf;
   if (!header_comment.empty()) {
@@ -179,7 +179,7 @@ void write_set(const std::filesystem::path& path, const std::vector<Vec>& S,
 // Binary helpers and SHA-256 front ends
 // ---------------------------------------------------------------------------
 std::vector<uint8_t> read_binary_file(const std::filesystem::path& path) {
-  std::FILE* f = std::fopen(path.c_str(), "rb");
+  std::FILE* f = fopen_path(path, "rb");
   if (!f) throw std::runtime_error("cannot open " + path.string());
   std::vector<uint8_t> data;
   const std::uintmax_t size = std::filesystem::file_size(path);
@@ -191,7 +191,7 @@ std::vector<uint8_t> read_binary_file(const std::filesystem::path& path) {
 }
 
 void write_binary_file(const std::filesystem::path& path, const void* data, std::size_t bytes) {
-  std::FILE* f = std::fopen(path.c_str(), "wb");
+  std::FILE* f = fopen_path(path, "wb");
   if (!f) throw std::runtime_error("cannot open " + path.string() + " for writing");
   const bool ok = std::fwrite(data, 1, bytes, f) == bytes;
   const bool closed = std::fclose(f) == 0;
@@ -205,7 +205,7 @@ std::string sha256_hex(const void* data, std::size_t bytes) {
 }
 
 std::string sha256_file(const std::filesystem::path& path) {
-  std::FILE* f = std::fopen(path.c_str(), "rb");
+  std::FILE* f = fopen_path(path, "rb");
   if (!f) throw std::runtime_error("sha256_file: cannot open " + path.string());
   Sha256 h;
   std::vector<uint8_t> buf(1u << 20);

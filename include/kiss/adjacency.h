@@ -3,8 +3,9 @@
 //
 // File format: raw uint32, N rows × DEG columns, row-major; row i lists the
 // indices j with ⟨C[i],C[j]⟩ = 16, sorted ascending. 3,616,704,000 bytes.
-// The table is never loaded into RAM (docs/design.md §1: ~7 GB free): it is mmap'ed
-// PROT_READ / MAP_PRIVATE and pages come from the page cache on demand.
+// The table is never loaded into RAM (docs/design.md §1: ~7 GB free): it is mapped
+// read-only — mmap PROT_READ/MAP_PRIVATE on POSIX, a PAGE_READONLY section on
+// Win32 — and pages come from the page cache on demand.
 //
 // The device upload (`to_device`) is the free function
 // kiss::cuda::adjacency_to_device(const Adjacency&) in cuda/adjacency_cuda.h,
@@ -47,10 +48,13 @@ class Adjacency {
   const uint32_t* data() const { return data_; }
   const std::filesystem::path& path() const { return path_; }
 
-  // Hint the kernel that a full sequential pass is coming (madvise); optional.
+  // Hint the kernel that a full sequential pass is coming (madvise); optional,
+  // and a no-op on Win32 (see src/adjacency.cpp).
   void advise_sequential() const;
 
  private:
+  void unmap_() noexcept;
+
   std::filesystem::path path_;
   const uint32_t* data_ = nullptr;
   void* map_ = nullptr;

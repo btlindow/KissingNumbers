@@ -47,6 +47,7 @@ docs/design.md     data formats, APIs and the GPU engine design (cited from sour
 data/              the Leech vectors, the record sets, certificates, disjoint families
 python/            reference implementations, bounds (LP/SDP), verifiers, analysis tools
 src/ include/ cuda/ tools/   C++ and CUDA: lattice generation, adjacency, GPU local search
+tools/kravatskiy/  independent exact verifiers for Kravatskiy's dimension 25–27 configurations
 tests/             ctest and pytest suites
 ```
 
@@ -61,6 +62,35 @@ unzip leech-496-artifacts.zip && cd leech-496-artifacts && python3 verify.py --a
 ```
 
 which needs only Python 3 and NumPy, takes about two minutes, and ends in a single `RESULT` line.
+
+### Other people's configurations, checked independently
+
+`tools/kravatskiy/` holds exact verifiers, written here and sharing no code with his, for the three
+configurations in dimensions 25, 26 and 27 published by Alexey Kravatskiy
+(<https://github.com/alexlegeartis/KissingNumbers>), together with a script that feeds them eleven
+deliberately corrupted artefacts and requires every one to be rejected. From a fresh clone:
+
+```
+python -m venv .venv
+source .venv/bin/activate            # Windows, Git Bash: source .venv/Scripts/activate
+pip install -r python/requirements.txt
+git clone https://github.com/alexlegeartis/KissingNumbers.git data/external/kravatskiy
+git -C data/external/kravatskiy checkout 52fa09d16e20394f06c1d19b7a1bdc967c865d9f
+AK=data/external/kravatskiy/verifications/improved
+PYTHONPATH=python python tools/kravatskiy/verify25_independent.py   $AK/dim25-lens-heads
+PYTHONPATH=python python tools/kravatskiy/verify2627_independent.py $AK/dim26-27-iota-triangles 26
+PYTHONPATH=python python tools/kravatskiy/verify2627_independent.py $AK/dim26-27-iota-triangles 27
+PYTHONPATH=python python tools/kravatskiy/falsify.py $AK/dim25-lens-heads $AK/dim26-27-iota-triangles
+```
+
+The first three each end in `ALL CHECKS PASS` with his bound (about 20 s, 80 s and 80 s); the last
+ends in `ALL FALSIFICATION TESTS PASS` (about 12 minutes). Details are in the last section of
+[`REPRODUCE.md`](REPRODUCE.md).
+
+### What is not here
+
+Work done jointly with collaborators is held back from this repository until the joint paper
+appears. Everything that is here can be verified from a clean clone.
 
 ## Licensing
 

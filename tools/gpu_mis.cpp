@@ -29,8 +29,6 @@
 //     ok=1 with the same size; otherwise VERIFY-FAIL, loudly.
 //
 // This tool owns no CUDA kernels: everything device-side is T3.2a/b's API.
-#include <sys/wait.h>
-#include <unistd.h>
 
 #include <algorithm>
 #include <array>
@@ -72,6 +70,7 @@
 #include "kiss_cuda.h"
 #include "ls_state.cuh"
 #include "ls_search.cuh"
+#include "kiss/platform.h"
 
 namespace fs = std::filesystem;
 using kiss::Adjacency;
@@ -97,8 +96,7 @@ void on_signal(int) { g_stop = 1; }
 // ---------------------------------------------------------------------------
 std::string utc_stamp() {
   const std::time_t t = std::time(nullptr);
-  std::tm tm{};
-  gmtime_r(&t, &tm);
+  const std::tm tm = kiss::gmtime_utc(t);
   char buf[32];
   std::strftime(buf, sizeof buf, "%Y%m%dT%H%M%SZ", &tm);
   return buf;
@@ -120,16 +118,8 @@ double now_s(const std::chrono::steady_clock::time_point& t0) {
   return std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
 }
 
-// Run a command, capture stdout+stderr, return the exit status.
-int run_capture(const std::string& cmd, std::string& out) {
-  out.clear();
-  FILE* p = popen((cmd + " 2>&1").c_str(), "r");
-  if (!p) return -1;
-  char buf[4096];
-  while (std::fgets(buf, sizeof buf, p)) out += buf;
-  const int rc = pclose(p);
-  return WIFEXITED(rc) ? WEXITSTATUS(rc) : -1;
-}
+// Run a command, capture stdout+stderr, return the exit status (kiss/platform.h).
+using kiss::run_capture;
 
 // Parse `RESULT ok=<0|1> size=<n>` out of a verifier's output.
 bool parse_result(const std::string& out, int* ok, long* size) {
@@ -512,7 +502,7 @@ void Driver::open_run_dir(bool resume) {
   notes_.open(run_dir_ / "run.log", std::ios::app);
   notes_ << "\n==== " << utc_stamp() << " " << cmdline << (resume ? "  [resume]" : "") << "\n";
   notes_.flush();
-  std::printf("run dir   : %s\n", run_dir_.c_str());
+  std::printf("run dir   : %s\n", run_dir_.string().c_str());
 }
 
 void Driver::wait_for_vram() {
@@ -910,7 +900,7 @@ void Driver::custody(const std::vector<uint32_t>& S, const std::string& origin, 
                                    ".txt");
   kiss::write_set(f, V, "gpu_mis run " + c_.run_name + " " + origin + " git " + kiss::git_hash());
   ++found_written_;
-  std::printf("\n>>> candidate |S| = %zu (%s) written to %s\n", S.size(), origin.c_str(), f.c_str());
+  std::printf("\n>>> candidate |S| = %zu (%s) written to %s\n", S.size(), origin.c_str(), f.string().c_str());
   std::fflush(stdout);
   notes_ << "candidate size=" << S.size() << " origin=" << origin << " file=" << f.string() << "\n";
   notes_.flush();
@@ -1150,7 +1140,7 @@ void Driver::checkpoint(bool final_exit) {
   fs::rename(tmp, run_dir_ / "checkpoint.txt");
   last_ckpt_t_ = elapsed_base_ + now_s(t0_);
   std::printf("checkpoint: launch %d, epoch -> %d, %s\n", launch_, next_epoch,
-              (run_dir_ / "checkpoint.txt").c_str());
+              (run_dir_ / "checkpoint.txt").string().c_str());
   notes_ << "checkpoint launch " << launch_ << " epoch " << next_epoch << "\n";
   notes_.flush();
 
@@ -1478,14 +1468,10 @@ int main(int argc, char** argv) {
     RunConfig c = kiss::load_run_config(cfg_path, overrides);
     if (selfcheck) c.selfcheck_every = selfcheck_n;
     if (c.verify_s.empty()) {
-      char buf[4096];
-      const ssize_t n = readlink("/proc/self/exe", buf, sizeof buf - 1);
-      if (n > 0) {
-        buf[n] = '\0';
-        c.verify_s = (fs::path(buf).parent_path() / "verify_s").string();
-      } else {
-        c.verify_s = "verify_s";
-      }
+      const std::string self = kiss::self_exe_path();
+      c.verify_s = self.empty()
+                       ? kiss::exe("verify_s")
+                       : (fs::path(self).parent_path() / kiss::exe("verify_s")).string();
     }
     kiss::validate_run_config(c);
     Driver d(std::move(c), echo);

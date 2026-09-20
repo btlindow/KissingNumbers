@@ -32,13 +32,14 @@
 #include <string>
 #include <vector>
 
-#include <unistd.h>
 
 #include "kiss/golay.h"
 #include "kiss/group.h"
 #include "kiss/io.h"
 #include "kiss/leech.h"
 #include "kiss/types.h"
+#include "kiss/bits.h"
+#include "kiss/platform.h"
 
 namespace {
 
@@ -241,7 +242,7 @@ int main(int argc, char** argv) {
         uint32_t m = 0;
         for (uint8_t i : sextet[static_cast<std::size_t>(a)]) m |= 1u << i;
         for (uint8_t i : sextet[static_cast<std::size_t>(b)]) m |= 1u << i;
-        CHECK(kiss::golay_is_codeword(m) && __builtin_popcount(m) == 8, "tetrads %d,%d do not form an octad", a, b);
+        CHECK(kiss::golay_is_codeword(m) && kiss::popcount32(m) == 8, "tetrads %d,%d do not form an octad", a, b);
       }
   }
   const Aut xi = kiss::make_xi(sextet);
@@ -279,7 +280,7 @@ int main(int argc, char** argv) {
     CHECK(throws([&] { kiss::apply(xi, e0); }), "apply(Aut) must throw on a non-integral image");
     Vec v0; CHECK(!kiss::try_apply(xi, e0, v0), "try_apply");
     // Round trip through save_aut/load_aut.
-    const std::filesystem::path tmp = std::filesystem::temp_directory_path() / ("kiss_xi_" + std::to_string(::getpid()) + ".txt");
+    const std::filesystem::path tmp = std::filesystem::temp_directory_path() / ("kiss_xi_" + std::to_string(kiss::process_id()) + ".txt");
     kiss::save_aut(tmp, xi, "round trip\nsecond line");
     CHECK(kiss::load_aut(tmp) == xi, "save/load round trip");
     std::filesystem::remove(tmp);

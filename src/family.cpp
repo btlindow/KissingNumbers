@@ -20,6 +20,7 @@
 
 #include "kiss/io.h"
 #include "kiss/verify.h"
+#include "kiss/bits.h"
 
 namespace kiss {
 
@@ -30,8 +31,6 @@ using clock_t_ = std::chrono::steady_clock;
 double seconds_since(clock_t_::time_point t0) {
   return std::chrono::duration<double>(clock_t_::now() - t0).count();
 }
-
-inline int popcount64(uint64_t x) { return __builtin_popcountll(x); }
 
 }  // namespace
 
@@ -172,11 +171,13 @@ BitGraph disjointness_graph_masks(const ImagePool& pool) {
   for (int i = 0; i < P; ++i)
     for (int j = i + 1; j < P; ++j)
       if (mask_disjoint(masks[static_cast<std::size_t>(i)], masks[static_cast<std::size_t>(j)])) {
-        // set both directions without racing: row i is owned by this thread,
-        // row j by another — use atomic OR on row j.
-        G.row(i)[j >> 6] |= uint64_t{1} << (j & 63);
-        uint64_t* wj = G.row(j) + (i >> 6);
-        __atomic_fetch_or(wj, uint64_t{1} << (i & 63), __ATOMIC_RELAXED);
+        // Both directions need the atomic. Row i is NOT private to this
+        // thread: it is also written as "row j" by every thread holding an
+        // i' < i, and those land in the same word whenever i < 64. Plain |=
+        // there is a data race, and on MSVC (which does not fuse it into one
+        // `or [mem], reg`) it loses edges often enough to fail tests/test_family.
+        kiss::atomic_or64_relaxed(G.row(i) + (j >> 6), uint64_t{1} << (j & 63));
+        kiss::atomic_or64_relaxed(G.row(j) + (i >> 6), uint64_t{1} << (i & 63));
       }
   return G;
 }
@@ -206,7 +207,7 @@ std::vector<int> bits_to_list(const std::vector<uint64_t>& cand) {
   for (std::size_t w = 0; w < cand.size(); ++w) {
     uint64_t x = cand[w];
     while (x) {
-      const int b = __builtin_ctzll(x);
+      const int b = kiss::ctz64(x);
       out.push_back(static_cast<int>(w * 64) + b);
       x &= x - 1;
     }

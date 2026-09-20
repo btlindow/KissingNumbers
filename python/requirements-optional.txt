@@ -1,0 +1,7 @@
+# Optional, and deliberately not pinned.
+#
+# pynauty is imported lazily by exactly one function in python/tools/channel_opt.py (the
+# automorphism group of the channel graph). No verifier, bound or test needs it. It has no
+# Windows wheel and its source distribution builds nauty with `make`, so it does not install
+# on Windows; on Linux:  pip install -r python/requirements-optional.txt
+pynauty

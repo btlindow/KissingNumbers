@@ -12,6 +12,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "kiss/bits.h"
+
 namespace kiss {
 
 namespace {
@@ -42,7 +44,7 @@ struct Mis {
 
   static int popc(const uint64_t* a, int W) {
     int c = 0;
-    for (int w = 0; w < W; ++w) c += __builtin_popcountll(a[w]);
+    for (int w = 0; w < W; ++w) c += kiss::popcount64(a[w]);
     return c;
   }
 
@@ -59,11 +61,11 @@ struct Mis {
     for (int w = 0; w < W; ++w) {
       uint64_t bits = cand[w];
       while (bits) {
-        const int v = w * 64 + __builtin_ctzll(bits);
+        const int v = w * 64 + kiss::ctz64(bits);
         bits &= bits - 1;
         const uint64_t* row = &adj[static_cast<std::size_t>(v) * static_cast<std::size_t>(W)];
         int d = 0;
-        for (int x = 0; x < W; ++x) d += __builtin_popcountll(row[x] & cand[x]);
+        for (int x = 0; x < W; ++x) d += kiss::popcount64(row[x] & cand[x]);
         if (d > pickdeg) { pickdeg = d; pick = v; }
       }
     }
@@ -73,7 +75,7 @@ struct Mis {
       for (int w = 0; w < W; ++w) {
         uint64_t bits = cand[w];
         while (bits) {
-          all.push_back(w * 64 + __builtin_ctzll(bits));
+          all.push_back(w * 64 + kiss::ctz64(bits));
           bits &= bits - 1;
         }
       }

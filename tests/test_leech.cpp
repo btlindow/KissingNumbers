@@ -33,12 +33,12 @@
 #include <vector>
 
 #include <omp.h>
-#include <unistd.h>
 
 #include "kiss/golay.h"
 #include "kiss/io.h"
 #include "kiss/leech.h"
 #include "kiss/types.h"
+#include "kiss/platform.h"
 
 namespace {
 
@@ -388,7 +388,7 @@ int main() {
 
     namespace fs = std::filesystem;
     const fs::path tmp = fs::temp_directory_path() /
-                         ("kiss_test_leech_" + std::to_string(static_cast<long>(::getpid())));
+                         ("kiss_test_leech_" + std::to_string(kiss::process_id()));
     fs::remove_all(tmp);
     fs::create_directories(tmp);
     kiss::save_leech(L, tmp);

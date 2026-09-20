@@ -175,7 +175,7 @@ int main(int argc, char** argv) {
 
     const std::filesystem::path adj_file = data_dir / "adj.u32";
     if (!std::filesystem::exists(adj_file) || std::filesystem::file_size(adj_file) != kiss::Adjacency::EXPECTED_BYTES) {
-      std::printf("adjacency        : %s absent — Leech-graph checks skipped\n", adj_file.c_str());
+      std::printf("adjacency        : %s absent — Leech-graph checks skipped\n", adj_file.string().c_str());
       if (failures == 0) {
         std::printf("RESULT ok=1 synthetic=1 leech=0 failures=0 (skipped: no adjacency file)\n");
         return 77;
@@ -237,7 +237,7 @@ int main(int argc, char** argv) {
                   K.levels[3].distinct_conf_eq_k, K.levels[3].R_examined, K.levels[3].largest_pool, K.levels[3].best_m,
                   K.levels[3].plateau_moves, K.seconds);
     } else {
-      std::printf("496              : %s absent, skipped\n", f496.c_str());
+      std::printf("496              : %s absent, skipped\n", f496.string().c_str());
     }
 
     // ---- 3. greedy random maximal set ---------------------------------------

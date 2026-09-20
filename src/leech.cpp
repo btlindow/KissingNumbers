@@ -10,6 +10,7 @@
 
 #include "kiss/golay.h"
 #include "kiss/io.h"
+#include "kiss/bits.h"
 
 namespace kiss {
 
@@ -17,8 +18,6 @@ namespace {
 
 constexpr std::size_t kN = static_cast<std::size_t>(N);
 constexpr std::size_t kDim = static_cast<std::size_t>(DIM);
-
-inline int popcount32(uint32_t x) { return __builtin_popcount(x); }
 
 // Shape (a): ±2 on the octad coordinates, even number of minus signs.
 void gen_octad_shape(std::vector<Vec>& out) {
@@ -209,7 +208,7 @@ void save_leech(const Leech& L, const std::filesystem::path& data_dir) {
   write_binary_file(data_dir / "leech_packed.u32", packed.data(), packed.size() * 4);
   // Human-readable copy, same order, no header (plain 24-column table).
   const auto txt = data_dir / "leech_min.txt";
-  std::FILE* f = std::fopen(txt.c_str(), "wb");
+  std::FILE* f = fopen_path(txt, "wb");
   if (!f) throw std::runtime_error("save_leech: cannot open " + txt.string());
   std::string buf;
   buf.reserve(kN * 60);

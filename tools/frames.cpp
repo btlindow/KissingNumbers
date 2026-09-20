@@ -47,6 +47,7 @@
 #include "kiss/leech.h"
 #include "kiss/types.h"
 #include "kiss/verify.h"
+#include "kiss/platform.h"
 
 namespace {
 
@@ -59,8 +60,7 @@ void usage() {
 
 std::string utc_stamp() {
   const std::time_t t = std::time(nullptr);
-  std::tm tm{};
-  gmtime_r(&t, &tm);
+  const std::tm tm = kiss::gmtime_utc(t);
   char buf[32];
   std::strftime(buf, sizeof buf, "%Y%m%dT%H%M%SZ", &tm);
   return buf;
@@ -186,14 +186,14 @@ int cmd_count(const Args& a) {
   }
   std::printf("restriction: shape=%d coords<%d -> %d admissible classes\n", shape, coords, allowed.count());
   const Neighbourhood Nb = build_neighbourhood(L, K, c, &allowed);
-  long dmin = 1L << 40, dmax = 0, dsum = 0;
+  long long dmin = 1LL << 40, dmax = 0, dsum = 0;  // long is 32-bit on Windows
   for (int i = 0; i < Nb.size(); ++i) {
-    const long d = Nb.adj[static_cast<std::size_t>(i)].count();
+    const long long d = Nb.adj[static_cast<std::size_t>(i)].count();
     dmin = std::min(dmin, d);
     dmax = std::max(dmax, d);
     dsum += d;
   }
-  std::printf("neighbourhood of class %u: %d vertices, degree min/mean/max = %ld / %.1f / %ld, built in %.1f s\n", c,
+  std::printf("neighbourhood of class %u: %d vertices, degree min/mean/max = %lld / %.1f / %lld, built in %.1f s\n", c,
               Nb.size(), dmin, Nb.size() ? static_cast<double>(dsum) / Nb.size() : 0.0, dmax, now());
 
   // Knuth estimate

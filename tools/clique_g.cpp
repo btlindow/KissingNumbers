@@ -48,6 +48,7 @@
 #include "kiss/adjacency.h"
 #include "kiss/leech.h"
 #include "kiss/types.h"
+#include "kiss/bits.h"
 
 namespace {
 
@@ -77,13 +78,13 @@ struct Bits {
   }
   int count() const {
     int c = 0;
-    for (int k = 0; k < MAXW; ++k) c += __builtin_popcountll(w[static_cast<std::size_t>(k)]);
+    for (int k = 0; k < MAXW; ++k) c += kiss::popcount64(w[static_cast<std::size_t>(k)]);
     return c;
   }
   int lsb() const {  // index of lowest set bit; -1 if empty
     for (int k = 0; k < MAXW; ++k)
       if (w[static_cast<std::size_t>(k)])
-        return (k << 6) + __builtin_ctzll(w[static_cast<std::size_t>(k)]);
+        return (k << 6) + kiss::ctz64(w[static_cast<std::size_t>(k)]);
     return -1;
   }
   Bits operator&(const Bits& o) const {
@@ -101,7 +102,7 @@ struct Bits {
   int count_and(const Bits& o) const {
     int c = 0;
     for (int k = 0; k < MAXW; ++k)
-      c += __builtin_popcountll(w[static_cast<std::size_t>(k)] & o.w[static_cast<std::size_t>(k)]);
+      c += kiss::popcount64(w[static_cast<std::size_t>(k)] & o.w[static_cast<std::size_t>(k)]);
     return c;
   }
 };

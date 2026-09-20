@@ -11,6 +11,7 @@
 
 #include "kiss/golay.h"
 #include "kiss/io.h"
+#include "kiss/bits.h"
 
 namespace kiss {
 
@@ -468,11 +469,11 @@ std::vector<Monomial> monomial_generators(const std::filesystem::path& group_dir
   for (uint32_t w : golay_codewords()) {
     uint32_t r = w;
     for (uint32_t b : basis)
-      if (r & (1u << (31 - __builtin_clz(b)))) r ^= b;
+      if (r & (1u << (31 - kiss::clz32(b)))) r ^= b;
     if (r == 0) continue;
     // keep the echelon invariant: reduce existing rows by r
     for (uint32_t& b : basis)
-      if (b & (1u << (31 - __builtin_clz(r)))) b ^= r;
+      if (b & (1u << (31 - kiss::clz32(r)))) b ^= r;
     basis.push_back(r);
     gens.push_back(sign_flip(w));  // the original codeword, not the reduced one
     if (basis.size() == 12) break;

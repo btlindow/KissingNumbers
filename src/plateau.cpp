@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "kiss/io.h"
+#include "kiss/bits.h"
 
 namespace kiss {
 
@@ -88,7 +89,7 @@ std::vector<Swap> disjoint_move_combinations(const std::vector<Swap>& moves, int
     for (std::size_t j = i + 1; j < m; ++j) disj[i * m + j] = disj[j * m + i] = swaps_disjoint(moves[i], moves[j]) ? 1 : 0;
   for (std::size_t size = 2; size <= m; ++size)
     for (uint32_t mask = 1; mask < (1u << m); ++mask) {
-      if (static_cast<std::size_t>(__builtin_popcount(mask)) != size) continue;
+      if (static_cast<std::size_t>(kiss::popcount32(mask)) != size) continue;
       bool ok = true;
       for (std::size_t i = 0; i < m && ok; ++i) {
         if (!(mask >> i & 1u)) continue;

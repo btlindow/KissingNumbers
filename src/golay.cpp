@@ -7,20 +7,11 @@
 
 #include <algorithm>
 
+#include "kiss/bits.h"
+
 namespace kiss {
 
 namespace {
-
-// Number of set bits (portable; the compiler lowers it to popcnt when allowed).
-inline int popcount32(uint32_t x) {
-#if defined(__GNUC__) || defined(__clang__)
-  return __builtin_popcount(x);
-#else
-  int c = 0;
-  for (; x; x &= x - 1) ++c;
-  return c;
-#endif
-}
 
 // Carry-less product a(x)·b(x) over GF(2). Inputs are bit-mask polynomials;
 // deg a + deg b must be < 32 (here <= 11 + 11 = 22).

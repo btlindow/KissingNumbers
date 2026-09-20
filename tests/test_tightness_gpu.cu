@@ -239,7 +239,7 @@ int main(int argc, char** argv) {
         const double el = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
         if (el >= wait_s496) break;
         if (static_cast<int>(el) % 30 == 0)
-          std::printf("waiting for %s (%.0f/%d s)\n", p496.c_str(), el, wait_s496);
+          std::printf("waiting for %s (%.0f/%d s)\n", p496.string().c_str(), el, wait_s496);
         std::this_thread::sleep_for(std::chrono::seconds(5));
       }
     }

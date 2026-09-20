@@ -3,44 +3,95 @@
   "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
   "configurePresets": [
     {
-      "name": "base",
+      "name": "common",
       "hidden": true,
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
-        "CMAKE_CUDA_COMPILER": "/usr/local/cuda-12.8/bin/nvcc",
         "CMAKE_CUDA_ARCHITECTURES": "86",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
         "KISS_ENABLE_GPU_TESTS": "ON"
       }
     },
+
+    {
+      "name": "base",
+      "hidden": true,
+      "inherits": "common",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux" },
+      "cacheVariables": {
+        "CMAKE_CUDA_COMPILER": "/usr/local/cuda-12.8/bin/nvcc",
+        "KISS_EXPECTED_NVCC": "/usr/local/cuda-12.8/bin/nvcc"
+      }
+    },
     {
       "name": "release",
-      "displayName": "Release (-O3 -DNDEBUG, nvcc -O3 -lineinfo)",
+      "displayName": "Linux Release (-O3 -DNDEBUG, nvcc -O3 -lineinfo)",
       "inherits": "base",
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
     },
     {
       "name": "debug",
-      "displayName": "Debug (-O0 -g, nvcc -G)",
+      "displayName": "Linux Debug (-O0 -g, nvcc -G)",
       "inherits": "base",
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
     },
     {
       "name": "sanitize",
-      "displayName": "Debug + host ASan/UBSan",
+      "displayName": "Linux Debug + host ASan/UBSan",
       "inherits": "debug",
+      "cacheVariables": { "KISS_SANITIZE": "ON" }
+    },
+
+    {
+      "name": "win-base",
+      "hidden": true,
+      "inherits": "common",
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" },
+      "cacheVariables": {
+        "CMAKE_CUDA_COMPILER": "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.4/bin/nvcc.exe",
+        "KISS_EXPECTED_NVCC": "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.4/bin/nvcc.exe",
+        "CMAKE_CXX_COMPILER": "cl.exe"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": [ "Windows" ]
+        }
+      }
+    },
+    {
+      "name": "windows-release",
+      "displayName": "Windows Release (MSVC /O2, nvcc -O3 -lineinfo)",
+      "inherits": "win-base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    },
+    {
+      "name": "windows-debug",
+      "displayName": "Windows Debug (MSVC /Od /Zi, nvcc -G)",
+      "inherits": "win-base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "windows-sanitize",
+      "displayName": "Windows Debug + host ASan (MSVC has no UBSan)",
+      "inherits": "windows-debug",
       "cacheVariables": { "KISS_SANITIZE": "ON" }
     }
   ],
   "buildPresets": [
     { "name": "release",  "configurePreset": "release" },
     { "name": "debug",    "configurePreset": "debug" },
-    { "name": "sanitize", "configurePreset": "sanitize" }
+    { "name": "sanitize", "configurePreset": "sanitize" },
+    { "name": "windows-release",  "configurePreset": "windows-release" },
+    { "name": "windows-debug",    "configurePreset": "windows-debug" },
+    { "name": "windows-sanitize", "configurePreset": "windows-sanitize" }
   ],
   "testPresets": [
     { "name": "release",  "configurePreset": "release",  "output": { "outputOnFailure": true } },
     { "name": "debug",    "configurePreset": "debug",    "output": { "outputOnFailure": true } },
-    { "name": "sanitize", "configurePreset": "sanitize", "output": { "outputOnFailure": true } }
+    { "name": "sanitize", "configurePreset": "sanitize", "output": { "outputOnFailure": true } },
+    { "name": "windows-release",  "configurePreset": "windows-release",  "output": { "outputOnFailure": true } },
+    { "name": "windows-debug",    "configurePreset": "windows-debug",    "output": { "outputOnFailure": true } },
+    { "name": "windows-sanitize", "configurePreset": "windows-sanitize", "output": { "outputOnFailure": true } }
   ]
 }

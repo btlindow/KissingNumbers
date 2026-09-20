@@ -143,3 +143,14 @@ Rows n = 24..31 (lower / upper / references as numbered on the page):
 | 31 | 238350 | 2213487 | [15, 10] | Ma et al. 2025 | de Laat–Leijenhorst 2024 |
 
 Identical to README §1.1 — nothing has moved past 496 in dimensions 24–31.
+
+---
+
+## 5. Kravatskiy's repository (added September 2026)
+
+| item | value |
+|---|---|
+| URL | https://github.com/alexlegeartis/KissingNumbers (MIT) |
+| clone | `git clone https://github.com/alexlegeartis/KissingNumbers.git data/external/kravatskiy` (gitignored) |
+| commit | `52fa09d16e20394f06c1d19b7a1bdc967c865d9f`, 2026-09-18 |
+| used | `verifications/improved/dim25-lens-heads/` and `verifications/improved/dim26-27-iota-triangles/`, read by the independent verifiers in `tools/kravatskiy/` (REPRODUCE.md, last section) |

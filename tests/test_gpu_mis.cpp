@@ -14,7 +14,6 @@
 //
 // Exit 0 on success, 77 (ctest SKIP_RETURN_CODE) without a CUDA device, without
 // data/adj.u32 or when another process holds the card.
-#include <unistd.h>
 
 #include <algorithm>
 #include <cstdint>
@@ -31,6 +30,7 @@
 
 #include "adjacency_cuda.h"
 #include "kiss/run_config.h"
+#include "kiss/platform.h"
 
 namespace fs = std::filesystem;
 
@@ -55,15 +55,7 @@ std::string gbstr(std::size_t b) {
   return buf;
 }
 
-int run_capture(const std::string& cmd, std::string& out) {
-  out.clear();
-  FILE* p = popen((cmd + " 2>&1").c_str(), "r");
-  if (!p) return -1;
-  char buf[4096];
-  while (std::fgets(buf, sizeof buf, p)) out += buf;
-  const int rc = pclose(p);
-  return WIFEXITED(rc) ? WEXITSTATUS(rc) : -1;
-}
+using kiss::run_capture;  // kiss/platform.h
 
 std::string last_result_line(const std::string& out) {
   const std::size_t pos = out.rfind("RESULT ");
@@ -229,7 +221,7 @@ void stage_custody() {
                                o1);
     const int r2 = run_capture(".venv/bin/python python/verify_S.py " + de.path().string(), o2);
     const std::string l1 = last_result_line(o1), l2 = last_result_line(o2);
-    std::printf("  %s\n    verify_s : %s\n    verify_S.py: %s\n", de.path().filename().c_str(), l1.c_str(), l2.c_str());
+    std::printf("  %s\n    verify_s : %s\n    verify_S.py: %s\n", de.path().filename().string().c_str(), l1.c_str(), l2.c_str());
     check(r1 == 0 && field(l1, "ok") == 1, "custody: verify_s accepts " + de.path().string());
     check(r2 == 0 && field(l2, "ok") == 1, "custody: verify_S.py accepts " + de.path().string());
     check(field(l1, "size") == field(l2, "size"), "custody: both verifiers report the same size");
@@ -362,23 +354,21 @@ int main(int argc, char** argv) {
     if (a == "--soak-minutes" && i + 1 < argc) soak_minutes = std::atof(argv[++i]);
     else if (a == "--small") { small = true; soak_minutes = 0.25; }
   }
-  char buf[4096];
-  const ssize_t n = readlink("/proc/self/exe", buf, sizeof buf - 1);
-  if (n <= 0) {
+  const std::string self = kiss::self_exe_path();
+  if (self.empty()) {
     std::printf("RESULT ok=0 reason=\"cannot locate own executable\"\n");
     return 1;
   }
-  buf[n] = '\0';
-  g_exe_dir = fs::path(buf).parent_path();
-  g_tool = g_exe_dir / ".." / "tools" / "gpu_mis";
+  g_exe_dir = fs::path(self).parent_path();
+  g_tool = g_exe_dir / ".." / "tools" / kiss::exe("gpu_mis");
   g_root = fs::current_path();
-  std::printf("test_gpu_mis: tool %s, cwd %s, soak %.2f min%s\n", g_tool.c_str(), g_root.c_str(), soak_minutes,
+  std::printf("test_gpu_mis: tool %s, cwd %s, soak %.2f min%s\n", g_tool.string().c_str(), g_root.string().c_str(), soak_minutes,
               small ? " (small)" : "");
 
   stage_json();
 
   if (!fs::exists(g_tool)) {
-    std::printf("test_gpu_mis: %s not built — skipping the GPU stages\n", g_tool.c_str());
+    std::printf("test_gpu_mis: %s not built — skipping the GPU stages\n", g_tool.string().c_str());
     std::printf("RESULT ok=%d skipped=1 reason=no_tool\n", g_failures == 0 ? 1 : 0);
     return g_failures == 0 ? kSkip : 1;
   }

@@ -10,6 +10,7 @@
 #include <unordered_set>
 
 #include "kiss/golay.h"
+#include "kiss/bits.h"
 
 namespace kiss {
 
@@ -381,7 +382,7 @@ struct BB {
     for (uint32_t wi = 0; wi < W; ++wi) {
       uint64_t x = P[wi];
       while (x) {
-        const int b = __builtin_ctzll(x);
+        const int b = kiss::ctz64(x);
         x &= x - 1;
         verts.push_back(wi * 64 + static_cast<uint32_t>(b));
       }

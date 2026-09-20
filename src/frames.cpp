@@ -2,7 +2,7 @@
 //
 // Algorithms (all exact integer arithmetic; OpenMP where noted):
 //  * make_classes: class id = rank of the representative v < neg[v].
-//  * Bitset: 64-bit words, popcount by __builtin_popcountll.
+//  * Bitset: 64-bit words, popcount by kiss::popcount64 (kiss/bits.h).
 //  * induced_graph: |pool|² dots, OpenMP over rows (no symmetry, no races).
 //  * maximal_cliques: Bron–Kerbosch with the Tomita pivot (u ∈ P ∪ X maximising
 //    |P ∩ N(u)|), bitsets, explicit recursion.
@@ -47,6 +47,7 @@
 #include <omp.h>
 
 #include "kiss/verify.h"
+#include "kiss/bits.h"
 
 namespace kiss {
 
@@ -174,7 +175,7 @@ bool Bitset::empty() const {
 }
 int Bitset::count() const {
   int c = 0;
-  for (uint64_t x : w_) c += __builtin_popcountll(x);
+  for (uint64_t x : w_) c += kiss::popcount64(x);
   return c;
 }
 void Bitset::and_with(const Bitset& o) {
@@ -195,7 +196,7 @@ int Bitset::intersect_above(const Bitset& a, const Bitset& b, int v) {
     uint64_t x = a.w_[k] & b.w_[k];
     if (k == k0 && ((v + 1) & 63)) x &= ~uint64_t{0} << ((v + 1) & 63);
     w_[k] = x;
-    c += __builtin_popcountll(x);
+    c += kiss::popcount64(x);
   }
   return c;
 }
@@ -204,7 +205,7 @@ int Bitset::next(int i) const {
   std::size_t k = static_cast<std::size_t>(i >> 6);
   uint64_t x = w_[k] & (~uint64_t{0} << (i & 63));
   while (true) {
-    if (x) return static_cast<int>(k * 64) + __builtin_ctzll(x);
+    if (x) return static_cast<int>(k * 64) + kiss::ctz64(x);
     if (++k >= w_.size()) return -1;
     x = w_[k];
   }
@@ -950,7 +951,7 @@ struct ExtState {
       const uint64_t* a = conf[static_cast<std::size_t>(u)].words();
       const uint64_t* b = cu.words();
       int mc = 0;
-      for (int w = 0; w < cu.nwords(); ++w) mc += __builtin_popcountll(a[w] & ~b[w]);
+      for (int w = 0; w < cu.nwords(); ++w) mc += kiss::popcount64(a[w] & ~b[w]);
       ++hist[static_cast<std::size_t>(mc)];
     });
     int best = new_now - conf_now;

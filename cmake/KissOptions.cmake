@@ -2,30 +2,60 @@
 include_guard(GLOBAL)
 
 option(KISS_ENABLE_GPU_TESTS "Register ctest targets that need a CUDA device (label: gpu)" ON)
-option(KISS_WERROR            "Treat warnings as errors"                                    ON)
 option(KISS_SANITIZE          "Build host code with AddressSanitizer + UBSan"               OFF)
 
-# docs/design.md §1: pin CUDA 12.8. /usr/local/cuda symlinks to 13.0, and 12.8's nvcc
-# is on PATH; the presets set CMAKE_CUDA_COMPILER explicitly so the two can
-# never disagree. Warn loudly if a different toolkit sneaks in.
-set(KISS_EXPECTED_NVCC "/usr/local/cuda-12.8/bin/nvcc" CACHE FILEPATH
-    "nvcc the project is pinned to (docs/design.md §1)")
-if(NOT CMAKE_CUDA_COMPILER STREQUAL KISS_EXPECTED_NVCC)
+# -Werror is the default where the code was developed (gcc). MSVC's /W4 flags a
+# different, larger set — mostly signed/unsigned narrowing inside the STL — so
+# warnings are reported there but not fatal. Override with -DKISS_WERROR=ON.
+if(MSVC)
+  option(KISS_WERROR "Treat warnings as errors" OFF)
+else()
+  option(KISS_WERROR "Treat warnings as errors" ON)
+endif()
+
+# ---------------------------------------------------------------------------
+# CUDA toolkit
+#
+# docs/design.md §1 pins a toolkit per machine, because more than one is
+# usually installed and PATH vs. symlink must never disagree. The pin itself
+# lives in CMakePresets.json (CMAKE_CUDA_COMPILER); this file only checks that
+# whatever CMake resolved is inside the supported range and is what the preset
+# asked for.
+#
+#   Linux box (§1):   CUDA 12.8 at /usr/local/cuda-12.8
+#   Windows box (§1): CUDA 13.x under
+#                     C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/vNN.N
+#
+# Both are supported; sm_86 is current in each. CUDA 13 dropped Maxwell,
+# Pascal and Volta, which this project never targeted.
+# ---------------------------------------------------------------------------
+set(KISS_CUDA_MIN 12.8 CACHE STRING "Oldest CUDA toolkit the project is tested against")
+set(KISS_CUDA_MAX 14.0 CACHE STRING "First CUDA toolkit version NOT tested (exclusive)")
+set(KISS_EXPECTED_NVCC "" CACHE FILEPATH
+    "nvcc the active preset pins (docs/design.md §1); empty disables the check")
+
+if(KISS_EXPECTED_NVCC AND NOT CMAKE_CUDA_COMPILER STREQUAL KISS_EXPECTED_NVCC)
   message(WARNING
     "CMAKE_CUDA_COMPILER is '${CMAKE_CUDA_COMPILER}', expected '${KISS_EXPECTED_NVCC}'. "
     "Use one of the presets in CMakePresets.json (cmake --preset release).")
 endif()
-if(NOT CMAKE_CUDA_COMPILER_VERSION VERSION_GREATER_EQUAL 12.8
-   OR CMAKE_CUDA_COMPILER_VERSION VERSION_GREATER_EQUAL 13.0)
-  message(WARNING "nvcc ${CMAKE_CUDA_COMPILER_VERSION} found; the project is pinned to 12.8.x")
-endif()
-if(NOT "86" IN_LIST CMAKE_CUDA_ARCHITECTURES)
-  message(WARNING "CMAKE_CUDA_ARCHITECTURES='${CMAKE_CUDA_ARCHITECTURES}'; the target GPU is sm_86 (docs/design.md §1)")
+if(CMAKE_CUDA_COMPILER_VERSION VERSION_LESS KISS_CUDA_MIN
+   OR CMAKE_CUDA_COMPILER_VERSION VERSION_GREATER_EQUAL KISS_CUDA_MAX)
+  message(WARNING "nvcc ${CMAKE_CUDA_COMPILER_VERSION} found; tested range is "
+                  "[${KISS_CUDA_MIN}, ${KISS_CUDA_MAX}).")
 endif()
 
+# Every machine the project has run on has an sm_86 card (RTX 3070 Laptop, then
+# RTX 3080 Ti). The kernels assume Ampere occupancy and __dp4a throughput; they
+# are correct elsewhere but untuned, so say so rather than fail.
+if(NOT "86" IN_LIST CMAKE_CUDA_ARCHITECTURES)
+  message(WARNING "CMAKE_CUDA_ARCHITECTURES='${CMAKE_CUDA_ARCHITECTURES}'; the tuned target is sm_86 (docs/design.md §1)")
+endif()
+
+message(STATUS "Host system   : ${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_PROCESSOR}")
 message(STATUS "CUDA compiler : ${CMAKE_CUDA_COMPILER} (${CMAKE_CUDA_COMPILER_VERSION})")
 message(STATUS "CUDA archs    : ${CMAKE_CUDA_ARCHITECTURES}")
-message(STATUS "C++ compiler  : ${CMAKE_CXX_COMPILER} (${CMAKE_CXX_COMPILER_VERSION})")
+message(STATUS "C++ compiler  : ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "Build type    : ${CMAKE_BUILD_TYPE}")
 message(STATUS "GPU tests     : ${KISS_ENABLE_GPU_TESTS}   sanitize: ${KISS_SANITIZE}   werror: ${KISS_WERROR}")
 

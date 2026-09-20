@@ -44,6 +44,7 @@
 #include "kiss/plateau.h"
 #include "kiss/swaps.h"
 #include "kiss/types.h"
+#include "kiss/platform.h"
 
 namespace {
 
@@ -56,8 +57,7 @@ void usage() {
 
 std::string utc_stamp() {
   const std::time_t t = std::time(nullptr);
-  std::tm tm {};
-  gmtime_r(&t, &tm);
+  const std::tm tm = kiss::gmtime_utc(t);
   char buf[32];
   std::strftime(buf, sizeof buf, "%Y%m%dT%H%M%SZ", &tm);
   return buf;
@@ -158,7 +158,7 @@ int main(int argc, char** argv) {
     }
     const std::filesystem::path adj_file = std::filesystem::path(data_dir) / "adj.u32";
     const kiss::Adjacency adj(adj_file);
-    std::printf("adjacency        : %s (mmap, %zu bytes)\n", adj_file.c_str(), adj.bytes());
+    std::printf("adjacency        : %s (mmap, %zu bytes)\n", adj_file.string().c_str(), adj.bytes());
     const kiss::LeechSwapGraph g(L, adj);
 
     // ---- the set -----------------------------------------------------------

@@ -35,6 +35,7 @@
 
 #include "kiss/leech.h"
 #include "kiss/types.h"
+#include "kiss/bits.h"
 
 namespace kiss {
 
@@ -114,7 +115,7 @@ class Bitset {
     for (std::size_t k = 0; k < w_.size(); ++k) {
       uint64_t x = w_[k];
       while (x) {
-        const int b = __builtin_ctzll(x);
+        const int b = kiss::ctz64(x);
         f(static_cast<int>(k * 64) + b);
         x &= x - 1;
       }

@@ -30,6 +30,8 @@
 #include <string>
 #include <vector>
 
+#include "kiss/bits.h"
+
 namespace {
 
 int g_failures = 0;
@@ -133,7 +135,7 @@ std::string sha256_hex(const std::string& s) {
   return h.hex_digest();
 }
 
-inline int popc(uint32_t x) { return __builtin_popcount(x); }
+inline int popc(uint32_t x) { return kiss::popcount32(x); }
 
 // Independent GF(2) carry-less multiply for the basis-span check (does not
 // call anything in src/golay.cpp beyond the public constant).

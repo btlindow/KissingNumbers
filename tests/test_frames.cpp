@@ -34,6 +34,7 @@
 #include "kiss/leech.h"
 #include "kiss/types.h"
 #include "kiss/verify.h"
+#include "kiss/bits.h"
 
 namespace {
 
@@ -134,7 +135,7 @@ void test_cliques() {
           for (int j = i + 1; j < n; ++j)
             if ((mask >> j & 1u) && !adj[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)]) { clique = false; break; }
       if (!clique) continue;
-      const int sz = __builtin_popcount(mask);
+      const int sz = kiss::popcount32(mask);
       ++all_by_size[sz];
       if (mask & 1u) ++through0_by_size[sz];
       omega = std::max(omega, sz);

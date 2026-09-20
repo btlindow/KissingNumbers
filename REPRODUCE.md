@@ -20,9 +20,9 @@ without a long recompute, and why.
 
 | | |
 |---|---|
-| OS | Linux (developed on Ubuntu 22.04). Nothing is macOS/Windows-tested. |
+| OS | Linux (developed on Ubuntu 22.04) or Windows 11. macOS is not tested (and has no CUDA). On Windows read §1.1 below first, then read every command in this file as its PowerShell equivalent. |
 | Compiler | g++ ≥ 11 with OpenMP; CMake ≥ 3.25; Ninja |
-| CUDA | **Only for the GPU section.** CUDA toolkit 12.8 at `/usr/local/cuda-12.8` (the path is pinned in `CMakePresets.json`) plus a driver new enough for it (tested: 580.119.02). `CMAKE_CUDA_ARCHITECTURES` is pinned to `86` — change it in `CMakePresets.json` for a non-Ampere card. |
+| CUDA | **Only for the GPU section.** CUDA toolkit 12.8 at `/usr/local/cuda-12.8` on Linux, or 13.4 under `C:/Program Files/NVIDIA GPU Computing Toolkit` on Windows (both paths are pinned in `CMakePresets.json`), plus a driver new enough for it (tested: 580.119.02 and 610.88). `CMAKE_CUDA_ARCHITECTURES` is pinned to `86` — change it in `CMakePresets.json` for a non-Ampere card. |
 | Python | `python3` ≥ 3.10 and `virtualenv` (`pip install --user virtualenv`, or `apt install python3-venv`). `scripts/setup_venv.sh` tries `venv`, then `virtualenv`, then `venv --without-pip` + a bootstrapped pip, and needs one of them to work. |
 | Disk | ~8 GB free: 3.6 GB for `data/adj.u32`, ~1 GB build tree, ~0.5 GB venv, plus run artefacts. |
 | RAM | 16 GB is enough for everything in this file. (The *four-point* SDP of `docs/handover/findings.pdf` §2.6 is priced at 64–128 GB and is deliberately not run — only its orbit scoping is.) |
@@ -40,6 +40,50 @@ file scripts/setup_venv.sh      # must NOT say "with CRLF line terminators"
 
 If it does, your clone predates `.gitattributes`; fix with
 `git config core.autocrlf false && git rm --cached -r . -q && git reset --hard`.
+
+### 1.1 Windows
+
+Verified on the machine B envelope of `docs/design.md` §1.B: Windows 11 Pro, VS 2022 Community
+(MSVC 14.38 + Windows SDK 10.0.22621), CUDA 13.4, CMake 4.4.3, Ninja 1.13.2, RTX 3080 Ti. Three
+differences from the Linux recipe; everything else is the same command in Windows spelling.
+
+**1. Put the toolchain on `PATH` first.** The Ninja generator cannot find `cl.exe` by itself, and
+the CUDA/CMake installers only edit the machine `PATH`, which an already-open console does not see.
+Source the helper once per shell — note the leading dot:
+
+```powershell
+. scripts\dev_shell.ps1
+# dev_shell: MSVC from C:\Program Files\Microsoft Visual Studio\2022\Community
+# dev_shell: nvcc 13.4 at C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.4\bin\nvcc.exe
+# dev_shell: GPU NVIDIA GeForce RTX 3080 Ti, 12288 MiB, 8.6
+```
+
+**2. Use the `windows-*` presets and the PowerShell scripts.** The `release`/`debug`/`sanitize`
+presets pin the Linux CUDA path and carry a `condition` restricting them to Linux hosts, so they
+are not offered here. CMake **≥ 3.30** is required on MSVC (for `OpenMP_RUNTIME_MSVC`).
+
+| Linux | Windows |
+|---|---|
+| `scripts/setup_venv.sh` | `powershell -ExecutionPolicy Bypass -File scripts\setup_venv.ps1` |
+| `.venv/bin/python` | `.venv\Scripts\python.exe` |
+| `cmake --preset release` | `cmake --preset windows-release` |
+| `cmake --build build/release -j "$(nproc)"` | `cmake --build build/windows-release` |
+| `ctest --preset release` | `ctest --preset windows-release` |
+| `build/release/tools/gen_leech data/` | `build\windows-release\tools\gen_leech.exe data\` |
+| `PYTHONPATH=python .venv/bin/python X` | `$env:PYTHONPATH='python'; .venv\Scripts\python.exe X` |
+
+**3. One optional dependency is skipped.** `pynauty` has no Windows wheel and its sdist builds
+nauty with `make`. It lives in `python/requirements-optional.txt`, which nothing installs by default; it is imported
+lazily by one function in `python/tools/channel_opt.py` and by no verifier, bound or test.
+
+Measured here: 16 tools + 19 tests build in ~3 min; `ctest --preset windows-release` is 19/19 in
+389 s (machine A: 586 s); `gen_leech` and `build_adj` reproduce `sha256_i8=aea59406…` and
+`adj.u32 sha256=83dd4d9b…` exactly — the committed digests are platform-independent.
+`pytest python/tests` is 294 passed / 1 skipped in 148 s, the same counts as machine A.
+
+The build is **not** `-Werror` on MSVC (`KISS_WERROR` defaults to `OFF` there): `/W4` flags a
+different and larger set than `-Wall -Wextra`, mostly narrowing conversions inside the STL. Pass
+`-DKISS_WERROR=ON` to make them fatal.
 
 ---
 
@@ -430,3 +474,41 @@ See [`docs/reports/07-lines-vs-vectors.md`](docs/reports/07-lines-vs-vectors.md)
 [`docs/reports/09-coset-classes.md`](docs/reports/09-coset-classes.md) and
 [`docs/reports/KRAVATSKIY-OVERLAP.md`](docs/reports/KRAVATSKIY-OVERLAP.md) for what each
 establishes.
+
+---
+
+## 8. Independent verification of Kravatskiy's configurations in dimensions 25–27 (September 2026)
+
+A. Kravatskiy's public repository claims K(25) ≥ 197569, K(26) ≥ 199632 and K(27) ≥ 201010 and
+ships its own verifiers. The four programmes in `tools/kravatskiy/` re-check those three
+configurations from his coordinate data with code written here, sharing nothing with his: they
+regenerate the 196,560 Leech minimal vectors from this repository's Golay code, recover every
+head's owner by search instead of reading it from the data, and decide every inequality in exact
+arithmetic (integers, and exact comparisons in ℚ(√2, √3) for the axis). Checked: every head
+pair, every head against the whole equator, the equator itself, heads against the axis, the axis
+against itself, distinctness of every point, and full ambient rank. CPU only; about 1.2 GiB of RAM.
+
+```
+git clone https://github.com/alexlegeartis/KissingNumbers.git data/external/kravatskiy
+git -C data/external/kravatskiy checkout 52fa09d16e20394f06c1d19b7a1bdc967c865d9f
+AK=data/external/kravatskiy/verifications/improved
+export PYTHONPATH=$PWD/python
+
+# 13. his three configurations                                        [~20 s, ~80 s, ~80 s]
+.venv/bin/python tools/kravatskiy/verify25_independent.py   $AK/dim25-lens-heads
+# ALL CHECKS PASS      K(25) >= 197569   (independent, exact)
+.venv/bin/python tools/kravatskiy/verify2627_independent.py $AK/dim26-27-iota-triangles 26
+# ALL CHECKS PASS      K(26) >= 199632   (independent, exact)
+.venv/bin/python tools/kravatskiy/verify2627_independent.py $AK/dim26-27-iota-triangles 27
+# ALL CHECKS PASS      K(27) >= 201010   (independent, exact)
+
+# 14. the verifiers reject eleven deliberately corrupted artefacts            [~12 min]
+.venv/bin/python tools/kravatskiy/falsify.py $AK/dim25-lens-heads $AK/dim26-27-iota-triangles
+# ALL FALSIFICATION TESTS PASS
+```
+
+`verify2627_independent.py` takes an optional third argument, the total to expect, for checking
+other configurations stored in the same artefact format. `tools/kravatskiy/exact_cmp.py` holds the
+exact surd comparisons. `tools/kravatskiy/interval_cert.py` is a general tool: it turns a Delsarte
+dual solved on a grid into one certified on a whole interval by exact real-root counting (Sturm
+sequences), so that a bound from `python/bounds/lp_delsarte.py` does not rest on the grid.

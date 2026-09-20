@@ -9,6 +9,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cstdio>
 #include <filesystem>
 #include <string>
 #include <vector>
@@ -16,6 +17,19 @@
 #include "kiss/types.h"
 
 namespace kiss {
+
+// std::fopen on a std::filesystem::path. Needed because path::c_str() is
+// `const wchar_t*` on Windows, where the narrow fopen would not compile and a
+// path::string() round trip would lose any character outside the active code
+// page. Returns nullptr exactly as std::fopen does; callers check and throw.
+inline std::FILE* fopen_path(const std::filesystem::path& path, const char* mode) {
+#if defined(_WIN32)
+  const std::wstring wmode(mode, mode + std::char_traits<char>::length(mode));
+  return ::_wfopen(path.c_str(), wmode.c_str());
+#else
+  return std::fopen(path.c_str(), mode);
+#endif
+}
 
 // Parse a set file. Throws std::runtime_error naming file and line on a row
 // with the wrong number of values, a non-integer token or a value outside

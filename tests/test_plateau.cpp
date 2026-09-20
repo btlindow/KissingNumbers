@@ -116,7 +116,7 @@ int main(int argc, char** argv) {
   // ---- 2. Leech --------------------------------------------------------------
   const std::filesystem::path adj_file = std::filesystem::path(data_dir) / "adj.u32";
   if (!std::filesystem::exists(adj_file)) {
-    std::printf("leech: %s absent — skipping (exit 77)\n", adj_file.c_str());
+    std::printf("leech: %s absent — skipping (exit 77)\n", adj_file.string().c_str());
     if (failures) { std::printf("RESULT ok=0 failures=%d\n", failures); return 1; }
     std::printf("RESULT ok=1 synthetic=1 leech=0 syn_best=%zu syn_nodes=%zu failures=0\n", syn_best, syn_nodes);
     return 77;

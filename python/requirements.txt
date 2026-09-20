@@ -1,11 +1,14 @@
-numpy
-scipy
-sympy
-pytest
-cvxpy
-clarabel
-scs
-python-sat
-ortools
-pyscipopt
-pynauty
+# Everything the verification commands in README.md and REPRODUCE.md need, pinned to the
+# versions they were last run with (CPython 3.10). One optional package lives in
+# requirements-optional.txt.
+numpy==2.2.6
+scipy==1.15.3
+sympy==1.14.0
+mpmath==1.3.0
+pytest==9.1.1
+cvxpy==1.7.5
+clarabel==0.11.1
+scs==3.3.1
+python-sat==1.9.dev15
+ortools==9.15.6755
+PySCIPOpt==6.2.1

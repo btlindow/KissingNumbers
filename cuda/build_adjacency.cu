@@ -21,6 +21,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "kiss/io.h"
 
 namespace kiss::cuda {
 
@@ -228,7 +229,7 @@ void AdjacencyBuilder::build_rows(uint32_t first_row, uint32_t nrows, uint32_t* 
 double AdjacencyBuilder::build_file(const std::filesystem::path& out_file) const {
   const auto t0 = std::chrono::steady_clock::now();
   const std::filesystem::path tmp = out_file.string() + ".tmp";
-  std::FILE* f = std::fopen(tmp.c_str(), "wb");
+  std::FILE* f = kiss::fopen_path(tmp, "wb");
   if (!f) throw std::runtime_error("build_adjacency: cannot open " + tmp.string() + " for writing");
 
   const uint32_t nchunks = (static_cast<uint32_t>(N) + chunk_rows_ - 1) / chunk_rows_;

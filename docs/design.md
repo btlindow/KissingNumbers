@@ -9,7 +9,17 @@ For *what was found*, see [`docs/reports/`](reports/) and the summary paper
 [`docs/handover/findings.pdf`](handover/findings.pdf). For *how to re-run it*, see
 [`REPRODUCE.md`](../REPRODUCE.md).
 
-## 1. Machine envelope (surveyed 2026-08-25)
+## 1. Machine envelopes
+
+The project has run on two machines. **Machine A** is the one everything was developed and
+measured on: every timing in `REPRODUCE.md` and in the reports is machine A unless it says
+otherwise. **Machine B** is the Windows workstation the work continued on; it is the same GPU
+architecture, so nothing in §5 needed retuning, and it regenerates `data/leech_min.i8` and
+`data/adj.u32` to the same SHA-256 digests.
+
+Anything not listed as differing is the same on both.
+
+### 1.A Linux laptop (surveyed 2026-08-25)
 
 | Item | Value | Consequence |
 |---|---|---|
@@ -24,7 +34,23 @@ For *what was found*, see [`docs/reports/`](reports/) and the summary paper
 | Build tools | cmake 3.25, ninja 1.10, make, git 2.34 | CMake + Ninja, ctest for tests. |
 | Network | github.com reachable; PackingStar and Kallal–Kan–Wang repos resolve | T1.3 can fetch fixtures. |
 
-**Design decisions forced by the envelope**
+### 1.B Windows workstation (surveyed 2026-09-18)
+
+| Item | Value | Consequence |
+|---|---|---|
+| OS | Windows 11 Pro 26200 | The POSIX calls the project makes are confined to `include/kiss/platform.h` (subprocess capture, own-exe path, pid, UTC `tm`), `kiss::fopen_path` in `include/kiss/io.h`, and the mapping branch of `src/adjacency.cpp`. Nothing else is OS-specific. |
+| GPU | NVIDIA GeForce RTX 3080 Ti (GA102, Ampere), **sm_86**, 80 SMs, 12 GB (10.84 GiB free at survey), 400 W cap | Same `-arch=sm_86`, so no kernel retuning. Twice the SMs and no thermal cap: 80 × 48 = 3840 resident warps, so the chain counts of design decision 3 below roughly double before the card is saturated. ~10.8 GB of VRAM means the adjacency table leaves ~7.2 GB for chain state, not ~3.8 GB. |
+| Driver | 610.88 (CUDA 13.3 capable) | Runs the toolkit below. |
+| CUDA toolkit | 13.4 at `C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.4` | Pinned by the `windows-*` presets. CUDA 13 dropped Maxwell, Pascal and Volta; sm_86 is unaffected. `KISS_CUDA_MIN`/`KISS_CUDA_MAX` in `cmake/KissOptions.cmake` hold the tested range, currently [12.8, 14.0). |
+| Host compiler | MSVC 19.38 (VS 2022 Community, toolset 14.38), Windows SDK 10.0.22621 | C++17. No `__builtin_popcount` family (→ `include/kiss/bits.h`), and `long` is **32-bit**, which is what `1L << 40` in `tools/frames.cpp` used to assume otherwise. `/openmp:llvm` is required: the classic `/openmp` is OpenMP 2.0 and rejects the unsigned loop counters in `src/`. CUDA 13's bundled CCCL additionally requires `/Zc:preprocessor` on the host pass. |
+| CPU / RAM | Ryzen 9 5950X, 16 cores / 32 threads, 64 GB RAM (~46 GB free) | The host-RAM constraint of decision 1 below is no longer binding, but the design is unchanged: the adjacency table is still built on the GPU and streamed to disk, because the file format is what other tools read. |
+| Disk | 258 GB free on NVMe | Fine for `data/adj.u32` (3.6 GB), build trees and run logs. |
+| Python | 3.10.11 (Store build; has `ensurepip`, so `scripts/setup_venv.ps1` needs no `virtualenv` fallback). Venv layout is `.venv\Scripts\python.exe`, not `.venv/bin/python` | Adjust the `REPRODUCE.md` command lines accordingly; see its Windows section. |
+| Build tools | cmake 4.4.3, ninja 1.13.2, git 2.48 | CMake ≥ 3.30 is **required** here, for `OpenMP_RUNTIME_MSVC`. `cl.exe` is not on `PATH` by default and the Ninja generator cannot find it alone: source `scripts/dev_shell.ps1` first. |
+
+
+**Design decisions forced by the envelope** (machine A; machine B relaxes the memory
+limits but the decisions stand, because the data formats are shared)
 
 1. **Adjacency lives on the GPU as `uint32[196560][4600]` = 3.62 GB.** It fits in 8 GB with ~3.8 GB left for chain state. Fallback if VRAM gets tight: 3×21-bit packing in `uint64` (2.41 GB). Never materialise it on the host in full.
 2. **Hot loop is incremental (neighbor-list tightness updates), not GEMM.** A full recompute of tightness for one chain is ≈ 196560 × 500 × 6 ≈ 6×10^8 `dp4a`; an incremental add/remove is 4600 reads + 4600 read-modify-writes. The fused GEMM-style kernel is still built (T1.5) for initialisation, self-checks, W2a, and the scheme computation.

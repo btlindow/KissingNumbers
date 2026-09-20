@@ -694,7 +694,7 @@ int main(int argc, char** argv) {
   }
   const std::filesystem::path adj_path = data_dir / "adj.u32";
   if (!std::filesystem::exists(adj_path)) {
-    std::printf("test_ls_moves: %s missing (run tools/build_adj) — skipping\n", adj_path.c_str());
+    std::printf("test_ls_moves: %s missing (run tools/build_adj) — skipping\n", adj_path.string().c_str());
     std::printf("RESULT ok=1 skipped=1 reason=no_adjacency\n");
     return kSkip;
   }
@@ -724,7 +724,7 @@ int main(int argc, char** argv) {
     const Adjacency adj(adj_path);
     const kiss::cuda::ScopedDeviceLeech dl(L);
     const std::vector<uint32_t> S496 = load_s496(L, data_dir / "S496.txt");
-    std::printf("fixture         : S496 |S|=%zu, adjacency %s\n", S496.size(), adj_path.c_str());
+    std::printf("fixture         : S496 |S|=%zu, adjacency %s\n", S496.size(), adj_path.string().c_str());
 
     std::size_t free0 = 0, total0 = 0;
     kiss::cuda::device_mem_info(&free0, &total0);

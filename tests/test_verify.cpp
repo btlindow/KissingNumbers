@@ -28,12 +28,12 @@
 #include <vector>
 
 #include <omp.h>
-#include <unistd.h>
 
 #include "kiss/io.h"
 #include "kiss/leech.h"
 #include "kiss/types.h"
 #include "kiss/verify.h"
+#include "kiss/platform.h"
 
 namespace {
 
@@ -313,7 +313,7 @@ int main(int argc, char** argv) {
   // ---- 4. set_line_numbers + file round trip ---------------------------------
   {
     const fs::path tmp = fs::temp_directory_path() /
-                         ("kiss_test_verify_" + std::to_string(static_cast<long>(getpid())));
+                         ("kiss_test_verify_" + std::to_string(kiss::process_id()));
     fs::create_directories(tmp);
     {
       std::ofstream out(tmp / "s.txt");

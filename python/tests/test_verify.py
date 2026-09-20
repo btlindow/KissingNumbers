@@ -2,7 +2,8 @@
 
 Everything is computed from the independent numpy generator. Fixture tests
 (data/S496.txt, data/S488.txt) and the C++/Python cross-checks
-(build/release/tools/verify_s) are skipped when the files are absent.
+(tools/verify_s, looked for under build/<preset>/) are skipped when the files
+are absent.
 """
 
 from __future__ import annotations
@@ -25,7 +26,24 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 PY = sys.executable
 VERIFY_S = os.path.join(REPO, "python", "verify_S.py")
 VERIFY_DIM25 = os.path.join(REPO, "python", "verify_dim25.py")
-CPP_TOOL = os.path.join(REPO, "build", "release", "tools", "verify_s")
+
+
+def _cpp_tool(stem):
+    """First build tree that has `stem`, over the preset names of CMakePresets.json.
+
+    The Windows presets are named windows-*, and the executables carry .exe, so a
+    single hard-coded build/release/<stem> path silently skips the C++/Python
+    cross-checks there -- which are the whole point of these tests.
+    """
+    exe = stem + (".exe" if os.name == "nt" else "")
+    for preset in ("release", "windows-release", "debug", "windows-debug"):
+        cand = os.path.join(REPO, "build", preset, "tools", exe)
+        if os.path.exists(cand):
+            return cand
+    return os.path.join(REPO, "build", "release", "tools", exe)  # for the skip message
+
+
+CPP_TOOL = _cpp_tool("verify_s")
 FIXTURES = {"S496.txt": 496, "S488.txt": 488}
 
 
@@ -165,7 +183,10 @@ def test_corrupt_not_in_C(C, greedy):
 def test_read_set_grammar(tmp_path, greedy):
     _, S = greedy
     p = tmp_path / "s.txt"
-    with open(p, "w") as f:
+    # newline="" so the explicit \r\n below stays two bytes: in text mode on
+    # Windows Python expands its \n to \r\n, writing \r\r\n, which adds a line
+    # and shifts the line numbers this test asserts on.
+    with open(p, "w", newline="") as f:
         f.write("# header\n\n")
         f.write("\t".join(str(int(v)) for v in S[0]) + "   # trailing\r\n")
         f.write("   \n")

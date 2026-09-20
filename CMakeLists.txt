@@ -1,5 +1,8 @@
 # T0.1 — build system for the Leech-subset kissing-number project.
 # See docs/design.md §1 (machine envelope), §2.1 (layout), §2.4 (conventions).
+#
+# Builds on Linux/gcc and on Windows/MSVC; pick a preset from CMakePresets.json
+# rather than configuring by hand, because the CUDA toolkit is pinned there.
 cmake_minimum_required(VERSION 3.25)
 
 project(kissing
@@ -23,7 +26,18 @@ set(CMAKE_CUDA_EXTENSIONS OFF)
 set(CMAKE_CUDA_SEPARABLE_COMPILATION OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-find_package(CUDAToolkit 12.8 REQUIRED)   # CUDA::cudart, CUDA::curand, ...
+find_package(CUDAToolkit ${KISS_CUDA_MIN} REQUIRED)   # CUDA::cudart, CUDA::curand, ...
+
+# MSVC's own /openmp is OpenMP 2.0 and rejects unsigned loop counters, which
+# src/ uses throughout; ask CMake for the LLVM runtime that ships with VS.
+# (OpenMP_RUNTIME_MSVC is CMake 3.30+; older CMake on Windows would need the
+# loops rewritten, so say why rather than silently falling back.)
+if(MSVC)
+  if(CMAKE_VERSION VERSION_LESS 3.30)
+    message(FATAL_ERROR "CMake >= 3.30 is required on MSVC (OpenMP_RUNTIME_MSVC); found ${CMAKE_VERSION}")
+  endif()
+  set(OpenMP_RUNTIME_MSVC "llvm")
+endif()
 find_package(OpenMP REQUIRED COMPONENTS CXX)
 
 # Generated version header (git hash logged in every run directory, §2.4).

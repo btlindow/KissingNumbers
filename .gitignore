@@ -12,6 +12,7 @@ data/external/
 
 # python
 .venv/
+venv/
 __pycache__/
 *.pyc
 .pytest_cache/
@@ -34,6 +35,14 @@ PHASE_2/
 
 # Confidential to the collaboration (Cohn construction) — never public
 private/
+# material received from others — never public
+inbox/
+outbox/
 
 # regenerable caches
 .cache/
+
+# solver scratch
+*.lp
+*.mps
+*.sol

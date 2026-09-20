@@ -52,6 +52,7 @@
 #include "kiss_cuda.h"
 #include "ls_search.cuh"
 #include "ls_state.cuh"
+#include "kiss/platform.h"
 
 using kiss::Adjacency;
 using kiss::DEG;
@@ -164,8 +165,7 @@ std::vector<uint32_t> greedy_set(const Leech& L, const Adjacency& adj, std::mt19
 // ---------------------------------------------------------------------------
 std::string utc_stamp() {
   const std::time_t t = std::time(nullptr);
-  std::tm tm{};
-  gmtime_r(&t, &tm);
+  const std::tm tm = kiss::gmtime_utc(t);
   char buf[32];
   std::strftime(buf, sizeof buf, "%Y%m%dT%H%M%SZ", &tm);
   return buf;
@@ -187,7 +187,7 @@ void handle_candidate(const Leech& L, const std::vector<uint32_t>& S, uint32_t c
   kiss::write_set(f, V, "T3.2b test_ls_search stage " + stage + " chain " + std::to_string(chain));
   std::printf("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
   std::printf("!!! CANDIDATE RECORD: |S| = %zu from chain %u (stage %s) written to %s\n", S.size(), chain, stage.c_str(),
-              f.c_str());
+              f.string().c_str());
   std::printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
   std::fflush(stdout);
   const std::filesystem::path tool = g_exe_dir / ".." / "tools" / "verify_s";
@@ -520,7 +520,7 @@ StageResult run_stage(const StageCfg& c0, const Leech& L, const kiss::cuda::Devi
       std::filesystem::create_directories("runs/ls_search");
       const std::filesystem::path f = std::filesystem::path("runs/ls_search") /
                                       (c.name + "_B" + std::to_string(B) + "_it" + std::to_string(c.launches * c.K) + "_bestsets.txt");
-      if (FILE* fp = std::fopen(f.c_str(), "w")) {
+      if (FILE* fp = kiss::fopen_path(f, "w")) {
         std::fprintf(fp, "# %s: distinct best_S per chain (vertex indices, canonical order); reference hash %08x\n",
                      c.name.c_str(), c.reference_hash);
         for (const auto& kv : distinct) {
@@ -639,7 +639,7 @@ int main(int argc, char** argv) {
   }
   const std::filesystem::path adj_path = data_dir / "adj.u32";
   if (!std::filesystem::exists(adj_path)) {
-    std::printf("test_ls_search: %s missing (run tools/build_adj) — skipping\n", adj_path.c_str());
+    std::printf("test_ls_search: %s missing (run tools/build_adj) — skipping\n", adj_path.string().c_str());
     std::printf("RESULT ok=1 skipped=1 reason=no_adjacency\n");
     return kSkip;
   }
@@ -672,7 +672,7 @@ int main(int argc, char** argv) {
     const std::vector<uint32_t> S496 = load_indices(L, data_dir / "S496.txt");
     const std::vector<uint32_t> S488 = load_indices(L, data_dir / "S488.txt");
     std::printf("fixture   : S496 |S|=%zu, S488 |S|=%zu, adjacency %s, omp threads %d\n", S496.size(), S488.size(),
-                adj_path.c_str(), omp_get_max_threads());
+                adj_path.string().c_str(), omp_get_max_threads());
     std::size_t free0 = 0, total0 = 0;
     kiss::cuda::device_mem_info(&free0, &total0);
     const auto ta = std::chrono::steady_clock::now();
