@@ -489,9 +489,8 @@ pair, every head against the whole equator, the equator itself, heads against th
 against itself, distinctness of every point, and full ambient rank. CPU only; about 1.2 GiB of RAM.
 
 ```
-git clone https://github.com/alexlegeartis/KissingNumbers.git data/external/kravatskiy
-git -C data/external/kravatskiy checkout 52fa09d16e20394f06c1d19b7a1bdc967c865d9f
-AK=data/external/kravatskiy/verifications/improved
+git submodule update --init external/kravatskiy
+AK=$(.venv/bin/python tools/kravatskiy/pinned.py 52fa09d)/verifications/improved
 export PYTHONPATH=$PWD/python
 
 # 13. his three configurations                                        [~20 s, ~80 s, ~80 s]
@@ -512,3 +511,13 @@ other configurations stored in the same artefact format. `tools/kravatskiy/exact
 exact surd comparisons. `tools/kravatskiy/interval_cert.py` is a general tool: it turns a Delsarte
 dual solved on a grid into one certified on a whole interval by exact real-root counting (Sturm
 sequences), so that a bound from `python/bounds/lp_delsarte.py` does not rest on the grid.
+
+**The submodule, and pinned commits.** Kravatskiy's repository is the git submodule
+`external/kravatskiy`. A plain `git pull` in this repository does **not** advance a submodule; to move
+it to his current head run `scripts/update_kravatskiy.sh` (Windows: `scripts\update_kravatskiy.ps1`),
+which is `git submodule update --remote external/kravatskiy` followed by a report of the old and new
+commit and of any changed rows of his `RESULTS.md`. The verifications above do not depend on where the
+submodule's head is: `tools/kravatskiy/pinned.py <commit>` makes a detached checkout of the requested
+commit under `external/.pins/` (gitignored) from the submodule's own object store, and the claims are
+checked there -- `52fa09d` for the three configurations above. The environment variable `KISS_ALEXEY`,
+if set, overrides the location.

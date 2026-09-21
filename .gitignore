@@ -46,3 +46,6 @@ outbox/
 *.lp
 *.mps
 *.sol
+
+# detached checkouts of the submodule at pinned commits (tools/kravatskiy/pinned.py)
+external/.pins/

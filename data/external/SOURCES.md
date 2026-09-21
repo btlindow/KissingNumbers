@@ -151,6 +151,6 @@ Identical to README §1.1 — nothing has moved past 496 in dimensions 24–31.
 | item | value |
 |---|---|
 | URL | https://github.com/alexlegeartis/KissingNumbers (MIT) |
-| clone | `git clone https://github.com/alexlegeartis/KissingNumbers.git data/external/kravatskiy` (gitignored) |
-| commit | `52fa09d16e20394f06c1d19b7a1bdc967c865d9f`, 2026-09-18 |
+| location | git submodule `external/kravatskiy` (since 2026-09-21; before that a gitignored clone under `data/external/`) |
+| pinned commits | `52fa09d16e20394f06c1d19b7a1bdc967c865d9f` (2026-09-18) and `c349d565362f39f8492e55bda7129cd0787a1d6e` (2026-09-20), checked out on demand by `tools/kravatskiy/pinned.py` |
 | used | `verifications/improved/dim25-lens-heads/` and `verifications/improved/dim26-27-iota-triangles/`, read by the independent verifiers in `tools/kravatskiy/` (REPRODUCE.md, last section) |

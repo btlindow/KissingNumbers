@@ -74,9 +74,8 @@ deliberately corrupted artefacts and requires every one to be rejected. From a f
 python -m venv .venv
 source .venv/bin/activate            # Windows, Git Bash: source .venv/Scripts/activate
 pip install -r python/requirements.txt
-git clone https://github.com/alexlegeartis/KissingNumbers.git data/external/kravatskiy
-git -C data/external/kravatskiy checkout 52fa09d16e20394f06c1d19b7a1bdc967c865d9f
-AK=data/external/kravatskiy/verifications/improved
+git submodule update --init external/kravatskiy
+AK=$(python tools/kravatskiy/pinned.py 52fa09d)/verifications/improved     # his commit 52fa09d, whatever the submodule's head
 PYTHONPATH=python python tools/kravatskiy/verify25_independent.py   $AK/dim25-lens-heads
 PYTHONPATH=python python tools/kravatskiy/verify2627_independent.py $AK/dim26-27-iota-triangles 26
 PYTHONPATH=python python tools/kravatskiy/verify2627_independent.py $AK/dim26-27-iota-triangles 27

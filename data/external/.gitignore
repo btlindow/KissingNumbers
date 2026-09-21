@@ -1,4 +1,3 @@
 # Raw upstream clones are reproducible from the commit hashes in SOURCES.md; do not commit them.
 PackingStar/
 Kissing-Numbers/
-kravatskiy/

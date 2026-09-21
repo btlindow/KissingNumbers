@@ -1,0 +1,3 @@
+[submodule "external/kravatskiy"]
+	path = external/kravatskiy
+	url = https://github.com/alexlegeartis/KissingNumbers.git
