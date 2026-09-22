@@ -506,6 +506,33 @@ export PYTHONPATH=$PWD/python
 # ALL FALSIFICATION TESTS PASS
 ```
 
+### The two-layer configurations (his commit `c349d56`)
+
+In September 2026 Kravatskiy added a second cap layer in dimensions 26 and 27: heads `(sqrt3/2)u`
+at `|x|^2 = 3` on three lines through the holes of the first layer's directions, each deleting
+exactly its owner. `verify2627_layers_independent.py` checks such a configuration, again from the
+geometric description alone: it derives the bar `<Y,u> <= floor(32 sqrt3 - 32 c)` from the actual
+lines and directions rather than quoting it, delegates the first layer to the verifier above, and
+adds the second layer, the cross conditions and the combined count. `falsify_layers.py` feeds both
+dimensions fourteen corrupted artefacts -- an owner too close to a first-layer head, two heads at
+`<u,u'> = 16` on one line, an owner shared with the first layer, a duplicated owner, an owner of
+norm 32 that is not a lattice vector, a line index out of range, a first-layer head moved to
+another triangle -- and requires every one to be rejected.
+
+```
+AK2=$(.venv/bin/python tools/kravatskiy/pinned.py c349d56)/verifications/improved/dim26-27-iota-triangles
+
+# 15. his two-layer configurations                                          [~80 s each]
+.venv/bin/python tools/kravatskiy/verify2627_layers_independent.py $AK2 26 199806
+# ALL CHECKS PASS      K(26) >= 199806   (independent, exact, two layers)
+.venv/bin/python tools/kravatskiy/verify2627_layers_independent.py $AK2 27 201509
+# ALL CHECKS PASS      K(27) >= 201509   (independent, exact, two layers)
+
+# 16. the fourteen corrupted two-layer artefacts are all rejected                 [~4 min]
+.venv/bin/python tools/kravatskiy/falsify_layers.py $AK2
+# ALL LAYER FALSIFICATION TESTS PASS
+```
+
 `verify2627_independent.py` takes an optional third argument, the total to expect, for checking
 other configurations stored in the same artefact format. `tools/kravatskiy/exact_cmp.py` holds the
 exact surd comparisons. `tools/kravatskiy/interval_cert.py` is a general tool: it turns a Delsarte
