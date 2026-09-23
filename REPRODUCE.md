@@ -539,6 +539,44 @@ exact surd comparisons. `tools/kravatskiy/interval_cert.py` is a general tool: i
 dual solved on a grid into one certified on a whole interval by exact real-root counting (Sturm
 sequences), so that a bound from `python/bounds/lp_delsarte.py` does not rest on the grid.
 
+### His dimensions 28-31: the line-class construction with a norm-8 frame layer
+
+In dimensions 28 to 31 the construction is a different shape: the unit is an owner *line*, not a
+head. Writing L for the number of owner lines and k = n - 24,
+
+    K(24+k) = 196560 - 2L + 2 sum_g |g| lines(g) + |axis| + 96k
+
+where each owner line contributes its two vectors' caps and deletes both, and the frame layer
+contributes 96k points while deleting nothing. A group is a set of cap directions pairwise at 120
+degrees -- a zero-sum triple, so a line is worth 6 - 2 = 4, or (in dimension 29, twice) a pair, so
+a line there is worth 4 - 2 = 2.
+
+`verify2831_independent.py` checks such a configuration from the geometry: the Leech shell comes
+from this repository's Golay code, every owner is looked up in it, and the R^k side -- where the
+data lives in Q(sqrt2, sqrt3, sqrt6) -- is decided exactly in the ring of integer quadruples
+(a + b sqrt2 + c sqrt3 + d sqrt6)/24, with no floating point anywhere. It checks the geometry it is
+given (unit directions, the 120-degree groups, the axis a 60-degree code, the frame a Leech frame),
+that every owner is type B for the frame, every cap pair, cap against axis and against the layer,
+the layer against the equator, itself and the axis, distinctness, ambient rank, and the count.
+His dimension-28 package ships no geometry file, so `geom28.py` builds it -- the 24 normalised D4
+roots in 8 zero-sum triples, the 16 half-vectors of the dual 24-cell, the four coordinate
+directions -- and the verifier calls it automatically.
+
+```
+AK2=$(.venv/bin/python tools/kravatskiy/pinned.py bfc2854)/verifications/improved
+
+# 17. his four line-class claims                                       [~1 to 6 min each]
+.venv/bin/python tools/kravatskiy/verify2831_independent.py $AK2/dim28-norm8-frame-layer   28 204896
+.venv/bin/python tools/kravatskiy/verify2831_independent.py $AK2/dim29-30-frame-layer      29 209968
+.venv/bin/python tools/kravatskiy/verify2831_independent.py $AK2/dim29-30-frame-layer      30 221012
+.venv/bin/python tools/kravatskiy/verify2831_independent.py $AK2/dim31-frame-layer         31 238662
+# each ends with  ALL CHECKS PASS      K(n) >= ...   (independent, exact)
+
+# 18. eight corrupted line-class artefacts, all rejected                          [~3 min]
+.venv/bin/python tools/kravatskiy/falsify2831.py $AK2/dim31-frame-layer 31 238662
+# ALL 28-31 FALSIFICATION TESTS PASS
+```
+
 **The submodule, and pinned commits.** Kravatskiy's repository is the git submodule
 `external/kravatskiy`. A plain `git pull` in this repository does **not** advance a submodule; to move
 it to his current head run `scripts/update_kravatskiy.sh` (Windows: `scripts\update_kravatskiy.ps1`),

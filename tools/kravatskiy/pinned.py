@@ -14,6 +14,8 @@ submodule; otherwise the submodule is fetched once.
 Pinned commits used by this repository:
     52fa09d16e20394f06c1d19b7a1bdc967c865d9f   2026-09-18   K(25) >= 197569, K(26) >= 199632, K(27) >= 201010
     c349d565362f39f8492e55bda7129cd0787a1d6e   2026-09-20   two layers: K(26) >= 199806, K(27) >= 201509
+    f0809165cb3c1cbcb817e7bbb051df27fcb15614   2026-09-22   K(25) >= 197579 (1016 lens heads) and its ceiling
+    bfc28543fe89b10f5017bc58bfe4a98e1357b269   2026-09-23   K(27) >= 201557 (second layer re-solved to 303)
 
 The environment variable KISS_ALEXEY, if set, names an existing clone and is returned unchanged
 (the caller is then responsible for what it has checked out).
@@ -30,6 +32,8 @@ PINS = os.path.join(ROOT, "external", ".pins")
 PINNED = {
     "52fa09d": "52fa09d16e20394f06c1d19b7a1bdc967c865d9f",
     "c349d56": "c349d565362f39f8492e55bda7129cd0787a1d6e",
+    "f080916": "f0809165cb3c1cbcb817e7bbb051df27fcb15614",
+    "bfc2854": "bfc28543fe89b10f5017bc58bfe4a98e1357b269",
 }
 
 
@@ -54,7 +58,7 @@ def pinned_checkout(commit, override_env="KISS_ALEXEY"):
     if os.path.isdir(dst):
         head = _git("rev-parse", "HEAD", cwd=dst).stdout.strip()
         dirty = _git("status", "--porcelain", cwd=dst).stdout.strip()
-        if head != full or dirty:
+        if not head.startswith(full) or dirty:        # `full` may be a short hash
             raise RuntimeError(f"{dst} is at {head[:7]}{' and modified' if dirty else ''}, expected {full[:7]}; remove it and rerun")
         return dst
     os.makedirs(PINS, exist_ok=True)
